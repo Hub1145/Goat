@@ -1,3 +1,5 @@
+import eventlet
+eventlet.monkey_patch()
 from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for, flash
 from flask_socketio import SocketIO, emit
 import json
@@ -13,7 +15,7 @@ logging.basicConfig(
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 config_file = 'config.json'
 login_file = 'login.json'
@@ -328,10 +330,10 @@ def get_status():
         'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
         'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
     })
-    return response
  
 @socketio.on('connect')
-def handle_connect(sid):
+def handle_connect(auth=None):
+    sid = request.sid
     global bot_engine
     logging.info(f'Client connected: {sid}')
     emit('connection_status', {'connected': True}, room=sid)

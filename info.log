@@ -1,0 +1,44 @@
+2026-02-13 07:38:12,042 - INFO - Logger initialized. info.log active for monitoring/downloads.
+2026-02-13 07:38:12,425 - INFO - Bot starting background monitoring...
+2026-02-13 07:38:12,998 - INFO - OKX server time synchronized. Offset: -9ms
+2026-02-13 07:38:13,289 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 07:38:13,290 - INFO - OKX BOT STARTING
+2026-02-13 07:38:13,292 - INFO - Check Cancel Condition
+2026-02-13 07:38:14,094 - INFO - Websocket connected
+2026-02-13 07:38:14,094 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 07:38:14,099 - INFO - Websocket connected
+2026-02-13 07:38:14,099 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 07:38:14,201 - INFO - 📅 Daily Report Saved for 2026-02-13: Capital $77293.34, Net Profit $0.00
+2026-02-13 07:38:14,314 - INFO - WebSocket Login Successful.
+2026-02-13 07:38:14,613 - INFO - Bot startup sequence complete.
+2026-02-13 07:38:15,579 - INFO - OKX server time synchronized. Offset: -5ms
+2026-02-13 07:45:39,122 - INFO - Logger initialized. info.log active for monitoring/downloads.
+2026-02-13 07:45:39,455 - INFO - Bot starting background monitoring...
+2026-02-13 07:45:40,024 - INFO - OKX server time synchronized. Offset: 37ms
+2026-02-13 07:45:40,336 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 07:45:40,337 - INFO - OKX BOT STARTING
+2026-02-13 07:45:40,338 - INFO - Check Cancel Condition
+2026-02-13 07:45:41,175 - INFO - Websocket connected
+2026-02-13 07:45:41,175 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 07:45:41,180 - INFO - Websocket connected
+2026-02-13 07:45:41,181 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 07:45:41,402 - INFO - WebSocket Login Successful.
+2026-02-13 07:45:41,689 - INFO - Bot startup sequence complete.
+2026-02-13 07:45:42,637 - INFO - OKX server time synchronized. Offset: 27ms
+2026-02-13 07:47:15,308 - INFO - Logger initialized. info.log active for monitoring/downloads.
+2026-02-13 07:47:15,309 - INFO - Logger initialized. info.log active for monitoring/downloads.
+2026-02-13 07:47:39,196 - INFO - Logger initialized. info.log active for monitoring/downloads.
+2026-02-13 07:47:39,196 - INFO - Bot starting background monitoring...
+2026-02-13 07:47:39,826 - INFO - OKX server time synchronized. Offset: 36ms
+2026-02-13 07:47:40,118 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 07:47:40,118 - INFO - OKX BOT STARTING
+2026-02-13 07:47:40,121 - INFO - Check Cancel Condition
+2026-02-13 07:47:40,944 - INFO - Websocket connected
+2026-02-13 07:47:40,944 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 07:47:40,956 - INFO - Websocket connected
+2026-02-13 07:47:40,956 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 07:47:41,164 - INFO - WebSocket Login Successful.
+2026-02-13 07:47:41,688 - INFO - Bot startup sequence complete.
+2026-02-13 07:48:19,922 - INFO - Client connected: 70GShOHqKqr1ZnCkAAAB
+2026-02-13 07:48:20,219 - INFO - OKX server time synchronized. Offset: 48ms
+2026-02-13 07:48:20,284 - INFO - OKX server time synchronized. Offset: 41ms

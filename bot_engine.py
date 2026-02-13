@@ -3361,9 +3361,10 @@ class TradingBotEngine:
                     self.log(f"Pending order {p_id} cleared from tracking.", level="debug")
                     self._should_update_tpsl = True
 
-        if getattr(self, '_should_update_tpsl', False) and any(self.in_position.values()) and self.is_running:
+        if getattr(self, '_should_update_tpsl', False) and any(self.in_position.values()):
             self._should_update_tpsl = False
             # Call TP/SL modification to sync with new average price
+            # Active even when bot is stopped if Auto features are enabled
             threading.Thread(target=self.batch_modify_tpsl, daemon=True).start()
         
         # Calculate Need Add metrics (Viz) - Moved here to ensure update during UI-only loops
@@ -3485,7 +3486,10 @@ class TradingBotEngine:
         if not self.authoritative_exit_in_progress and okx_pos_notional > 0:
             
             # [CRITICAL FIX] Gate the logic with configuration check
-            if self.config.get('use_add_pos_auto_cal', False):
+            # User wants this active if any Add Position mode is enabled
+            if self.config.get('use_add_pos_auto_cal', False) or \
+               self.config.get('use_add_pos_above_zero', False) or \
+               self.config.get('use_add_pos_profit_target', False):
                 
                 # ... (Existing Auto-Add Gap Logic) ...
                 current_side = None
@@ -3667,17 +3671,18 @@ class TradingBotEngine:
                              
                              denom = target_price_be - current_price
                              if denom > 0:
-                                 self.need_add_usdt_above_zero = okx_pos_notional * (avg_entry - target_price_be) / denom
+                                 # Exact Martingale Formula: A = O * (o - n) / (n - c) * (c / o)
+                                 self.need_add_usdt_above_zero = okx_pos_notional * (avg_entry - target_price_be) / denom * (current_price / avg_entry)
                          else: # Short
                              # For Short, we need Entry > CurrentPrice for profit.
-                             # recovery_pct=0.6% -> We want new entry to be 0.6% ABOVE current price
-                             target_price_be = current_price * (1 + recovery_pct)
+                             # If we are losing, current_price > avg_entry. We want to average UP.
+                             target_price_be = current_price * (1 - recovery_pct)
                              # Limit target to entry price if it would overshoot (stays sensitive)
                              target_price_be = max(target_price_be, avg_entry + 0.00000001)
-                             
-                             denom = target_price_be - current_price
+
+                             denom = current_price - target_price_be
                              if denom > 0:
-                                  self.need_add_usdt_above_zero = okx_pos_notional * (target_price_be - avg_entry) / denom
+                                  self.need_add_usdt_above_zero = okx_pos_notional * (target_price_be - avg_entry) / denom * (current_price / avg_entry)
                          
                          # Mode 2: Profit Target (Using fee-aware formula matching Target Exit)
                          profit_mult = self.config.get('add_pos_profit_multiplier', 1.5)
@@ -3688,27 +3693,18 @@ class TradingBotEngine:
                          target_pnl_mode2 = current_size_fee * (profit_mult + 2)
 
                          if pos_side == 'long':
-                             qty_contracts = okx_pos_notional / (avg_entry if avg_entry > 0 else 1.0)
-                             # To get profit target_pnl_mode2, we need NewEntry > CurrentPrice
-                             # We average DOWN to shift entry closer to price.
-                             target_avg_for_profit = avg_entry - (target_pnl_mode2 / (qty_contracts if qty_contracts > 0 else 1.0))
-                             
-                             # If we are losing, current_price < avg_entry and current_price < target_avg_for_profit
+                             target_avg_for_profit = current_price * (1 + recovery_pct)
                              denom_p = target_avg_for_profit - current_price
                              if denom_p > 0:
-                                 self.need_add_usdt_profit_target = okx_pos_notional * (avg_entry - target_avg_for_profit) / denom_p
+                                 self.need_add_usdt_profit_target = okx_pos_notional * (avg_entry - target_avg_for_profit) / denom_p * (current_price / avg_entry)
                          else: # Short
-                             qty_contracts = okx_pos_notional / (avg_entry if avg_entry > 0 else 1.0)
-                             # For Short, we want to average UP to raise our entry above current_price
-                             target_avg_for_profit = avg_entry + (target_pnl_mode2 / (qty_contracts if qty_contracts > 0 else 1.0))
-
-                             # If we are losing, current_price > avg_entry and current_price > target_avg_for_profit
+                             target_avg_for_profit = current_price * (1 - recovery_pct)
                              denom_p = current_price - target_avg_for_profit
                              if denom_p > 0:
-                                 self.need_add_usdt_profit_target = okx_pos_notional * (target_avg_for_profit - avg_entry) / denom_p
+                                 self.need_add_usdt_profit_target = okx_pos_notional * (target_avg_for_profit - avg_entry) / denom_p * (current_price / avg_entry)
+
             except Exception as e:
                 self.log(f"Error calculating Need Add: {e}", level="debug")
-
     def _emit_socket_updates(self):
         """
         Phase 3 of Unified Loop: Emitter.
@@ -3835,9 +3831,10 @@ class TradingBotEngine:
                     # We might want to trigger TP/SL update here too.
                     self._should_update_tpsl = True # Flag to update TP/SL if needed
 
-        if getattr(self, '_should_update_tpsl', False) and any(self.in_position.values()) and self.is_running:
+        if getattr(self, '_should_update_tpsl', False) and any(self.in_position.values()):
             self._should_update_tpsl = False
             # Call TP/SL modification to sync with new average price
+            # Active even when bot is stopped if Auto features are enabled
             threading.Thread(target=self.batch_modify_tpsl, daemon=True).start()
             
             # REMOVED: self.initial_total_capital = total_balance reset. 
