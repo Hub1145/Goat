@@ -310,7 +310,7 @@ function setupSocketListeners() {
         updateBotStatus(data.running);
     });
 
-    socket.on('account_update', (data) => {
+    socket.on('account_update', (data) => { console.log('Received account_update', data);
         updateAccountMetrics(data);
     });
 

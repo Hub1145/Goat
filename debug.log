@@ -1,0 +1,882 @@
+2026-02-13 09:26:03,526 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-13 09:26:03,527 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:26:03,527 - INFO - Bot starting background monitoring...
+2026-02-13 09:26:03,527 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:26:03,528 - DEBUG - Verifying API credentials...
+2026-02-13 09:26:03,528 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:26:03,528 - DEBUG - GET /api/v5/account/balance (Attempt 1/1)
+2026-02-13 09:26:03,531 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:03,867 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:03,869 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2410445323553', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77883.05104453237', 'uTime': '1770974763928', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:03,872 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:04,172 - DEBUG - https://www.okx.com:443 "GET /api/v5/public/time HTTP/1.1" 200 None
+2026-02-13 09:26:04,173 - INFO - OKX server time synchronized. Offset: 34ms
+2026-02-13 09:26:04,175 - DEBUG - GET /api/v5/public/instruments (Attempt 1/3)
+2026-02-13 09:26:04,176 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:04,452 - DEBUG - https://www.okx.com:443 "GET /api/v5/public/instruments?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:04,454 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/public/instruments: {'code': '0', 'data': [{'alias': '', 'auctionEndTime': '', 'baseCcy': '', 'category': '1', 'contTdSwTime': '1605101056000', 'ctMult': '1', 'ctType': 'linear', 'ctVal': '0.1', 'ctValCcy': 'ETH', 'expTime': '', 'futureSettlement': False, 'groupId': '4', 'instCategory': '1', 'instFamily': 'ETH-USDT', 'instId': 'ETH-USDT-SWAP', 'instIdCode': 2021032601102994, 'instType': 'SWAP', 'lever': '100', 'listTime': '1605101055676', 'longPosRemainingQuota': '', 'lotSz': '0.01', 'maxIcebergSz': '100000000.0000000000000000', 'maxLmtAmt': '20000000', 'maxLmtSz': '100000000', 'maxMktAmt': '', 'maxMktSz': '200000', 'maxPlatOILmt': '', 'maxStopSz': '200000', 'maxTriggerSz': '100000000.0000000000000000', 'maxTwapSz': '100000000.0000000000000000', 'minSz': '0.01', 'openType': 'call_auction', 'optType': '', 'posLmtAmt': '', 'posLmtPct': '', 'preMktSwTime': '', 'quoteCcy': '', 'ruleType': 'normal', 'settleCcy': 'USDT', 'shortPosRemainingQuota': '', 'state': 'live', 'stk': '', 'tickSz': '0.01', 'tradeQuoteCcyList': [], 'uly': 'ETH-USDT', 'upcChg': []}], 'msg': ''}
+2026-02-13 09:26:04,456 - DEBUG - Product specifications for ETH-USDT-SWAP initialized.
+2026-02-13 09:26:04,456 - DEBUG - Session baseline recorded: LONG=0.0, SHORT=0.0
+2026-02-13 09:26:04,456 - DEBUG - Checking position mode...
+2026-02-13 09:26:04,456 - DEBUG - GET /api/v5/account/config (Attempt 1/3)
+2026-02-13 09:26:04,457 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:04,744 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/config HTTP/1.1" 200 None
+2026-02-13 09:26:04,746 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/config: {'code': '0', 'data': [{'acctLv': '2', 'acctStpMode': 'cancel_maker', 'autoLoan': False, 'ctIsoMode': 'automatic', 'enableSpotBorrow': False, 'feeType': '0', 'greeksType': 'PA', 'ip': '', 'kycLv': '0', 'label': 'bot', 'level': 'Lv1', 'levelTmp': '', 'liquidationGear': '-1', 'mainUid': '773930895140341083', 'mgnIsoMode': 'auto_transfers_ccy', 'opAuth': '0', 'perm': 'read_only,withdraw,trade', 'posMode': 'net_mode', 'roleType': '0', 'settleCcy': 'USDC', 'settleCcyList': ['USDC', 'USDG'], 'spotBorrowAutoRepay': False, 'spotOffsetType': '', 'spotRoleType': '0', 'spotTraderInsts': [], 'stgyType': '0', 'traderInsts': [], 'type': '0', 'uid': '773930895140341083'}], 'msg': ''}
+2026-02-13 09:26:04,748 - DEBUG - [OK] Position mode already confirmed: net_mode
+2026-02-13 09:26:04,748 - DEBUG - Checking leverage...
+2026-02-13 09:26:04,748 - DEBUG - Setting leverage to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:26:04,748 - DEBUG - POST /api/v5/account/set-leverage (Attempt 1/3)
+2026-02-13 09:26:04,749 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:05,274 - DEBUG - https://www.okx.com:443 "POST /api/v5/account/set-leverage HTTP/1.1" 200 None
+2026-02-13 09:26:05,276 - DEBUG - DEBUG: Full OKX API Response for POST /api/v5/account/set-leverage: {'code': '0', 'data': [{'instId': 'ETH-USDT-SWAP', 'lever': '100', 'mgnMode': 'cross', 'posSide': ''}], 'msg': ''}
+2026-02-13 09:26:05,278 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:26:05,278 - INFO - Checking for and closing any existing open positions...
+2026-02-13 09:26:05,278 - DEBUG - Checking for any open OKX positions to close...
+2026-02-13 09:26:05,279 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:05,280 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:05,549 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:05,551 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:05,552 - DEBUG - Position check found symbols: []
+2026-02-13 09:26:05,552 - INFO - No open OKX positions found to close.
+2026-02-13 09:26:05,553 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 09:26:05,553 - INFO - OKX BOT STARTING
+2026-02-13 09:26:05,554 - DEBUG - Unified management thread started.
+2026-02-13 09:26:05,554 - INFO - Check Cancel Condition
+2026-02-13 09:26:05,555 - DEBUG - No Orders to cancel
+2026-02-13 09:26:05,555 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:05,556 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:05,559 - DEBUG - WebSocket connections (Public & Private) initiated.
+2026-02-13 09:26:05,559 - DEBUG - Syncing with market data...
+2026-02-13 09:26:05,923 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:05,924 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2410445323553', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77880.09104453237', 'uTime': '1770974765980', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:05,927 - INFO - Account sync: total_equity=77880.09104453237, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:05,927 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:05,928 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:06,212 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:06,213 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:06,215 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:06,216 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:06,368 - INFO - Websocket connected
+2026-02-13 09:26:06,369 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 09:26:06,395 - INFO - Websocket connected
+2026-02-13 09:26:06,395 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 09:26:06,395 - DEBUG - WS (public) Sending subscriptions: {"op": "subscribe", "args": [{"channel": "trades", "instId": "ETH-USDT-SWAP"}, {"channel": "tickers", "instId": "ETH-USDT-SWAP"}]}
+2026-02-13 09:26:06,496 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:06,497 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:06,498 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:06,614 - DEBUG - Subscription confirmed for public:trades:ETH-USDT-SWAP
+2026-02-13 09:26:06,614 - DEBUG - Subscription confirmed for public:tickers:ETH-USDT-SWAP
+2026-02-13 09:26:06,614 - DEBUG - All WebSocket subscriptions are ready.
+2026-02-13 09:26:06,615 - DEBUG - Fetching historical data for ETH-USDT-SWAP (15m)
+2026-02-13 09:26:06,615 - DEBUG - GET /api/v5/market/history-candles (Attempt 1/3)
+2026-02-13 09:26:06,616 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:06,789 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:06,790 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:06,791 - INFO - 127.0.0.1 - - [2026-02-13 09:26:06] "GET /api/status HTTP/1.1" 302 465 0.002215
+2026-02-13 09:26:06,820 - INFO - WebSocket Login Successful.
+2026-02-13 09:26:06,820 - DEBUG - WS (private) Sending subscriptions: {"op": "subscribe", "args": [{"channel": "account"}, {"channel": "positions", "instType": "ANY"}]}
+2026-02-13 09:26:06,895 - DEBUG - https://www.okx.com:443 "GET /api/v5/market/history-candles?bar=15m&before=1770940800000&instId=ETH-USDT-SWAP&limit=100 HTTP/1.1" 200 None
+2026-02-13 09:26:06,897 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/market/history-candles: {'code': '0', 'msg': '', 'data': [['1770974100000', '1960', '1961.34', '1960', '1961.22', '9021981.17', '902198.117', '1769067598.30612', '0'], ['1770973200000', '1958.4', '1961', '1958.38', '1960', '7985354.97', '798535.497', '1564980248.17273', '1'], ['1770972300000', '1957.71', '1959.36', '1956.83', '1959.36', '8297115.7', '829711.57', '1624780587.43007', '1'], ['1770971400000', '1957.69', '1957.71', '1956.54', '1957.71', '6001645.78', '600164.578', '1174686602.51801', '1'], ['1770970500000', '1956.54', '1957.71', '1956.48', '1957.71', '6059089.17', '605908.917', '1185909296.75751', '1'], ['1770969600000', '1956.3', '1957.52', '1955.95', '1957.52', '7086771.27', '708677.127', '1386684894.90569', '1'], ['1770968700000', '1955.56', '1957.14', '1954.71', '1956.3', '9667074.28', '966707.428', '1890812628.71137', '1'], ['1770967800000', '1953.78', '1955.95', '1952.94', '1955.95', '10827292.44', '1082729.244', '2116286747.85147', '1'], ['1770966900000', '1954.17', '1954.97', '1953.33', '1953.78', '8919914.3', '891991.43', '1743132520.58563', '1'], ['1770966000000', '1953.65', '1954.62', '1953.3', '1954.62', '7285667.81', '728566.781', '1423707364.83716', '1'], ['1770965100000', '1952.8', '1954.62', '1952.64', '1953.6', '7093143.71', '709314.371', '1385859987.19653', '1'], ['1770964200000', '1952.94', '1953.78', '1952.1', '1953.6', '7252223.09', '725222.309', '1416470744.32673', '1'], ['1770963300000', '1952.04', '1953', '1951.68', '1952.94', '8563665.86', '856366.586', '1672056683.2166', '1'], ['1770962400000', '1952.8', '1953.78', '1952.04', '1952.04', '5900445.45', '590044.545', '1152160412.41484', '1'], ['1770961500000', '1952.94', '1953.78', '1952.42', '1953.6', '4499203.47', '449920.347', '878737759.11826', '1'], ['1770960600000', '1953.33', '1954.19', '1952.94', '1953.78', '3915571.75', '391557.175', '764900958.03707', '1'], ['1770959700000', '1953.78', '1954.62', '1953.09', '1954.19', '7662956.82', '766295.682', '1497313232.59313', '1'], ['1770958800000', '1953.6', '1954.62', '1953', '1954.62', '5074821.87', '507482.187', '991610320.51355', '1'], ['1770957900000', '1954.12', '1954.62', '1953.09', '1953.6', '4958433.53', '495843.353', '968834858.08385', '1'], ['1770957000000', '1953.78', '1954.62', '1953.3', '1953.3', '5517380.21', '551738.021', '1078129758.98593', '1'], ['1770956100000', '1953.78', '1954.62', '1952.6', '1954.62', '5288546.13', '528854.613', '1033253116.62673', '1'], ['1770955200000', '1954.12', '1954.62', '1952.94', '1952.94', '5456764.28', '545676.428', '1066195355.06788', '1'], ['1770954300000', '1952.64', '1954.56', '1952.42', '1953.3', '7341044.31', '734104.431', '1434141584.98493', '1'], ['1770953400000', '1950.38', '1953.65', '1950', '1953.65', '8421934.03', '842193.403', '1643881676.10473', '1'], ['1770952500000', '1949.63', '1950.66', '1949.34', '1950.36', '4989615.75', '498961.575', '972998644.84644', '1'], ['1770951600000', '1950.07', '1950.83', '1949.58', '1950.66', '6850492.94', '685049.294', '1336009466.07715', '1'], ['1770950700000', '1947.18', '1950.09', '1946.95', '1949', '6882865.95', '688286.595', '1341094916.58581', '1'], ['1770949800000', '1948.74', '1948.74', '1947', '1947.18', '4741934.59', '474193.459', '923548932.14171', '1'], ['1770948900000', '1948.9', '1948.9', '1947.14', '1947.9', '4598614.22', '459861.422', '895872913.50644', '1'], ['1770948000000', '1948.02', '1949', '1947.14', '1948.9', '7379757.66', '737975.766', '1437886498.70958', '1'], ['1770947100000', '1947.9', '1948.74', '1947.14', '1947.14', '6004903.39', '600490.339', '1169878065.28097', '1'], ['1770946200000', '1947.9', '1948.9', '1947.32', '1947.9', '6282950.36', '628295.036', '1224132869.44542', '1'], ['1770945300000', '1948.74', '1948.74', '1947.14', '1947.9', '4632935.73', '463293.573', '902626314.64166', '1'], ['1770944400000', '1948.02', '1948.9', '1947.14', '1948.74', '5296733.69', '529673.369', '1031932349.71781', '1'], ['1770943500000', '1948.9', '1949.78', '1948', '1948.9', '3959643.69', '395964.369', '771662098.81369', '1'], ['1770942600000', '1949.39', '1950.42', '1948.9', '1949.78', '4986925.96', '498692.596', '972277409.77033', '1'], ['1770941700000', '1949.97', '1950.66', '1949', '1949.39', '6523811.8', '652381.18', '1272122354.86145', '1']]}
+2026-02-13 09:26:06,899 - DEBUG - Fetched 37 candles for 15m
+2026-02-13 09:26:06,908 - DEBUG - Loaded 37 candles for 15m
+2026-02-13 09:26:06,908 - INFO - Bot startup sequence complete.
+2026-02-13 09:26:06,909 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:06,910 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:07,036 - DEBUG - Subscription confirmed for private:account:
+2026-02-13 09:26:07,037 - DEBUG - Subscription confirmed for private:positions:
+2026-02-13 09:26:07,037 - DEBUG - All WebSocket subscriptions are ready.
+2026-02-13 09:26:07,081 - DEBUG - Real-time Balance Update: 77880.21354453235 USDT
+2026-02-13 09:26:07,081 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:07,126 - DEBUG - Real-time Balance Update: 77880.21354453235 USDT
+2026-02-13 09:26:07,126 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:07,194 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:07,196 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2410445323553', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77880.21354453235', 'uTime': '1770974767241', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:07,198 - INFO - Account sync: total_equity=77880.21354453235, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:07,198 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:07,199 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:07,480 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:07,481 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:07,483 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:07,484 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:07,533 - DEBUG - No Orders to cancel
+2026-02-13 09:26:07,533 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:07,534 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:07,758 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:07,759 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:07,761 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:07,762 - INFO - Initial account balance fetched.
+2026-02-13 09:26:07,762 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:07,763 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:07,763 - DEBUG - Trading loop started.
+2026-02-13 09:26:07,814 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:07,815 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2410445323553', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77880.91354453236', 'uTime': '1770974767874', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:07,817 - INFO - Account sync: total_equity=77880.91354453236, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:07,817 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:07,818 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:08,041 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:08,042 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2410445323553', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77880.91354453236', 'uTime': '1770974768100', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:08,044 - INFO - Account sync: total_equity=77880.91354453236, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:08,045 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:08,046 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:08,097 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:08,099 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:08,100 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:08,101 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:08,232 - DEBUG - Real-time Balance Update: 77881.06958630322 USDT
+2026-02-13 09:26:08,232 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:08,351 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:08,352 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:08,355 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:08,356 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:08,406 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:08,407 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:08,408 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:08,640 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:08,642 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:08,643 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:09,410 - DEBUG - No Orders to cancel
+2026-02-13 09:26:09,411 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:09,412 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:09,690 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:09,691 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77882.4320863032', 'uTime': '1770974769750', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:09,693 - INFO - Account sync: total_equity=77882.4320863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:09,693 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:09,694 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:09,967 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:09,968 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:09,970 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:09,971 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:10,246 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:10,247 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:10,249 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:11,252 - DEBUG - No Orders to cancel
+2026-02-13 09:26:11,252 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:11,253 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:11,305 - DEBUG - Real-time Balance Update: 77880.61208630321 USDT
+2026-02-13 09:26:11,305 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:11,546 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:11,548 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77880.61208630321', 'uTime': '1770974771595', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:11,550 - INFO - Account sync: total_equity=77880.61208630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:11,550 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:11,551 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:11,844 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:11,845 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:11,847 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:11,848 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:12,123 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:12,124 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:12,126 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:13,128 - INFO - Check Cancel Condition
+2026-02-13 09:26:13,128 - DEBUG - No Orders to cancel
+2026-02-13 09:26:13,128 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:13,130 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:13,240 - DEBUG - Real-time Balance Update: 77878.20458630321 USDT
+2026-02-13 09:26:13,240 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:13,432 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:13,433 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77878.20458630321', 'uTime': '1770974773466', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:13,435 - INFO - Account sync: total_equity=77878.20458630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:13,436 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:13,437 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:13,709 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:13,710 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:13,713 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:13,714 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:13,985 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:13,986 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:13,988 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:14,989 - DEBUG - No Orders to cancel
+2026-02-13 09:26:14,989 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:14,990 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:15,269 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:15,270 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1751071886383', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77878.19010718864', 'uTime': '1770974775329', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:15,272 - INFO - Account sync: total_equity=77878.19010718864, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:15,273 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:15,274 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:15,556 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:15,557 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:15,560 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:15,561 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:15,873 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:15,874 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:15,876 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:16,294 - DEBUG - Real-time Balance Update: 77876.49010718864 USDT
+2026-02-13 09:26:16,294 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:16,877 - DEBUG - No Orders to cancel
+2026-02-13 09:26:16,878 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:16,879 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:17,173 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:17,175 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1751071886383', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77876.89010718864', 'uTime': '1770974777225', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:17,177 - INFO - Account sync: total_equity=77876.89010718864, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:17,177 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:17,178 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:17,470 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:17,472 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:17,474 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:17,475 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:17,884 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:17,885 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:17,887 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:18,294 - DEBUG - Real-time Balance Update: 77875.41208630321 USDT
+2026-02-13 09:26:18,295 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:18,646 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:18,647 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:18,888 - DEBUG - No Orders to cancel
+2026-02-13 09:26:18,888 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:18,889 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:18,940 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:18,941 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77876.42708630321', 'uTime': '1770974778989', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:18,943 - INFO - Account sync: total_equity=77876.42708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:18,943 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:18,944 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:19,186 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:19,188 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77876.42708630321', 'uTime': '1770974779223', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:19,190 - INFO - Account sync: total_equity=77876.42708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:19,190 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:19,191 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:19,245 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:19,246 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:19,248 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:19,249 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:19,475 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:19,476 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:19,478 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:19,479 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:19,527 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:19,528 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:19,530 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:19,771 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:19,772 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:19,773 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:20,775 - DEBUG - No Orders to cancel
+2026-02-13 09:26:20,776 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:20,777 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:21,066 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:21,068 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77875.87958630321', 'uTime': '1770974781117', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:21,070 - INFO - Account sync: total_equity=77875.87958630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:21,070 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:21,071 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:21,299 - DEBUG - Real-time Balance Update: 77875.87958630321 USDT
+2026-02-13 09:26:21,299 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:21,343 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:21,344 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:21,347 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:21,348 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:21,649 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:21,651 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:21,652 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:22,654 - INFO - Check Cancel Condition
+2026-02-13 09:26:22,655 - DEBUG - No Orders to cancel
+2026-02-13 09:26:22,655 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:22,656 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:22,926 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:22,927 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77875.87958630321', 'uTime': '1770974782991', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:22,930 - INFO - Account sync: total_equity=77875.87958630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:22,930 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:22,931 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:23,206 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:23,207 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:23,209 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:23,210 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:23,262 - DEBUG - Real-time Balance Update: 77875.87958630321 USDT
+2026-02-13 09:26:23,262 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:23,492 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:23,493 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:23,495 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:24,497 - DEBUG - No Orders to cancel
+2026-02-13 09:26:24,498 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:24,499 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:24,777 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:24,778 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77874.50208630321', 'uTime': '1770974784838', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:24,780 - INFO - Account sync: total_equity=77874.50208630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:24,781 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:24,782 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:25,066 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:25,067 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:25,069 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:25,070 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:25,365 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:25,366 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:25,368 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:26,358 - DEBUG - Real-time Balance Update: 77873.12708630321 USDT
+2026-02-13 09:26:26,359 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:26,370 - DEBUG - No Orders to cancel
+2026-02-13 09:26:26,370 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:26,371 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:26,651 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:26,652 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77873.12708630321', 'uTime': '1770974786701', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:26,654 - INFO - Account sync: total_equity=77873.12708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:26,654 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:26,655 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:26,959 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:26,960 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:26,962 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:26,963 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:27,239 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:27,240 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:27,241 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:28,243 - DEBUG - No Orders to cancel
+2026-02-13 09:26:28,243 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:28,245 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:28,305 - DEBUG - Real-time Balance Update: 77862.88312807407 USDT
+2026-02-13 09:26:28,305 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:28,520 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:28,521 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.131148959493', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77859.2611489595', 'uTime': '1770974788583', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:28,523 - INFO - Account sync: total_equity=77859.2611489595, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:28,524 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:28,525 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:28,815 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:28,816 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:28,818 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:28,819 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:29,117 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:29,118 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:29,120 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:29,532 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:29,534 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:29,814 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:29,816 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77859.32708630321', 'uTime': '1770974789879', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:29,818 - INFO - Account sync: total_equity=77859.32708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:29,818 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:29,819 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:30,099 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:30,100 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:30,102 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:30,103 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:30,153 - DEBUG - No Orders to cancel
+2026-02-13 09:26:30,154 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:30,155 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:30,378 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:30,379 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:30,380 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:30,432 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:30,434 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77859.32708630321', 'uTime': '1770974790493', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:30,435 - INFO - Account sync: total_equity=77859.32708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:30,436 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:30,437 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:31,160 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:31,161 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:31,164 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:31,165 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:31,308 - DEBUG - Real-time Balance Update: 77859.32708630321 USDT
+2026-02-13 09:26:31,308 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:31,435 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:31,436 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:31,438 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:32,439 - INFO - Check Cancel Condition
+2026-02-13 09:26:32,440 - DEBUG - No Orders to cancel
+2026-02-13 09:26:32,440 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:32,441 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:32,721 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:32,722 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77859.31958630322', 'uTime': '1770974792782', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:32,724 - INFO - Account sync: total_equity=77859.31958630322, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:32,724 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:32,726 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:33,020 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:33,021 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:33,023 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:33,024 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:33,267 - DEBUG - Real-time Balance Update: 77858.71958630321 USDT
+2026-02-13 09:26:33,267 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:33,322 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:33,323 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:33,324 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:34,327 - DEBUG - No Orders to cancel
+2026-02-13 09:26:34,327 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:34,328 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:34,619 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:34,620 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77858.70458630321', 'uTime': '1770974794670', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:34,623 - INFO - Account sync: total_equity=77858.70458630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:34,623 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:34,624 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:34,910 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:34,911 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:34,914 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:34,915 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:35,195 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:35,196 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:35,198 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:35,199 - DEBUG - Account Update | Used: $0.00 | Size: $0.00
+2026-02-13 09:26:36,510 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-13 09:26:36,511 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:26:36,511 - INFO - Bot starting background monitoring...
+2026-02-13 09:26:36,511 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:26:36,511 - DEBUG - Verifying API credentials...
+2026-02-13 09:26:36,511 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:26:36,512 - DEBUG - GET /api/v5/account/balance (Attempt 1/1)
+2026-02-13 09:26:36,514 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:36,804 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:36,806 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77858.4895863032', 'uTime': '1770974796867', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:36,809 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:37,081 - DEBUG - https://www.okx.com:443 "GET /api/v5/public/time HTTP/1.1" 200 None
+2026-02-13 09:26:37,082 - INFO - OKX server time synchronized. Offset: 67ms
+2026-02-13 09:26:37,085 - DEBUG - GET /api/v5/public/instruments (Attempt 1/3)
+2026-02-13 09:26:37,086 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:37,358 - DEBUG - https://www.okx.com:443 "GET /api/v5/public/instruments?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:37,359 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/public/instruments: {'code': '0', 'data': [{'alias': '', 'auctionEndTime': '', 'baseCcy': '', 'category': '1', 'contTdSwTime': '1605101056000', 'ctMult': '1', 'ctType': 'linear', 'ctVal': '0.1', 'ctValCcy': 'ETH', 'expTime': '', 'futureSettlement': False, 'groupId': '4', 'instCategory': '1', 'instFamily': 'ETH-USDT', 'instId': 'ETH-USDT-SWAP', 'instIdCode': 2021032601102994, 'instType': 'SWAP', 'lever': '100', 'listTime': '1605101055676', 'longPosRemainingQuota': '', 'lotSz': '0.01', 'maxIcebergSz': '100000000.0000000000000000', 'maxLmtAmt': '20000000', 'maxLmtSz': '100000000', 'maxMktAmt': '', 'maxMktSz': '200000', 'maxPlatOILmt': '', 'maxStopSz': '200000', 'maxTriggerSz': '100000000.0000000000000000', 'maxTwapSz': '100000000.0000000000000000', 'minSz': '0.01', 'openType': 'call_auction', 'optType': '', 'posLmtAmt': '', 'posLmtPct': '', 'preMktSwTime': '', 'quoteCcy': '', 'ruleType': 'normal', 'settleCcy': 'USDT', 'shortPosRemainingQuota': '', 'state': 'live', 'stk': '', 'tickSz': '0.01', 'tradeQuoteCcyList': [], 'uly': 'ETH-USDT', 'upcChg': []}], 'msg': ''}
+2026-02-13 09:26:37,361 - DEBUG - Product specifications for ETH-USDT-SWAP initialized.
+2026-02-13 09:26:37,361 - DEBUG - Session baseline recorded: LONG=0.0, SHORT=0.0
+2026-02-13 09:26:37,361 - DEBUG - Checking position mode...
+2026-02-13 09:26:37,361 - DEBUG - GET /api/v5/account/config (Attempt 1/3)
+2026-02-13 09:26:37,362 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:37,636 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/config HTTP/1.1" 200 None
+2026-02-13 09:26:37,637 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/config: {'code': '0', 'data': [{'acctLv': '2', 'acctStpMode': 'cancel_maker', 'autoLoan': False, 'ctIsoMode': 'automatic', 'enableSpotBorrow': False, 'feeType': '0', 'greeksType': 'PA', 'ip': '', 'kycLv': '0', 'label': 'bot', 'level': 'Lv1', 'levelTmp': '', 'liquidationGear': '-1', 'mainUid': '773930895140341083', 'mgnIsoMode': 'auto_transfers_ccy', 'opAuth': '0', 'perm': 'read_only,withdraw,trade', 'posMode': 'net_mode', 'roleType': '0', 'settleCcy': 'USDC', 'settleCcyList': ['USDC', 'USDG'], 'spotBorrowAutoRepay': False, 'spotOffsetType': '', 'spotRoleType': '0', 'spotTraderInsts': [], 'stgyType': '0', 'traderInsts': [], 'type': '0', 'uid': '773930895140341083'}], 'msg': ''}
+2026-02-13 09:26:37,639 - DEBUG - [OK] Position mode already confirmed: net_mode
+2026-02-13 09:26:37,639 - DEBUG - Checking leverage...
+2026-02-13 09:26:37,639 - DEBUG - Setting leverage to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:26:37,640 - DEBUG - POST /api/v5/account/set-leverage (Attempt 1/3)
+2026-02-13 09:26:37,640 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:37,942 - DEBUG - https://www.okx.com:443 "POST /api/v5/account/set-leverage HTTP/1.1" 200 None
+2026-02-13 09:26:37,943 - DEBUG - DEBUG: Full OKX API Response for POST /api/v5/account/set-leverage: {'code': '0', 'data': [{'instId': 'ETH-USDT-SWAP', 'lever': '100', 'mgnMode': 'cross', 'posSide': ''}], 'msg': ''}
+2026-02-13 09:26:37,945 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:26:37,945 - INFO - Checking for and closing any existing open positions...
+2026-02-13 09:26:37,945 - DEBUG - Checking for any open OKX positions to close...
+2026-02-13 09:26:37,946 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:37,947 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:38,242 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:38,243 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:38,245 - DEBUG - Position check found symbols: []
+2026-02-13 09:26:38,245 - INFO - No open OKX positions found to close.
+2026-02-13 09:26:38,246 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 09:26:38,246 - INFO - OKX BOT STARTING
+2026-02-13 09:26:38,247 - DEBUG - Unified management thread started.
+2026-02-13 09:26:38,247 - INFO - Check Cancel Condition
+2026-02-13 09:26:38,247 - DEBUG - No Orders to cancel
+2026-02-13 09:26:38,248 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:38,249 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:38,251 - DEBUG - WebSocket connections (Public & Private) initiated.
+2026-02-13 09:26:38,251 - DEBUG - Syncing with market data...
+2026-02-13 09:26:38,630 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:38,632 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77858.4895863032', 'uTime': '1770974798675', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:38,633 - INFO - Account sync: total_equity=77858.4895863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:38,634 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:38,635 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:38,916 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:38,917 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:38,919 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:38,920 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:39,038 - INFO - Websocket connected
+2026-02-13 09:26:39,038 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 09:26:39,040 - INFO - Websocket connected
+2026-02-13 09:26:39,040 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 09:26:39,040 - DEBUG - WS (public) Sending subscriptions: {"op": "subscribe", "args": [{"channel": "trades", "instId": "ETH-USDT-SWAP"}, {"channel": "tickers", "instId": "ETH-USDT-SWAP"}]}
+2026-02-13 09:26:39,191 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:39,192 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:39,193 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:39,257 - DEBUG - Subscription confirmed for public:trades:ETH-USDT-SWAP
+2026-02-13 09:26:39,257 - DEBUG - Subscription confirmed for public:tickers:ETH-USDT-SWAP
+2026-02-13 09:26:39,257 - DEBUG - All WebSocket subscriptions are ready.
+2026-02-13 09:26:39,258 - DEBUG - Fetching historical data for ETH-USDT-SWAP (15m)
+2026-02-13 09:26:39,258 - DEBUG - GET /api/v5/market/history-candles (Attempt 1/3)
+2026-02-13 09:26:39,259 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:39,261 - INFO - WebSocket Login Successful.
+2026-02-13 09:26:39,262 - DEBUG - WS (private) Sending subscriptions: {"op": "subscribe", "args": [{"channel": "account"}, {"channel": "positions", "instType": "ANY"}]}
+2026-02-13 09:26:39,480 - DEBUG - Subscription confirmed for private:account:
+2026-02-13 09:26:39,481 - DEBUG - Subscription confirmed for private:positions:
+2026-02-13 09:26:39,481 - DEBUG - All WebSocket subscriptions are ready.
+2026-02-13 09:26:39,518 - DEBUG - Real-time Balance Update: 77858.51156541778 USDT
+2026-02-13 09:26:39,518 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:39,533 - DEBUG - https://www.okx.com:443 "GET /api/v5/market/history-candles?bar=15m&before=1770940800000&instId=ETH-USDT-SWAP&limit=100 HTTP/1.1" 200 None
+2026-02-13 09:26:39,534 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/market/history-candles: {'code': '0', 'msg': '', 'data': [['1770974100000', '1960', '1961.34', '1960', '1960.08', '9037214.73', '903721.473', '1772053694.52007', '0'], ['1770973200000', '1958.4', '1961', '1958.38', '1960', '7985354.97', '798535.497', '1564980248.17273', '1'], ['1770972300000', '1957.71', '1959.36', '1956.83', '1959.36', '8297115.7', '829711.57', '1624780587.43007', '1'], ['1770971400000', '1957.69', '1957.71', '1956.54', '1957.71', '6001645.78', '600164.578', '1174686602.51801', '1'], ['1770970500000', '1956.54', '1957.71', '1956.48', '1957.71', '6059089.17', '605908.917', '1185909296.75751', '1'], ['1770969600000', '1956.3', '1957.52', '1955.95', '1957.52', '7086771.27', '708677.127', '1386684894.90569', '1'], ['1770968700000', '1955.56', '1957.14', '1954.71', '1956.3', '9667074.28', '966707.428', '1890812628.71137', '1'], ['1770967800000', '1953.78', '1955.95', '1952.94', '1955.95', '10827292.44', '1082729.244', '2116286747.85147', '1'], ['1770966900000', '1954.17', '1954.97', '1953.33', '1953.78', '8919914.3', '891991.43', '1743132520.58563', '1'], ['1770966000000', '1953.65', '1954.62', '1953.3', '1954.62', '7285667.81', '728566.781', '1423707364.83716', '1'], ['1770965100000', '1952.8', '1954.62', '1952.64', '1953.6', '7093143.71', '709314.371', '1385859987.19653', '1'], ['1770964200000', '1952.94', '1953.78', '1952.1', '1953.6', '7252223.09', '725222.309', '1416470744.32673', '1'], ['1770963300000', '1952.04', '1953', '1951.68', '1952.94', '8563665.86', '856366.586', '1672056683.2166', '1'], ['1770962400000', '1952.8', '1953.78', '1952.04', '1952.04', '5900445.45', '590044.545', '1152160412.41484', '1'], ['1770961500000', '1952.94', '1953.78', '1952.42', '1953.6', '4499203.47', '449920.347', '878737759.11826', '1'], ['1770960600000', '1953.33', '1954.19', '1952.94', '1953.78', '3915571.75', '391557.175', '764900958.03707', '1'], ['1770959700000', '1953.78', '1954.62', '1953.09', '1954.19', '7662956.82', '766295.682', '1497313232.59313', '1'], ['1770958800000', '1953.6', '1954.62', '1953', '1954.62', '5074821.87', '507482.187', '991610320.51355', '1'], ['1770957900000', '1954.12', '1954.62', '1953.09', '1953.6', '4958433.53', '495843.353', '968834858.08385', '1'], ['1770957000000', '1953.78', '1954.62', '1953.3', '1953.3', '5517380.21', '551738.021', '1078129758.98593', '1'], ['1770956100000', '1953.78', '1954.62', '1952.6', '1954.62', '5288546.13', '528854.613', '1033253116.62673', '1'], ['1770955200000', '1954.12', '1954.62', '1952.94', '1952.94', '5456764.28', '545676.428', '1066195355.06788', '1'], ['1770954300000', '1952.64', '1954.56', '1952.42', '1953.3', '7341044.31', '734104.431', '1434141584.98493', '1'], ['1770953400000', '1950.38', '1953.65', '1950', '1953.65', '8421934.03', '842193.403', '1643881676.10473', '1'], ['1770952500000', '1949.63', '1950.66', '1949.34', '1950.36', '4989615.75', '498961.575', '972998644.84644', '1'], ['1770951600000', '1950.07', '1950.83', '1949.58', '1950.66', '6850492.94', '685049.294', '1336009466.07715', '1'], ['1770950700000', '1947.18', '1950.09', '1946.95', '1949', '6882865.95', '688286.595', '1341094916.58581', '1'], ['1770949800000', '1948.74', '1948.74', '1947', '1947.18', '4741934.59', '474193.459', '923548932.14171', '1'], ['1770948900000', '1948.9', '1948.9', '1947.14', '1947.9', '4598614.22', '459861.422', '895872913.50644', '1'], ['1770948000000', '1948.02', '1949', '1947.14', '1948.9', '7379757.66', '737975.766', '1437886498.70958', '1'], ['1770947100000', '1947.9', '1948.74', '1947.14', '1947.14', '6004903.39', '600490.339', '1169878065.28097', '1'], ['1770946200000', '1947.9', '1948.9', '1947.32', '1947.9', '6282950.36', '628295.036', '1224132869.44542', '1'], ['1770945300000', '1948.74', '1948.74', '1947.14', '1947.9', '4632935.73', '463293.573', '902626314.64166', '1'], ['1770944400000', '1948.02', '1948.9', '1947.14', '1948.74', '5296733.69', '529673.369', '1031932349.71781', '1'], ['1770943500000', '1948.9', '1949.78', '1948', '1948.9', '3959643.69', '395964.369', '771662098.81369', '1'], ['1770942600000', '1949.39', '1950.42', '1948.9', '1949.78', '4986925.96', '498692.596', '972277409.77033', '1'], ['1770941700000', '1949.97', '1950.66', '1949', '1949.39', '6523811.8', '652381.18', '1272122354.86145', '1']]}
+2026-02-13 09:26:39,536 - DEBUG - Fetched 37 candles for 15m
+2026-02-13 09:26:39,544 - DEBUG - Loaded 37 candles for 15m
+2026-02-13 09:26:39,544 - INFO - Bot startup sequence complete.
+2026-02-13 09:26:39,545 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:39,546 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:39,598 - DEBUG - Real-time Balance Update: 77858.51156541778 USDT
+2026-02-13 09:26:39,598 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:39,721 - DEBUG - Real-time Balance Update: 77858.51156541778 USDT
+2026-02-13 09:26:39,721 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:39,850 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:39,851 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77858.51156541778', 'uTime': '1770974799886', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:39,853 - INFO - Account sync: total_equity=77858.51156541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:39,853 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:39,854 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:40,144 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:40,146 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:40,148 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:40,149 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:40,199 - DEBUG - No Orders to cancel
+2026-02-13 09:26:40,200 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:40,200 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:40,423 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:40,424 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:40,425 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:40,426 - INFO - Initial account balance fetched.
+2026-02-13 09:26:40,426 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:40,427 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:40,428 - DEBUG - Trading loop started.
+2026-02-13 09:26:40,496 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:40,497 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77858.51156541778', 'uTime': '1770974800549', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:40,499 - INFO - Account sync: total_equity=77858.51156541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:40,499 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:40,500 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:40,735 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:40,737 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77858.49656541778', 'uTime': '1770974800774', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:40,739 - INFO - Account sync: total_equity=77858.49656541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:40,739 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:40,740 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:40,811 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:40,812 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:40,814 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:40,815 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:41,056 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:41,058 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:41,060 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:41,062 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:41,138 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:41,139 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:41,141 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:41,363 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:41,365 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:41,367 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:42,143 - DEBUG - No Orders to cancel
+2026-02-13 09:26:42,143 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:42,145 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:42,165 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:42,166 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:42,174 - INFO - 127.0.0.1 - - [2026-02-13 09:26:42] "GET /login HTTP/1.1" 200 4387 0.008422
+2026-02-13 09:26:42,444 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:42,446 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77857.16656541778', 'uTime': '1770974802509', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:42,458 - INFO - Account sync: total_equity=77857.16656541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:42,458 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:42,459 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:42,739 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:42,740 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:42,742 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:42,743 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:43,050 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:43,051 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:43,053 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:43,419 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,420 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,420 - DEBUG - Can only upgrade connection if using GET method.
+2026-02-13 09:26:43,422 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "POST /login HTTP/1.1" 302 511 0.002315
+2026-02-13 09:26:43,424 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,424 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,441 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET / HTTP/1.1" 200 69345 0.016290
+2026-02-13 09:26:43,451 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,451 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,460 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /static/css/style.css HTTP/1.1" 200 9493 0.009061
+2026-02-13 09:26:43,460 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,461 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,462 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /static/js/app.js HTTP/1.1" 200 71099 0.001563
+2026-02-13 09:26:43,622 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,623 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,625 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /socket.io/?EIO=4&transport=polling&t=PnMKlQY HTTP/1.1" 200 254 0.002816
+2026-02-13 09:26:43,631 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,632 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,633 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /api/config HTTP/1.1" 200 2261 0.002354
+2026-02-13 09:26:43,634 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,634 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,639 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /api/status HTTP/1.1" 200 962 0.004761
+2026-02-13 09:26:43,639 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,639 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,640 - DEBUG - Can only upgrade connection if using GET method.
+2026-02-13 09:26:43,641 - INFO - Client connected: dheZel2XDKVcTaeIAAAB
+2026-02-13 09:26:43,651 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "POST /socket.io/?EIO=4&transport=polling&t=PnMKlQn&sid=jp4HtNpuyDkVg1aUAAAA HTTP/1.1" 200 195 0.011335
+2026-02-13 09:26:43,651 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,652 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,652 - DEBUG - Attempting to upgrade connection
+2026-02-13 09:26:43,652 - DEBUG - WebSocket request accepted, switching protocols
+2026-02-13 09:26:43,652 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,653 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,653 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /socket.io/?EIO=4&transport=polling&t=PnMKlQq&sid=jp4HtNpuyDkVg1aUAAAA HTTP/1.1" 200 157 0.000482
+2026-02-13 09:26:43,670 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,671 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,671 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /socket.io/?EIO=4&transport=polling&t=PnMKlRL&sid=jp4HtNpuyDkVg1aUAAAA HTTP/1.1" 200 157 0.000554
+2026-02-13 09:26:43,744 - DEBUG - Initializing WebSocket
+2026-02-13 09:26:43,744 - DEBUG - Validating WebSocket request
+2026-02-13 09:26:43,745 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /api/status HTTP/1.1" 200 962 0.001215
+2026-02-13 09:26:44,055 - DEBUG - No Orders to cancel
+2026-02-13 09:26:44,055 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:44,056 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:44,329 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:44,331 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77857.0740654178', 'uTime': '1770974804396', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:44,332 - INFO - Account sync: total_equity=77857.0740654178, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:44,333 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:44,334 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:44,427 - DEBUG - Real-time Balance Update: 77862.85156541779 USDT
+2026-02-13 09:26:44,427 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:44,628 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:44,629 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:44,631 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:44,632 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:44,727 - DEBUG - Real-time Balance Update: 77862.6745863032 USDT
+2026-02-13 09:26:44,727 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:49,432 - DEBUG - Real-time Balance Update: 77874.40156541778 USDT
+2026-02-13 09:26:49,432 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:49,784 - DEBUG - Real-time Balance Update: 77877.50156541778 USDT
+2026-02-13 09:26:49,784 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:51,370 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:26:51,371 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:51,668 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:26:51,669 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77883.7295863032', 'uTime': '1770974811720', 'upl': ''}], 'msg': ''}
+2026-02-13 09:26:51,671 - INFO - Account sync: total_equity=77883.7295863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:51,672 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:26:51,673 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:54,439 - DEBUG - Real-time Balance Update: 77885.49760718863 USDT
+2026-02-13 09:26:54,439 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:54,736 - DEBUG - Real-time Balance Update: 77885.49010718864 USDT
+2026-02-13 09:26:54,736 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:56,050 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:26:56,051 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:26:56,053 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:26:56,054 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:26:59,444 - DEBUG - Real-time Balance Update: 77886.10614895949 USDT
+2026-02-13 09:26:59,445 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:26:59,793 - DEBUG - Real-time Balance Update: 77889.3061489595 USDT
+2026-02-13 09:26:59,794 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:04,502 - DEBUG - Real-time Balance Update: 77892.94812807406 USDT
+2026-02-13 09:27:04,502 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:04,747 - DEBUG - Real-time Balance Update: 77892.94812807406 USDT
+2026-02-13 09:27:04,747 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:05,035 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:27:05,036 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:27:05,037 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:06,040 - DEBUG - No Orders to cancel
+2026-02-13 09:27:06,041 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:27:06,042 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:06,356 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:27:06,358 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1751071886383', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77893.42510718864', 'uTime': '1770974826404', 'upl': ''}], 'msg': ''}
+2026-02-13 09:27:06,359 - INFO - Account sync: total_equity=77893.42510718864, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:06,360 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:27:06,361 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:06,630 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:27:06,631 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:27:06,632 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:27:06,633 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:06,925 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:27:06,926 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:27:06,928 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:07,930 - DEBUG - No Orders to cancel
+2026-02-13 09:27:07,930 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:27:07,931 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:08,209 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:27:08,210 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77894.3545863032', 'uTime': '1770974828275', 'upl': ''}], 'msg': ''}
+2026-02-13 09:27:08,212 - INFO - Account sync: total_equity=77894.3545863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:08,212 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:27:08,213 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:09,507 - DEBUG - Real-time Balance Update: 77893.74010718864 USDT
+2026-02-13 09:27:09,507 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:09,804 - DEBUG - Real-time Balance Update: 77891.74010718864 USDT
+2026-02-13 09:27:09,804 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:10,536 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:27:10,537 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:27:10,539 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:27:10,540 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:10,815 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:27:10,816 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:27:10,818 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:11,348 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:27:11,349 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:27:11,350 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:11,820 - DEBUG - No Orders to cancel
+2026-02-13 09:27:11,820 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:27:11,822 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:12,110 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:27:12,111 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1751071886383', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77891.18760718865', 'uTime': '1770974832158', 'upl': ''}], 'msg': ''}
+2026-02-13 09:27:12,113 - INFO - Account sync: total_equity=77891.18760718865, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:12,113 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:27:12,114 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:27:14,465 - DEBUG - Real-time Balance Update: 77887.06708630321 USDT
+2026-02-13 09:27:14,465 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:14,465 - DEBUG - Account Update | Used: $0.00 | Size: $0.00
+2026-02-13 09:27:14,762 - DEBUG - Real-time Balance Update: 77887.06708630321 USDT
+2026-02-13 09:27:14,762 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:27:14,762 - DEBUG - Account Update | Used: $0.00 | Size: $0.00
+2026-02-13 09:27:18,668 - DEBUG - Closed WebSocket
+2026-02-13 09:27:18,669 - DEBUG - Failed to write closing frame -> closing socket
+2026-02-13 09:27:18,669 - DEBUG - Closed WebSocket
+2026-02-13 09:27:18,670 - INFO - Client disconnected
+2026-02-13 09:28:22,061 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-13 09:28:22,061 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:28:22,062 - INFO - Bot starting background monitoring...
+2026-02-13 09:28:22,062 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:28:22,062 - DEBUG - Verifying API credentials...
+2026-02-13 09:28:22,062 - DEBUG - API Credentials Applied: Developer | Demo
+2026-02-13 09:28:22,062 - DEBUG - GET /api/v5/account/balance (Attempt 1/1)
+2026-02-13 09:28:22,064 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:22,365 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:28:22,367 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77896.3845863032', 'uTime': '1770974902426', 'upl': ''}], 'msg': ''}
+2026-02-13 09:28:22,370 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:22,660 - DEBUG - https://www.okx.com:443 "GET /api/v5/public/time HTTP/1.1" 200 None
+2026-02-13 09:28:22,662 - INFO - OKX server time synchronized. Offset: 62ms
+2026-02-13 09:28:22,664 - DEBUG - GET /api/v5/public/instruments (Attempt 1/3)
+2026-02-13 09:28:22,665 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:22,934 - DEBUG - https://www.okx.com:443 "GET /api/v5/public/instruments?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:22,935 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/public/instruments: {'code': '0', 'data': [{'alias': '', 'auctionEndTime': '', 'baseCcy': '', 'category': '1', 'contTdSwTime': '1605101056000', 'ctMult': '1', 'ctType': 'linear', 'ctVal': '0.1', 'ctValCcy': 'ETH', 'expTime': '', 'futureSettlement': False, 'groupId': '4', 'instCategory': '1', 'instFamily': 'ETH-USDT', 'instId': 'ETH-USDT-SWAP', 'instIdCode': 2021032601102994, 'instType': 'SWAP', 'lever': '100', 'listTime': '1605101055676', 'longPosRemainingQuota': '', 'lotSz': '0.01', 'maxIcebergSz': '100000000.0000000000000000', 'maxLmtAmt': '20000000', 'maxLmtSz': '100000000', 'maxMktAmt': '', 'maxMktSz': '200000', 'maxPlatOILmt': '', 'maxStopSz': '200000', 'maxTriggerSz': '100000000.0000000000000000', 'maxTwapSz': '100000000.0000000000000000', 'minSz': '0.01', 'openType': 'call_auction', 'optType': '', 'posLmtAmt': '', 'posLmtPct': '', 'preMktSwTime': '', 'quoteCcy': '', 'ruleType': 'normal', 'settleCcy': 'USDT', 'shortPosRemainingQuota': '', 'state': 'live', 'stk': '', 'tickSz': '0.01', 'tradeQuoteCcyList': [], 'uly': 'ETH-USDT', 'upcChg': []}], 'msg': ''}
+2026-02-13 09:28:22,937 - DEBUG - Product specifications for ETH-USDT-SWAP initialized.
+2026-02-13 09:28:22,937 - DEBUG - Session baseline recorded: LONG=0.0, SHORT=0.0
+2026-02-13 09:28:22,937 - DEBUG - Checking position mode...
+2026-02-13 09:28:22,937 - DEBUG - GET /api/v5/account/config (Attempt 1/3)
+2026-02-13 09:28:22,938 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:23,231 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/config HTTP/1.1" 200 None
+2026-02-13 09:28:23,233 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/config: {'code': '0', 'data': [{'acctLv': '2', 'acctStpMode': 'cancel_maker', 'autoLoan': False, 'ctIsoMode': 'automatic', 'enableSpotBorrow': False, 'feeType': '0', 'greeksType': 'PA', 'ip': '', 'kycLv': '0', 'label': 'bot', 'level': 'Lv1', 'levelTmp': '', 'liquidationGear': '-1', 'mainUid': '773930895140341083', 'mgnIsoMode': 'auto_transfers_ccy', 'opAuth': '0', 'perm': 'read_only,withdraw,trade', 'posMode': 'net_mode', 'roleType': '0', 'settleCcy': 'USDC', 'settleCcyList': ['USDC', 'USDG'], 'spotBorrowAutoRepay': False, 'spotOffsetType': '', 'spotRoleType': '0', 'spotTraderInsts': [], 'stgyType': '0', 'traderInsts': [], 'type': '0', 'uid': '773930895140341083'}], 'msg': ''}
+2026-02-13 09:28:23,235 - DEBUG - [OK] Position mode already confirmed: net_mode
+2026-02-13 09:28:23,235 - DEBUG - Checking leverage...
+2026-02-13 09:28:23,235 - DEBUG - Setting leverage to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:28:23,235 - DEBUG - POST /api/v5/account/set-leverage (Attempt 1/3)
+2026-02-13 09:28:23,236 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:23,524 - DEBUG - https://www.okx.com:443 "POST /api/v5/account/set-leverage HTTP/1.1" 200 None
+2026-02-13 09:28:23,525 - DEBUG - DEBUG: Full OKX API Response for POST /api/v5/account/set-leverage: {'code': '0', 'data': [{'instId': 'ETH-USDT-SWAP', 'lever': '100', 'mgnMode': 'cross', 'posSide': ''}], 'msg': ''}
+2026-02-13 09:28:23,527 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:28:23,527 - INFO - Checking for and closing any existing open positions...
+2026-02-13 09:28:23,527 - DEBUG - Checking for any open OKX positions to close...
+2026-02-13 09:28:23,527 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:28:23,528 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:23,804 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:23,806 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:23,808 - DEBUG - Position check found symbols: []
+2026-02-13 09:28:23,808 - INFO - No open OKX positions found to close.
+2026-02-13 09:28:23,808 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 09:28:23,808 - INFO - OKX BOT STARTING
+2026-02-13 09:28:23,809 - DEBUG - Unified management thread started.
+2026-02-13 09:28:23,810 - INFO - Check Cancel Condition
+2026-02-13 09:28:23,810 - DEBUG - No Orders to cancel
+2026-02-13 09:28:23,810 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:28:23,811 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:23,812 - DEBUG - WebSocket connections (Public & Private) initiated.
+2026-02-13 09:28:23,813 - DEBUG - Syncing with market data...
+2026-02-13 09:28:24,160 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:28:24,162 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77898.35906541778', 'uTime': '1770974904234', 'upl': ''}], 'msg': ''}
+2026-02-13 09:28:24,163 - INFO - Account sync: total_equity=77898.35906541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:24,164 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:28:24,165 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:24,448 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:24,450 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:24,451 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:28:24,452 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:24,639 - INFO - Websocket connected
+2026-02-13 09:28:24,639 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 09:28:24,639 - DEBUG - WS (public) Sending subscriptions: {"op": "subscribe", "args": [{"channel": "trades", "instId": "ETH-USDT-SWAP"}, {"channel": "tickers", "instId": "ETH-USDT-SWAP"}]}
+2026-02-13 09:28:24,641 - INFO - Websocket connected
+2026-02-13 09:28:24,641 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 09:28:24,743 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:24,744 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:24,746 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:24,864 - DEBUG - Subscription confirmed for public:trades:ETH-USDT-SWAP
+2026-02-13 09:28:24,864 - DEBUG - Subscription confirmed for public:tickers:ETH-USDT-SWAP
+2026-02-13 09:28:24,864 - DEBUG - All WebSocket subscriptions are ready.
+2026-02-13 09:28:24,864 - INFO - WebSocket Login Successful.
+2026-02-13 09:28:24,865 - DEBUG - WS (private) Sending subscriptions: {"op": "subscribe", "args": [{"channel": "account"}, {"channel": "positions", "instType": "ANY"}]}
+2026-02-13 09:28:24,865 - DEBUG - Fetching historical data for ETH-USDT-SWAP (15m)
+2026-02-13 09:28:24,866 - DEBUG - GET /api/v5/market/history-candles (Attempt 1/3)
+2026-02-13 09:28:24,867 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:25,082 - DEBUG - Subscription confirmed for private:account:
+2026-02-13 09:28:25,082 - DEBUG - Subscription confirmed for private:positions:
+2026-02-13 09:28:25,082 - DEBUG - All WebSocket subscriptions are ready.
+2026-02-13 09:28:25,113 - DEBUG - Real-time Balance Update: 77898.35906541778 USDT
+2026-02-13 09:28:25,113 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:25,142 - DEBUG - Real-time Balance Update: 77898.35906541778 USDT
+2026-02-13 09:28:25,142 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:25,163 - DEBUG - https://www.okx.com:443 "GET /api/v5/market/history-candles?bar=15m&before=1770940800000&instId=ETH-USDT-SWAP&limit=100 HTTP/1.1" 200 None
+2026-02-13 09:28:25,164 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/market/history-candles: {'code': '0', 'msg': '', 'data': [['1770974100000', '1960', '1961.34', '1959.98', '1960', '9782905.15', '978290.515', '1918229041.93921', '0'], ['1770973200000', '1958.4', '1961', '1958.38', '1960', '7985354.97', '798535.497', '1564980248.17273', '1'], ['1770972300000', '1957.71', '1959.36', '1956.83', '1959.36', '8297115.7', '829711.57', '1624780587.43007', '1'], ['1770971400000', '1957.69', '1957.71', '1956.54', '1957.71', '6001645.78', '600164.578', '1174686602.51801', '1'], ['1770970500000', '1956.54', '1957.71', '1956.48', '1957.71', '6059089.17', '605908.917', '1185909296.75751', '1'], ['1770969600000', '1956.3', '1957.52', '1955.95', '1957.52', '7086771.27', '708677.127', '1386684894.90569', '1'], ['1770968700000', '1955.56', '1957.14', '1954.71', '1956.3', '9667074.28', '966707.428', '1890812628.71137', '1'], ['1770967800000', '1953.78', '1955.95', '1952.94', '1955.95', '10827292.44', '1082729.244', '2116286747.85147', '1'], ['1770966900000', '1954.17', '1954.97', '1953.33', '1953.78', '8919914.3', '891991.43', '1743132520.58563', '1'], ['1770966000000', '1953.65', '1954.62', '1953.3', '1954.62', '7285667.81', '728566.781', '1423707364.83716', '1'], ['1770965100000', '1952.8', '1954.62', '1952.64', '1953.6', '7093143.71', '709314.371', '1385859987.19653', '1'], ['1770964200000', '1952.94', '1953.78', '1952.1', '1953.6', '7252223.09', '725222.309', '1416470744.32673', '1'], ['1770963300000', '1952.04', '1953', '1951.68', '1952.94', '8563665.86', '856366.586', '1672056683.2166', '1'], ['1770962400000', '1952.8', '1953.78', '1952.04', '1952.04', '5900445.45', '590044.545', '1152160412.41484', '1'], ['1770961500000', '1952.94', '1953.78', '1952.42', '1953.6', '4499203.47', '449920.347', '878737759.11826', '1'], ['1770960600000', '1953.33', '1954.19', '1952.94', '1953.78', '3915571.75', '391557.175', '764900958.03707', '1'], ['1770959700000', '1953.78', '1954.62', '1953.09', '1954.19', '7662956.82', '766295.682', '1497313232.59313', '1'], ['1770958800000', '1953.6', '1954.62', '1953', '1954.62', '5074821.87', '507482.187', '991610320.51355', '1'], ['1770957900000', '1954.12', '1954.62', '1953.09', '1953.6', '4958433.53', '495843.353', '968834858.08385', '1'], ['1770957000000', '1953.78', '1954.62', '1953.3', '1953.3', '5517380.21', '551738.021', '1078129758.98593', '1'], ['1770956100000', '1953.78', '1954.62', '1952.6', '1954.62', '5288546.13', '528854.613', '1033253116.62673', '1'], ['1770955200000', '1954.12', '1954.62', '1952.94', '1952.94', '5456764.28', '545676.428', '1066195355.06788', '1'], ['1770954300000', '1952.64', '1954.56', '1952.42', '1953.3', '7341044.31', '734104.431', '1434141584.98493', '1'], ['1770953400000', '1950.38', '1953.65', '1950', '1953.65', '8421934.03', '842193.403', '1643881676.10473', '1'], ['1770952500000', '1949.63', '1950.66', '1949.34', '1950.36', '4989615.75', '498961.575', '972998644.84644', '1'], ['1770951600000', '1950.07', '1950.83', '1949.58', '1950.66', '6850492.94', '685049.294', '1336009466.07715', '1'], ['1770950700000', '1947.18', '1950.09', '1946.95', '1949', '6882865.95', '688286.595', '1341094916.58581', '1'], ['1770949800000', '1948.74', '1948.74', '1947', '1947.18', '4741934.59', '474193.459', '923548932.14171', '1'], ['1770948900000', '1948.9', '1948.9', '1947.14', '1947.9', '4598614.22', '459861.422', '895872913.50644', '1'], ['1770948000000', '1948.02', '1949', '1947.14', '1948.9', '7379757.66', '737975.766', '1437886498.70958', '1'], ['1770947100000', '1947.9', '1948.74', '1947.14', '1947.14', '6004903.39', '600490.339', '1169878065.28097', '1'], ['1770946200000', '1947.9', '1948.9', '1947.32', '1947.9', '6282950.36', '628295.036', '1224132869.44542', '1'], ['1770945300000', '1948.74', '1948.74', '1947.14', '1947.9', '4632935.73', '463293.573', '902626314.64166', '1'], ['1770944400000', '1948.02', '1948.9', '1947.14', '1948.74', '5296733.69', '529673.369', '1031932349.71781', '1'], ['1770943500000', '1948.9', '1949.78', '1948', '1948.9', '3959643.69', '395964.369', '771662098.81369', '1'], ['1770942600000', '1949.39', '1950.42', '1948.9', '1949.78', '4986925.96', '498692.596', '972277409.77033', '1'], ['1770941700000', '1949.97', '1950.66', '1949', '1949.39', '6523811.8', '652381.18', '1272122354.86145', '1']]}
+2026-02-13 09:28:25,166 - DEBUG - Fetched 37 candles for 15m
+2026-02-13 09:28:25,174 - DEBUG - Loaded 37 candles for 15m
+2026-02-13 09:28:25,174 - INFO - Bot startup sequence complete.
+2026-02-13 09:28:25,174 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:28:25,175 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:25,287 - DEBUG - Real-time Balance Update: 77898.35906541778 USDT
+2026-02-13 09:28:25,287 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:25,464 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:28:25,465 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77898.35906541778', 'uTime': '1770974905534', 'upl': ''}], 'msg': ''}
+2026-02-13 09:28:25,467 - INFO - Account sync: total_equity=77898.35906541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:25,467 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:28:25,468 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:25,742 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:25,743 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:25,745 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:28:25,746 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:25,747 - DEBUG - No Orders to cancel
+2026-02-13 09:28:25,747 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:28:25,748 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:26,044 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:26,045 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:26,046 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:26,047 - INFO - Initial account balance fetched.
+2026-02-13 09:28:26,047 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:28:26,048 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:26,049 - DEBUG - Trading loop started.
+2026-02-13 09:28:26,056 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:28:26,057 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.1970863032107', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77902.43708630321', 'uTime': '1770974906132', 'upl': ''}], 'msg': ''}
+2026-02-13 09:28:26,059 - INFO - Account sync: total_equity=77902.43708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:26,059 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:28:26,060 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:26,364 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:28:26,365 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77903.35906541778', 'uTime': '1770974906427', 'upl': ''}], 'msg': ''}
+2026-02-13 09:28:26,367 - INFO - Account sync: total_equity=77903.35906541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:26,367 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:28:26,368 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:26,369 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:26,370 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:26,372 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:28:26,373 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:26,670 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:26,671 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:26,672 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:26,699 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:26,701 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:26,703 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:28:26,703 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:26,935 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:26,935 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:26,941 - INFO - 127.0.0.1 - - [2026-02-13 09:28:26] "GET /login HTTP/1.1" 200 4387 0.006724
+2026-02-13 09:28:26,977 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:26,978 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:26,979 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:27,674 - DEBUG - No Orders to cancel
+2026-02-13 09:28:27,675 - DEBUG - GET /api/v5/account/balance (Attempt 1/3)
+2026-02-13 09:28:27,676 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:27,956 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/balance?ccy=USDT HTTP/1.1" 200 None
+2026-02-13 09:28:27,957 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/balance: {'code': '0', 'data': [{'adjEq': '', 'availEq': '', 'borrowFroz': '', 'delta': '', 'deltaLever': '', 'deltaNeutralStatus': '', 'details': [{'accAvgPx': '', 'autoLendAmt': '0', 'autoLendMtAmt': '0', 'autoLendStatus': 'unsupported', 'autoStakingStatus': 'unsupported', 'availBal': '2197.9114572398576', 'availEq': '2197.9114572398576', 'borrowFroz': '', 'cashBal': '2197.9114572398576', 'ccy': 'USDT', 'clSpotInUseAmt': '', 'colBorrAutoConversion': '0', 'colRes': '0', 'collateralEnabled': False, 'collateralRestrict': False, 'crossLiab': '', 'disEq': '0', 'eq': '2197.9114572398576', 'eqUsd': '2196.2190654177825', 'fixedBal': '0', 'frozenBal': '0', 'frpType': '0', 'imr': '0', 'interest': '', 'isoEq': '0', 'isoLiab': '', 'isoUpl': '0', 'liab': '', 'maxLoan': '', 'maxSpotInUse': '', 'mgnRatio': '', 'mmr': '0', 'notionalLever': '0', 'openAvgPx': '', 'ordFrozen': '0', 'rewardBal': '0', 'smtSyncEq': '0', 'spotBal': '', 'spotCopyTradingEq': '0', 'spotInUseAmt': '', 'spotIsoBal': '0', 'spotUpl': '', 'spotUplRatio': '', 'stgyEq': '0', 'totalPnl': '', 'totalPnlRatio': '', 'twap': '0', 'uTime': '1770973697164', 'upl': '0', 'uplLiab': ''}], 'imr': '', 'isoEq': '0', 'mgnRatio': '', 'mmr': '', 'notionalUsd': '', 'notionalUsdForBorrow': '', 'notionalUsdForFutures': '', 'notionalUsdForOption': '', 'notionalUsdForSwap': '', 'ordFroz': '', 'totalEq': '77903.71156541778', 'uTime': '1770974908019', 'upl': ''}], 'msg': ''}
+2026-02-13 09:28:27,959 - INFO - Account sync: total_equity=77903.71156541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:27,960 - DEBUG - GET /api/v5/trade/orders-pending (Attempt 1/3)
+2026-02-13 09:28:27,960 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:28,048 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,049 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,049 - DEBUG - Can only upgrade connection if using GET method.
+2026-02-13 09:28:28,050 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "POST /login HTTP/1.1" 302 511 0.001893
+2026-02-13 09:28:28,053 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,053 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,066 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET / HTTP/1.1" 200 69345 0.013314
+2026-02-13 09:28:28,078 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,078 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,085 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /static/js/app.js HTTP/1.1" 200 71099 0.006767
+2026-02-13 09:28:28,085 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,085 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,086 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /static/css/style.css HTTP/1.1" 200 9493 0.001198
+2026-02-13 09:28:28,210 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,210 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,211 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8yi HTTP/1.1" 200 254 0.000819
+2026-02-13 09:28:28,222 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,222 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,223 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /api/status HTTP/1.1" 200 962 0.001174
+2026-02-13 09:28:28,223 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,223 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,224 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /api/config HTTP/1.1" 200 2261 0.001034
+2026-02-13 09:28:28,225 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,225 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,225 - DEBUG - Can only upgrade connection if using GET method.
+2026-02-13 09:28:28,226 - INFO - Client connected: VPD7VYArPq5ihYUrAAAB
+2026-02-13 09:28:28,230 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "POST /socket.io/?EIO=4&transport=polling&t=PnML8yx&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 195 0.004825
+2026-02-13 09:28:28,230 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,231 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,232 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8yz&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 4437 0.001478
+2026-02-13 09:28:28,232 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,233 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,233 - DEBUG - Attempting to upgrade connection
+2026-02-13 09:28:28,233 - DEBUG - WebSocket request accepted, switching protocols
+2026-02-13 09:28:28,235 - DEBUG - https://www.okx.com:443 "GET /api/v5/trade/orders-pending?instId=ETH-USDT-SWAP&instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:28,237 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/trade/orders-pending: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:28,240 - DEBUG - GET /api/v5/account/positions (Attempt 1/3)
+2026-02-13 09:28:28,241 - DEBUG - Starting new HTTPS connection (1): www.okx.com:443
+2026-02-13 09:28:28,242 - DEBUG - Initializing WebSocket
+2026-02-13 09:28:28,242 - DEBUG - Validating WebSocket request
+2026-02-13 09:28:28,242 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8zD&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 157 0.000470
+2026-02-13 09:28:28,518 - DEBUG - https://www.okx.com:443 "GET /api/v5/account/positions?instType=SWAP HTTP/1.1" 200 None
+2026-02-13 09:28:28,519 - DEBUG - DEBUG: Full OKX API Response for GET /api/v5/account/positions: {'code': '0', 'data': [], 'msg': ''}
+2026-02-13 09:28:28,521 - DEBUG - DEBUG: bot_engine emitting updates
+2026-02-13 09:28:29,262 - DEBUG - Closed WebSocket
+2026-02-13 09:28:29,262 - DEBUG - Failed to write closing frame -> closing socket
+2026-02-13 09:28:29,263 - DEBUG - Closed WebSocket
+2026-02-13 09:28:29,263 - INFO - Client disconnected

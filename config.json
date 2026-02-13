@@ -44,7 +44,7 @@
   "max_chg_high_close": 0,
   "candlestick_timeframe": "15m",
   "use_candlestick_conditions": false,
-  "log_level": "info",
+  "log_level": "debug",
   "use_pnl_auto_manual": false,
   "pnl_auto_manual_threshold": 100,
   "use_pnl_auto_cal": false,

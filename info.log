@@ -1,44 +1,114 @@
-2026-02-13 07:38:12,042 - INFO - Logger initialized. info.log active for monitoring/downloads.
-2026-02-13 07:38:12,425 - INFO - Bot starting background monitoring...
-2026-02-13 07:38:12,998 - INFO - OKX server time synchronized. Offset: -9ms
-2026-02-13 07:38:13,289 - INFO - Bot initialized. Starting live connection threads...
-2026-02-13 07:38:13,290 - INFO - OKX BOT STARTING
-2026-02-13 07:38:13,292 - INFO - Check Cancel Condition
-2026-02-13 07:38:14,094 - INFO - Websocket connected
-2026-02-13 07:38:14,094 - INFO - OKX PRIVATE WebSocket opened. Logging in...
-2026-02-13 07:38:14,099 - INFO - Websocket connected
-2026-02-13 07:38:14,099 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
-2026-02-13 07:38:14,201 - INFO - 📅 Daily Report Saved for 2026-02-13: Capital $77293.34, Net Profit $0.00
-2026-02-13 07:38:14,314 - INFO - WebSocket Login Successful.
-2026-02-13 07:38:14,613 - INFO - Bot startup sequence complete.
-2026-02-13 07:38:15,579 - INFO - OKX server time synchronized. Offset: -5ms
-2026-02-13 07:45:39,122 - INFO - Logger initialized. info.log active for monitoring/downloads.
-2026-02-13 07:45:39,455 - INFO - Bot starting background monitoring...
-2026-02-13 07:45:40,024 - INFO - OKX server time synchronized. Offset: 37ms
-2026-02-13 07:45:40,336 - INFO - Bot initialized. Starting live connection threads...
-2026-02-13 07:45:40,337 - INFO - OKX BOT STARTING
-2026-02-13 07:45:40,338 - INFO - Check Cancel Condition
-2026-02-13 07:45:41,175 - INFO - Websocket connected
-2026-02-13 07:45:41,175 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
-2026-02-13 07:45:41,180 - INFO - Websocket connected
-2026-02-13 07:45:41,181 - INFO - OKX PRIVATE WebSocket opened. Logging in...
-2026-02-13 07:45:41,402 - INFO - WebSocket Login Successful.
-2026-02-13 07:45:41,689 - INFO - Bot startup sequence complete.
-2026-02-13 07:45:42,637 - INFO - OKX server time synchronized. Offset: 27ms
-2026-02-13 07:47:15,308 - INFO - Logger initialized. info.log active for monitoring/downloads.
-2026-02-13 07:47:15,309 - INFO - Logger initialized. info.log active for monitoring/downloads.
-2026-02-13 07:47:39,196 - INFO - Logger initialized. info.log active for monitoring/downloads.
-2026-02-13 07:47:39,196 - INFO - Bot starting background monitoring...
-2026-02-13 07:47:39,826 - INFO - OKX server time synchronized. Offset: 36ms
-2026-02-13 07:47:40,118 - INFO - Bot initialized. Starting live connection threads...
-2026-02-13 07:47:40,118 - INFO - OKX BOT STARTING
-2026-02-13 07:47:40,121 - INFO - Check Cancel Condition
-2026-02-13 07:47:40,944 - INFO - Websocket connected
-2026-02-13 07:47:40,944 - INFO - OKX PRIVATE WebSocket opened. Logging in...
-2026-02-13 07:47:40,956 - INFO - Websocket connected
-2026-02-13 07:47:40,956 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
-2026-02-13 07:47:41,164 - INFO - WebSocket Login Successful.
-2026-02-13 07:47:41,688 - INFO - Bot startup sequence complete.
-2026-02-13 07:48:19,922 - INFO - Client connected: 70GShOHqKqr1ZnCkAAAB
-2026-02-13 07:48:20,219 - INFO - OKX server time synchronized. Offset: 48ms
-2026-02-13 07:48:20,284 - INFO - OKX server time synchronized. Offset: 41ms
+2026-02-13 09:26:03,526 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-13 09:26:03,527 - INFO - Bot starting background monitoring...
+2026-02-13 09:26:04,173 - INFO - OKX server time synchronized. Offset: 34ms
+2026-02-13 09:26:05,278 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:26:05,278 - INFO - Checking for and closing any existing open positions...
+2026-02-13 09:26:05,552 - INFO - No open OKX positions found to close.
+2026-02-13 09:26:05,553 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 09:26:05,553 - INFO - OKX BOT STARTING
+2026-02-13 09:26:05,554 - INFO - Check Cancel Condition
+2026-02-13 09:26:05,927 - INFO - Account sync: total_equity=77880.09104453237, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:06,368 - INFO - Websocket connected
+2026-02-13 09:26:06,369 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 09:26:06,395 - INFO - Websocket connected
+2026-02-13 09:26:06,395 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 09:26:06,791 - INFO - 127.0.0.1 - - [2026-02-13 09:26:06] "GET /api/status HTTP/1.1" 302 465 0.002215
+2026-02-13 09:26:06,820 - INFO - WebSocket Login Successful.
+2026-02-13 09:26:06,908 - INFO - Bot startup sequence complete.
+2026-02-13 09:26:07,198 - INFO - Account sync: total_equity=77880.21354453235, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:07,762 - INFO - Initial account balance fetched.
+2026-02-13 09:26:07,817 - INFO - Account sync: total_equity=77880.91354453236, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:08,044 - INFO - Account sync: total_equity=77880.91354453236, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:09,693 - INFO - Account sync: total_equity=77882.4320863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:11,550 - INFO - Account sync: total_equity=77880.61208630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:13,128 - INFO - Check Cancel Condition
+2026-02-13 09:26:13,435 - INFO - Account sync: total_equity=77878.20458630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:15,272 - INFO - Account sync: total_equity=77878.19010718864, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:17,177 - INFO - Account sync: total_equity=77876.89010718864, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:18,943 - INFO - Account sync: total_equity=77876.42708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:19,190 - INFO - Account sync: total_equity=77876.42708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:21,070 - INFO - Account sync: total_equity=77875.87958630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:22,654 - INFO - Check Cancel Condition
+2026-02-13 09:26:22,930 - INFO - Account sync: total_equity=77875.87958630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:24,780 - INFO - Account sync: total_equity=77874.50208630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:26,654 - INFO - Account sync: total_equity=77873.12708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:28,523 - INFO - Account sync: total_equity=77859.2611489595, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:29,818 - INFO - Account sync: total_equity=77859.32708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:30,435 - INFO - Account sync: total_equity=77859.32708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:32,439 - INFO - Check Cancel Condition
+2026-02-13 09:26:32,724 - INFO - Account sync: total_equity=77859.31958630322, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:34,623 - INFO - Account sync: total_equity=77858.70458630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:36,510 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-13 09:26:36,511 - INFO - Bot starting background monitoring...
+2026-02-13 09:26:37,082 - INFO - OKX server time synchronized. Offset: 67ms
+2026-02-13 09:26:37,945 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:26:37,945 - INFO - Checking for and closing any existing open positions...
+2026-02-13 09:26:38,245 - INFO - No open OKX positions found to close.
+2026-02-13 09:26:38,246 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 09:26:38,246 - INFO - OKX BOT STARTING
+2026-02-13 09:26:38,247 - INFO - Check Cancel Condition
+2026-02-13 09:26:38,633 - INFO - Account sync: total_equity=77858.4895863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:39,038 - INFO - Websocket connected
+2026-02-13 09:26:39,038 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 09:26:39,040 - INFO - Websocket connected
+2026-02-13 09:26:39,040 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 09:26:39,261 - INFO - WebSocket Login Successful.
+2026-02-13 09:26:39,544 - INFO - Bot startup sequence complete.
+2026-02-13 09:26:39,853 - INFO - Account sync: total_equity=77858.51156541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:40,426 - INFO - Initial account balance fetched.
+2026-02-13 09:26:40,499 - INFO - Account sync: total_equity=77858.51156541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:40,739 - INFO - Account sync: total_equity=77858.49656541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:42,174 - INFO - 127.0.0.1 - - [2026-02-13 09:26:42] "GET /login HTTP/1.1" 200 4387 0.008422
+2026-02-13 09:26:42,458 - INFO - Account sync: total_equity=77857.16656541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:43,422 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "POST /login HTTP/1.1" 302 511 0.002315
+2026-02-13 09:26:43,441 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET / HTTP/1.1" 200 69345 0.016290
+2026-02-13 09:26:43,460 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /static/css/style.css HTTP/1.1" 200 9493 0.009061
+2026-02-13 09:26:43,462 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /static/js/app.js HTTP/1.1" 200 71099 0.001563
+2026-02-13 09:26:43,625 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /socket.io/?EIO=4&transport=polling&t=PnMKlQY HTTP/1.1" 200 254 0.002816
+2026-02-13 09:26:43,633 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /api/config HTTP/1.1" 200 2261 0.002354
+2026-02-13 09:26:43,639 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /api/status HTTP/1.1" 200 962 0.004761
+2026-02-13 09:26:43,641 - INFO - Client connected: dheZel2XDKVcTaeIAAAB
+2026-02-13 09:26:43,651 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "POST /socket.io/?EIO=4&transport=polling&t=PnMKlQn&sid=jp4HtNpuyDkVg1aUAAAA HTTP/1.1" 200 195 0.011335
+2026-02-13 09:26:43,653 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /socket.io/?EIO=4&transport=polling&t=PnMKlQq&sid=jp4HtNpuyDkVg1aUAAAA HTTP/1.1" 200 157 0.000482
+2026-02-13 09:26:43,671 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /socket.io/?EIO=4&transport=polling&t=PnMKlRL&sid=jp4HtNpuyDkVg1aUAAAA HTTP/1.1" 200 157 0.000554
+2026-02-13 09:26:43,745 - INFO - 127.0.0.1 - - [2026-02-13 09:26:43] "GET /api/status HTTP/1.1" 200 962 0.001215
+2026-02-13 09:26:44,332 - INFO - Account sync: total_equity=77857.0740654178, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:26:51,671 - INFO - Account sync: total_equity=77883.7295863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:06,359 - INFO - Account sync: total_equity=77893.42510718864, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:08,212 - INFO - Account sync: total_equity=77894.3545863032, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:12,113 - INFO - Account sync: total_equity=77891.18760718865, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:27:18,670 - INFO - Client disconnected
+2026-02-13 09:28:22,061 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-13 09:28:22,062 - INFO - Bot starting background monitoring...
+2026-02-13 09:28:22,662 - INFO - OKX server time synchronized. Offset: 62ms
+2026-02-13 09:28:23,527 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-13 09:28:23,527 - INFO - Checking for and closing any existing open positions...
+2026-02-13 09:28:23,808 - INFO - No open OKX positions found to close.
+2026-02-13 09:28:23,808 - INFO - Bot initialized. Starting live connection threads...
+2026-02-13 09:28:23,808 - INFO - OKX BOT STARTING
+2026-02-13 09:28:23,810 - INFO - Check Cancel Condition
+2026-02-13 09:28:24,163 - INFO - Account sync: total_equity=77898.35906541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:24,639 - INFO - Websocket connected
+2026-02-13 09:28:24,639 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-13 09:28:24,641 - INFO - Websocket connected
+2026-02-13 09:28:24,641 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-13 09:28:24,864 - INFO - WebSocket Login Successful.
+2026-02-13 09:28:25,174 - INFO - Bot startup sequence complete.
+2026-02-13 09:28:25,467 - INFO - Account sync: total_equity=77898.35906541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:26,047 - INFO - Initial account balance fetched.
+2026-02-13 09:28:26,059 - INFO - Account sync: total_equity=77902.43708630321, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:26,367 - INFO - Account sync: total_equity=77903.35906541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:26,941 - INFO - 127.0.0.1 - - [2026-02-13 09:28:26] "GET /login HTTP/1.1" 200 4387 0.006724
+2026-02-13 09:28:27,959 - INFO - Account sync: total_equity=77903.71156541778, total_balance=0.0, avail_bal=2197.9114572398576
+2026-02-13 09:28:28,050 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "POST /login HTTP/1.1" 302 511 0.001893
+2026-02-13 09:28:28,066 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET / HTTP/1.1" 200 69345 0.013314
+2026-02-13 09:28:28,085 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /static/js/app.js HTTP/1.1" 200 71099 0.006767
+2026-02-13 09:28:28,086 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /static/css/style.css HTTP/1.1" 200 9493 0.001198
+2026-02-13 09:28:28,211 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8yi HTTP/1.1" 200 254 0.000819
+2026-02-13 09:28:28,223 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /api/status HTTP/1.1" 200 962 0.001174
+2026-02-13 09:28:28,224 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /api/config HTTP/1.1" 200 2261 0.001034
+2026-02-13 09:28:28,226 - INFO - Client connected: VPD7VYArPq5ihYUrAAAB
+2026-02-13 09:28:28,230 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "POST /socket.io/?EIO=4&transport=polling&t=PnML8yx&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 195 0.004825
+2026-02-13 09:28:28,232 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8yz&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 4437 0.001478
+2026-02-13 09:28:28,242 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8zD&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 157 0.000470
+2026-02-13 09:28:29,263 - INFO - Client disconnected

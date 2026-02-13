@@ -1,5 +1,6 @@
-import eventlet
-eventlet.monkey_patch()
+import gevent
+from gevent import monkey
+monkey.patch_all()
 from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for, flash
 from flask_socketio import SocketIO, emit
 import json
@@ -15,7 +16,7 @@ logging.basicConfig(
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
 
 config_file = 'config.json'
 login_file = 'login.json'
@@ -281,16 +282,17 @@ def get_status():
             logging.error(f"Error initializing bot engine for status: {e}")
             return jsonify({'running': False, 'error': str(e)}), 500
 
-    if not bot_engine.is_running:
-        try:
-            bot_engine.fetch_account_data_sync()
-        except Exception as e:
-            logging.error(f"Error fetching sync account data: {e}")
+    # Background sync is already handling data updates
+    # if not bot_engine.is_running:
+    #     try:
+    #         bot_engine.fetch_account_data_sync()
+    #     except Exception as e:
+    #         logging.error(f"Error fetching sync account data: {e}")
 
     # Centralized metric calculation logic (matches bot_engine._emit_socket_updates)
     total_active_trades_count = bot_engine.total_trades_count + len(bot_engine.open_trades)
     
-    return jsonify({
+    status = {
         'running': bot_engine.is_running,
         'open_trades': bot_engine.open_trades,
         'total_trades': total_active_trades_count,
@@ -329,7 +331,11 @@ def get_status():
         'net_trade_profit': getattr(bot_engine, 'net_trade_profit', 0.0),
         'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
         'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
-    })
+    }
+
+    response = jsonify(status)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
  
 @socketio.on('connect')
 def handle_connect(auth=None):
@@ -348,9 +354,7 @@ def handle_connect(auth=None):
     if bot_engine:
         emit('bot_status', {'running': bot_engine.is_running}, room=sid)
         if bot_engine:
-            # Trigger a sync to ensure metrics are fresh
-            bot_engine.fetch_account_data_sync()
-            
+            # Use cached data for immediate response
             payload = {
                 'total_capital': bot_engine.total_equity,
                 'total_capital_2nd': max(0.0, bot_engine.total_equity - bot_engine.cumulative_margin_used),
