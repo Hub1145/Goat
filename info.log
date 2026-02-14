@@ -112,3 +112,65 @@
 2026-02-13 09:28:28,232 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8yz&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 4437 0.001478
 2026-02-13 09:28:28,242 - INFO - 127.0.0.1 - - [2026-02-13 09:28:28] "GET /socket.io/?EIO=4&transport=polling&t=PnML8zD&sid=qk3O_Qt_rmL3YJ1SAAAA HTTP/1.1" 200 157 0.000470
 2026-02-13 09:28:29,263 - INFO - Client disconnected
+2026-02-14 00:47:10,296 - INFO - Logger initialized. Writing DEBUG logs to debug.log
+2026-02-14 00:47:10,300 - INFO - Bot starting background monitoring...
+2026-02-14 00:47:11,144 - INFO - OKX server time synchronized. Offset: 47ms
+2026-02-14 00:47:12,204 - INFO - [OK] Leverage set to 100x for ETH-USDT-SWAP (net)
+2026-02-14 00:47:12,205 - INFO - Checking for and closing any existing open positions...
+2026-02-14 00:47:12,526 - WARNING - ⚠️ Found open net position: -27.95 ETH-USDT-SWAP (Mode: cross)
+2026-02-14 00:47:12,526 - INFO - Closing 27.95 ETH-USDT-SWAP with market Buy order (posSide: net)
+2026-02-14 00:47:12,527 - INFO - Placing Market Buy order for 27.95 ETH-USDT-SWAP at None
+2026-02-14 00:47:12,887 - INFO - [OK] Order placed: OrderID=3306038758759616512
+2026-02-14 00:47:12,892 - INFO - [OK] Position close order placed: 3306038758759616512
+2026-02-14 00:47:12,892 - INFO - [DONE] Close Position (Manual): NET ETH-USDT-SWAP | Qty: 27.95
+2026-02-14 00:47:12,894 - INFO - Bot initialized. Starting live connection threads...
+2026-02-14 00:47:12,896 - INFO - OKX BOT STARTING
+2026-02-14 00:47:13,370 - INFO - Account sync: total_equity=80459.95921357245, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:13,383 - INFO - Account sync: total_equity=80459.95921357245, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:14,045 - INFO - Websocket connected
+2026-02-14 00:47:14,045 - INFO - OKX PUBLIC WebSocket opened. Subscribing...
+2026-02-14 00:47:14,050 - INFO - Websocket connected
+2026-02-14 00:47:14,050 - INFO - OKX PRIVATE WebSocket opened. Logging in...
+2026-02-14 00:47:14,271 - INFO - 📅 Daily Report Saved for 2026-02-14: Capital $80459.96, Net Profit $0.00
+2026-02-14 00:47:14,289 - INFO - WebSocket Login Successful.
+2026-02-14 00:47:14,651 - INFO - Bot startup sequence complete.
+2026-02-14 00:47:15,006 - INFO - Account sync: total_equity=80460.01747176053, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:15,815 - INFO - Initial account balance fetched.
+2026-02-14 00:47:15,836 - INFO - 127.0.0.1 - - [2026-02-14 00:47:15] "GET /login HTTP/1.1" 200 4387 0.014729
+2026-02-14 00:47:15,931 - INFO - Account sync: total_equity=80460.07747176052, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:16,181 - INFO - Account sync: total_equity=80460.09997176053, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:17,144 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "POST /login HTTP/1.1" 302 511 0.006474
+2026-02-14 00:47:17,193 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET / HTTP/1.1" 200 69345 0.036824
+2026-02-14 00:47:17,312 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /static/css/style.css HTTP/1.1" 200 9493 0.035257
+2026-02-14 00:47:17,320 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /static/js/app.js HTTP/1.1" 200 71099 0.004761
+2026-02-14 00:47:17,657 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /socket.io/?EIO=4&transport=polling&t=PnPdSI2 HTTP/1.1" 200 254 0.004115
+2026-02-14 00:47:17,682 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /api/status HTTP/1.1" 200 962 0.003594
+2026-02-14 00:47:17,692 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /api/config HTTP/1.1" 200 2261 0.003742
+2026-02-14 00:47:17,728 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /socket.io/?EIO=4&transport=polling&t=PnPdSJ0&sid=cQkaV0VdwJ1YGZZsAAAA HTTP/1.1" 200 157 0.001821
+2026-02-14 00:47:17,734 - INFO - Client connected: lR7TIcU8AX0vdecFAAAB
+2026-02-14 00:47:17,753 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "POST /socket.io/?EIO=4&transport=polling&t=PnPdSIp&sid=cQkaV0VdwJ1YGZZsAAAA HTTP/1.1" 200 195 0.022417
+2026-02-14 00:47:17,756 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /socket.io/?EIO=4&transport=polling&t=PnPdSJn&sid=cQkaV0VdwJ1YGZZsAAAA HTTP/1.1" 200 157 0.001157
+2026-02-14 00:47:17,881 - INFO - 127.0.0.1 - - [2026-02-14 00:47:17] "GET /socket.io/?EIO=4&transport=polling&t=PnPdSL2&sid=cQkaV0VdwJ1YGZZsAAAA HTTP/1.1" 200 157 0.001038
+2026-02-14 00:47:18,040 - INFO - 127.0.0.1 - - [2026-02-14 00:47:18] "GET /api/status HTTP/1.1" 200 962 0.004031
+2026-02-14 00:47:18,138 - INFO - Account sync: total_equity=80461.44497176052, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:18,676 - INFO - Bot starting trading logic...
+2026-02-14 00:47:18,677 - INFO - Session trade metrics reset.
+2026-02-14 00:47:19,387 - INFO - OKX server time synchronized. Offset: 38ms
+2026-02-14 00:47:20,040 - INFO - Account sync: total_equity=80462.19247176051, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:20,202 - INFO - Account sync: total_equity=80462.19247176051, total_balance=0.0, avail_bal=2191.9396027698576
+2026-02-14 00:47:20,882 - INFO - ------------------------------------------------------------------------------------------
+2026-02-14 00:47:20,883 - INFO - ------------------------------------------------------------------------------------------
+2026-02-14 00:47:20,883 - INFO - Check Entry Condition
+2026-02-14 00:47:20,883 - INFO - Entry-1:SHORT Market 2075.75, Safety:2000, Passed
+2026-02-14 00:47:20,884 - INFO - Entry-3:Remaining: 35000.00 >= Target 3500: Passed
+2026-02-14 00:47:20,884 - INFO - Entry-4:Remaining: 35000.00 >= Min 50: Passed
+2026-02-14 00:47:20,884 - INFO - Place Order Batch 1
+2026-02-14 00:47:20,884 - INFO - Batch1-1:M:2075.75|En:2077.75|Tp:0.00|SL:0.00|3500|Short|Cross
+2026-02-14 00:47:21,188 - INFO - Wait 10 seconds (Post-Entry)
+2026-02-14 00:47:21,503 - INFO - Account sync: total_equity=80461.50247176051, total_balance=0.0, avail_bal=2155.2008272698577
+2026-02-14 00:47:21,563 - INFO - Account sync: total_equity=80461.50247176051, total_balance=0.0, avail_bal=2155.2008272698577
+2026-02-14 00:47:22,166 - INFO - Account sync: total_equity=80458.98747176051, total_balance=0.0, avail_bal=2155.2008272698577
+2026-02-14 00:47:24,132 - INFO - Account sync: total_equity=80454.75689115656, total_balance=0.0, avail_bal=2155.2008272698577
+2026-02-14 00:47:26,028 - INFO - Check Cancel Condition
+2026-02-14 00:47:26,324 - INFO - Account sync: total_equity=80453.41881055257, total_balance=0.0, avail_bal=2155.2008272698577
+2026-02-14 00:47:26,556 - INFO - Client disconnected

@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 import numpy as np
 import websocket # The 'websocket-client' package provides the 'websocket' module
-import ta
 import threading
 from collections import deque
 import os # Added for file path operations
@@ -1488,13 +1487,6 @@ class TradingBotEngine:
 
     def _handle_order_update(self, orders_data):
         with self.position_lock:
-            current_pending_id = self.pending_entry_order_id
-            is_in_pos = self.in_position
-            active_exit_orders = dict(self.position_exit_orders)
-            tracked_qty = self.position_qty
-
-    def _handle_order_update(self, orders_data):
-        with self.position_lock:
              # Snapshot current states for directional mapping
              active_exit_ids = {
                  'long': self.position_exit_orders.get('long', {}),
@@ -2807,6 +2799,13 @@ class TradingBotEngine:
                     # NEW ARCHITECTURE: Split God Method
                     self._sync_account_data()
                     self._execute_position_management()
+
+                    # Periodic sync of realized profit (every ~5s)
+                    if not hasattr(self, '_profit_sync_count'): self._profit_sync_count = 0
+                    if self._profit_sync_count % 5 == 0:
+                        self._calculate_net_profit_from_fills()
+                    self._profit_sync_count += 1
+
                     self._emit_socket_updates()
                     last_account_sync = now
 
