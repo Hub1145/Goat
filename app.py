@@ -1,12 +1,10 @@
-import gevent
-from gevent import monkey
-monkey.patch_all()
 from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for, flash
 from flask_socketio import SocketIO, emit
 import json
 import logging
 import os
 import functools
+import threading
 from bot_engine import TradingBotEngine
 
 logging.basicConfig(
@@ -16,7 +14,7 @@ logging.basicConfig(
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='gevent')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 config_file = 'config.json'
 login_file = 'login.json'
@@ -172,7 +170,6 @@ def update_config():
                 if not valid:
                     emit_to_client('error', {'message': f'API Credentials Error: {msg}'})
             
-            import threading
             threading.Thread(target=background_init, daemon=True).start()
             
             final_msg = 'Configuration updated successfully'
@@ -486,4 +483,4 @@ if __name__ == '__main__':
         bot_engine = TradingBotEngine(config_file, emit_to_client)
         bot_engine.start(passive_monitoring=True)
         
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
