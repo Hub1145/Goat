@@ -5,7 +5,14 @@ class PositionManager:
     def __init__(self, engine):
         self.engine = engine
         self.config = engine.config
+        self.reset_session_metrics()
         self.reset()
+
+    def reset_session_metrics(self):
+        self.net_trade_profit = 0.0
+        self.total_trade_profit = 0.0
+        self.total_trade_loss = 0.0
+        self.total_fees = 0.0
 
     def reset(self):
         self.in_position = {'long': False, 'short': False}
@@ -13,8 +20,8 @@ class PositionManager:
         self.position_entry_price = {'long': 0.0, 'short': 0.0}
         self.position_liq = {'long': 0.0, 'short': 0.0}
         self.position_details = {'long': {}, 'short': {}}
+        self.position_notional = {'long': 0.0, 'short': 0.0}
         self.session_baseline_qty = {'long': 0.0, 'short': 0.0}
-        self.total_fees = 0.0
         self.cached_active_positions_count = 0
         self.cached_pos_notional = 0.0
         self.cached_unrealized_pnl = 0.0
@@ -29,7 +36,7 @@ class PositionManager:
         found_sides = set()
         contract_size = safe_float(self.engine.product_info.get('contractSize', 1.0))
 
-        with threading.Lock(): # Using local lock for safety
+        with self.engine.lock:
             prev_qtys = {k: v for k, v in self.position_qty.items()}
             for pos in positions_data:
                 if pos.get('instId', '').strip().upper() == target_symbol:
@@ -39,12 +46,19 @@ class PositionManager:
                     if qty_raw != 0:
                         found_sides.add(side_key)
                         mkt_px = self.engine.latest_trade_price if self.engine.latest_trade_price else safe_float(pos.get('avgPx'))
-                        temp_pos_notional += abs(qty_raw) * mkt_px * contract_size
+                        side_notional = abs(qty_raw) * mkt_px * contract_size
+                        self.position_notional[side_key] = side_notional
+                        temp_pos_notional += side_notional
                         temp_unrealized_pnl += safe_float(pos.get('upl', '0'))
                         temp_active_count += 1
+
+                        # Session margin tracking
                         if self.engine.is_running:
                             session_qty = max(0, abs(qty_raw * contract_size) - self.session_baseline_qty.get(side_key, 0.0))
                             temp_used_notional += session_qty * mkt_px
+                        else:
+                            # In stop mode, we might want to update baseline or just track total
+                            temp_used_notional += abs(qty_raw * contract_size) * mkt_px
 
                         new_qty = qty_raw * contract_size
                         if abs(new_qty - prev_qtys.get(side_key, 0.0)) > 1e-6:
@@ -59,26 +73,27 @@ class PositionManager:
                         self.position_details[side_key] = pos
 
             for s in ['long', 'short']:
-                should_close = False
                 if is_snapshot:
-                    if s not in found_sides and self.in_position[s]: should_close = True
+                    if s not in found_sides and self.in_position[s]: self._handle_closure(s)
                 else:
                     for pos in positions_data:
                         if self._map_side(pos.get('posSide', 'net')) == s and safe_float(pos.get('pos')) == 0:
-                            should_close = True
+                            self._handle_closure(s)
                             break
-                if should_close:
-                    self.in_position[s] = False
-                    self.position_qty[s] = 0.0
-                    self.position_entry_price[s] = 0.0
-                    self.position_details[s] = {}
-                    self.engine.current_take_profit[s] = 0.0
-                    self.engine.current_stop_loss[s] = 0.0
 
             self.cached_active_positions_count = temp_active_count
             self.cached_pos_notional = temp_pos_notional
             self.cached_unrealized_pnl = temp_unrealized_pnl
             self.used_amount_notional = temp_used_notional
+
+    def _handle_closure(self, s):
+        self.in_position[s] = False
+        self.position_qty[s] = 0.0
+        self.position_entry_price[s] = 0.0
+        self.position_notional[s] = 0.0
+        self.position_details[s] = {}
+        self.engine.current_take_profit[s] = 0.0
+        self.engine.current_stop_loss[s] = 0.0
 
     def update_realtime_metrics(self, current_price):
         if not current_price: return
@@ -91,7 +106,9 @@ class PositionManager:
                 entry = self.position_entry_price[side]
                 if side == 'long': temp_upl += (current_price - entry) * qty
                 else: temp_upl += (entry - current_price) * qty
-                temp_notional += qty * current_price
+                side_notional = qty * current_price
+                self.position_notional[side] = side_notional
+                temp_notional += side_notional
         self.cached_unrealized_pnl = temp_upl
         self.cached_pos_notional = temp_notional
 
@@ -102,3 +119,8 @@ class PositionManager:
         return 'long' if side_key == 'both' else side_key
 
     def add_fee(self, fee): self.total_fees += abs(fee)
+    def add_realized_pnl(self, pnl, fee):
+        net = pnl + fee
+        if net > 0: self.total_trade_profit += net
+        else: self.total_trade_loss += abs(net)
+        self.net_trade_profit = self.total_trade_profit - self.total_trade_loss

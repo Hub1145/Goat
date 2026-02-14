@@ -23,7 +23,7 @@ class TradingBotEngine:
         self.is_running = False
         self.stop_event = threading.Event()
         self.console_logs = deque(maxlen=200)
-        self.product_info = {'contractSize': 1.0, 'lotSz': '1', 'tickSz': '0.01', 'pricePrecision': 2, 'qtyPrecision': 2}
+        self.product_info = {'contractSize': 1.0, 'lotSz': '1', 'tickSz': '0.01', 'pricePrecision': 2, 'qtyPrecision': 2, 'qtyStepSize': 1.0, 'minOrderQty': 0.01}
         self.latest_trade_price = 0.0
         self.total_trades_count = 0
         self.last_emit_time = 0
@@ -32,8 +32,12 @@ class TradingBotEngine:
         self.current_stop_loss = {'long': 0.0, 'short': 0.0}
         self._should_update_tpsl = False
         self.last_add_price = 0.0
+        self.account_balance = 0.0
+        self.total_equity = 0.0
+        self.available_balance = 0.0
         self.authoritative_exit_in_progress = False
         self.exit_lock = threading.Lock()
+        self.lock = threading.Lock()
         self.intervals = {'1m': 60, '3m': 180, '5m': 300, '15m': 900, '1h': 3600}
 
         # Handlers
@@ -74,11 +78,17 @@ class TradingBotEngine:
     @property
     def used_amount_notional(self): return self.position_manager.used_amount_notional
     @property
-    def remaining_amount_notional(self): return max(0.0, self.config.get('max_allowed_used', 0.0) - self.used_amount_notional)
+    def remaining_amount_notional(self):
+        leverage = safe_float(self.config.get('leverage', 1), 1.0)
+        max_allowed = self.config.get('max_allowed_used', 0.0)
+        capacity = max_allowed * leverage
+        return max(0.0, capacity - self.used_amount_notional)
     @property
     def max_allowed_display(self): return self.config.get('max_allowed_used', 0.0)
     @property
-    def max_amount_display(self): return self.max_allowed_display
+    def max_amount_display(self):
+        leverage = safe_float(self.config.get('leverage', 1), 1.0)
+        return self.max_allowed_display * leverage
     @property
     def net_profit(self): return self.cached_unrealized_pnl
     @property
@@ -90,13 +100,34 @@ class TradingBotEngine:
     @property
     def trade_fees(self): return self.position_manager.total_fees
     @property
-    def net_trade_profit(self): return 0.0
+    def net_trade_profit(self): return self.position_manager.net_trade_profit
     @property
-    def total_trade_profit(self): return 0.0
+    def total_trade_profit(self): return self.position_manager.total_trade_profit
     @property
-    def total_trade_loss(self): return 0.0
+    def total_trade_loss(self): return self.position_manager.total_trade_loss
     @property
-    def cumulative_margin_used(self): return 0.0
+    def cumulative_margin_used(self): return self.position_manager.used_amount_notional / safe_float(self.config.get('leverage', 1), 1.0)
+    @property
+    def total_capital_2nd(self): return max(0.0, self.total_equity - self.cumulative_margin_used)
+    @property
+    def size_amount(self): return self.cached_pos_notional
+
+    def check_credentials(self):
+        try:
+            path = "/api/v5/account/balance"
+            params = {"ccy": "USDT"}
+            res = self.okx_client.request("GET", path, params=params, max_retries=1)
+            if res and res.get('code') == '0':
+                return True, "Credentials valid."
+            elif res and res.get('msg'):
+                return False, f"API Error: {res.get('msg')}"
+            return False, "Invalid API credentials."
+        except Exception as e:
+            return False, f"Connection error: {str(e)}"
+
+    def test_api_credentials(self):
+        valid, _ = self.check_credentials()
+        return valid
 
     def start(self, passive_monitoring=False):
         if not passive_monitoring: self.is_running = True
@@ -127,6 +158,7 @@ class TradingBotEngine:
                 if self.monitoring_tick % 15 == 0:
                     self.account_manager.sync_account_data()
                     self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
+                    self.order_manager.sync_open_orders(self.config['symbol'])
 
                 if not self.authoritative_exit_in_progress:
                     self.auto_cal_manager.calculate_need_add_metrics()
@@ -184,14 +216,20 @@ class TradingBotEngine:
                 for o in data:
                     fee = safe_float(o.get('fillFee', 0))
                     if fee != 0: self.position_manager.add_fee(fee)
+                    pnl = safe_float(o.get('fillPnl', 0))
+                    if pnl != 0: self.position_manager.add_realized_pnl(pnl, fee)
+                self.order_manager.sync_open_orders(self.config['symbol'])
 
     def _emit_socket_updates(self, throttle=False):
         if throttle and time.time() - self.last_emit_time < 0.2: return
         self.last_emit_time = time.time()
         payload = {
             'total_trades': self.total_trades_count, 'total_capital': self.total_equity,
+            'total_capital_2nd': self.total_capital_2nd,
             'total_balance': self.account_balance, 'available_balance': self.available_balance,
             'used_amount': self.used_amount_notional, 'remaining_amount': self.remaining_amount_notional,
+            'max_allowed_used_display': self.max_allowed_display, 'max_amount_display': self.max_amount_display,
+            'size_amount': self.size_amount,
             'net_profit': self.net_profit, 'in_position': self.in_position,
             'position_qty': self.position_qty, 'position_entry_price': self.position_entry_price,
             'daily_reports': self.daily_reports, 'need_add_usdt': self.need_add_usdt_profit_target,
@@ -227,7 +265,7 @@ class TradingBotEngine:
         for h in [self.okx_client, self.account_manager, self.position_manager, self.order_manager, self.auto_cal_manager, self.indicator_manager, self.strategy_manager, self.ws_handler]:
             h.config = new_config
         self.okx_client.apply_api_credentials()
-        keys = ['okx_api_key', 'okx_demo_api_key', 'use_testnet', 'symbol']
+        keys = ['okx_api_key', 'okx_api_secret', 'okx_passphrase', 'okx_demo_api_key', 'okx_demo_api_secret', 'okx_demo_api_passphrase', 'use_developer_api', 'use_testnet', 'symbol']
         if any(old.get(k) != new_config.get(k) for k in keys):
             self.position_manager.reset(); self.order_manager.reset()
             if old.get('symbol') != new_config.get('symbol'):
@@ -239,4 +277,3 @@ class TradingBotEngine:
 
     def batch_modify_tpsl(self): self.log("Batch Modify TP/SL triggered")
     def batch_cancel_orders(self): self.order_manager.batch_cancel_orders(self.config['symbol'], [o['ordId'] for o in self.open_trades])
-    def test_api_credentials(self): return self.okx_client.sync_server_time()

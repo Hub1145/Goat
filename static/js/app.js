@@ -567,15 +567,15 @@ function updateDailyReport(reports) {
     tableBody.innerHTML = sortedReports.map(report => `
         <tr>
             <td>${report.date}</td>
-            <td>$${report.total_capital.toFixed(2)}</td>
+            <td>$${(report.total_capital || 0).toFixed(2)}</td>
             <td class="${report.net_trade_profit >= 0 ? 'text-success' : 'text-danger'}">
-                $${report.net_trade_profit.toFixed(2)}
+                $${(report.net_trade_profit || 0).toFixed(2)}
             </td>
             <td>
                 <span class="badge ${report.compound_interest >= 1 ? 'bg-success' : 'bg-danger'}">
                     ${((report.compound_interest - 1) * 100).toFixed(2)}%
                 </span>
-                <small class="text-muted ms-1">(${report.compound_interest.toFixed(4)})</small>
+                <small class="text-muted ms-1">(${(report.compound_interest || 0).toFixed(4)})</small>
             </td>
         </tr>
     `).join('');

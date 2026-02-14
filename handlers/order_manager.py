@@ -59,7 +59,6 @@ class OrderManager:
 
             if price <= 0: continue
 
-            # Logic for sizing from original code
             leverage = safe_float(self.config.get('leverage', 1), 1.0)
             equity = self.engine.total_equity
             max_allowed = min(float(self.config.get('max_allowed_used', 1000)), equity if equity > 0 else 1000000)
@@ -74,11 +73,10 @@ class OrderManager:
             trade_amt = min(target, remaining)
             qty_contracts = trade_amt / (price * self.engine.product_info.get('contractSize', 1.0))
 
-            # Precise rounding
-            lot_sz = self.engine.product_info.get('qtyStepSize', 1.0)
+            lot_sz = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))
             qty = math.floor(qty_contracts / lot_sz) * lot_sz
 
-            if qty < self.engine.product_info.get('minOrderQty', 0): continue
+            if qty < safe_float(self.engine.product_info.get('minOrderQty', 0)): continue
 
             order = self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price, order_type="Limit", posSide=side)
             if order:
@@ -95,3 +93,23 @@ class OrderManager:
     def fetch_algo_orders(self, symbol):
         res = self.engine.okx_client.request("GET", "/api/v5/trade/orders-algo-pending", params={"instType": "SWAP", "instId": symbol})
         return res.get('data', []) if res and res.get('code') == '0' else []
+
+    def sync_open_orders(self, symbol):
+        res = self.engine.okx_client.request("GET", "/api/v5/trade/orders-pending", params={"instType": "SWAP", "instId": symbol})
+        if res and res.get('code') == '0':
+            raw_orders = res.get('data', [])
+            formatted = []
+            for o in raw_orders:
+                # Map OKX fields to dashboard fields
+                formatted.append({
+                    'id': o.get('ordId'),
+                    'type': o.get('side', '').upper(),
+                    'entry_spot_price': safe_float(o.get('px')),
+                    'stake': safe_float(o.get('sz')) * safe_float(o.get('px')) * safe_float(self.engine.product_info.get('contractSize', 1.0)),
+                    'tp_price': safe_float(o.get('tpTriggerPx')),
+                    'sl_price': safe_float(o.get('slTriggerPx')),
+                    'time_left': None, # OKX orders don't have built-in expiry in this way
+                    'ordId': o.get('ordId')
+                })
+            self.open_trades = formatted
+        return self.open_trades
