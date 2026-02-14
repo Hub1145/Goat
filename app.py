@@ -141,15 +141,13 @@ def update_config():
             save_config(current_config)
 
             warning_msg = None
-            if bot_engine and bot_engine.is_running:
-                # Update the bot's internal config object and trigger dynamic updates
+            if bot_engine:
+                # Bot engine is modular and always runs a management loop once started.
+                # apply_live_config_update handles sensitive changes like API keys and symbol.
                 result = bot_engine.apply_live_config_update(current_config)
                 if result.get('warnings'):
                     warning_msg = " | ".join(result['warnings'])
                 bot_engine.log("Configuration updated live from dashboard.", level="info")
-            elif bot_engine:
-                 # If not running, just sync the config object
-                 bot_engine.config = current_config
 
             def background_init():
                 global bot_engine
@@ -157,13 +155,9 @@ def update_config():
                 if not bot_engine:
                     bot_engine = TradingBotEngine(config_file, emit_to_client)
 
-                # If not trading, we still refresh credentials for background monitoring
-                if not bot_engine.is_running:
+                # Ensure it's started (at least in passive monitoring mode)
+                if not bot_engine.mgmt_thread or not bot_engine.mgmt_thread.is_alive():
                     bot_engine.start(passive_monitoring=True)
-                else:
-                    # If already running, we might need to apply new credentials if they changed
-                    # (Though credentials are usually considered sensitive and blocked if changed while running)
-                    bot_engine._apply_api_credentials()
                 
                 # Check if the currently selected credentials are valid
                 valid, msg = bot_engine.check_credentials()

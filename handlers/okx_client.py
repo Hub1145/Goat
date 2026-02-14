@@ -51,9 +51,9 @@ class OKXClient:
         self.credentials_invalid = False
         self.server_time_offset = 0
         self.okx_rest_api_base_url = "https://www.okx.com"
-        self._apply_api_credentials()
+        self.apply_api_credentials()
 
-    def _apply_api_credentials(self):
+    def apply_api_credentials(self):
         use_testnet = self.config.get('use_testnet', False)
         use_developer_api = self.config.get('use_developer_api', False)
         if use_developer_api:
@@ -75,6 +75,7 @@ class OKXClient:
                 self.okx_api_secret = self.config.get('okx_api_secret', '')
                 self.okx_passphrase = self.config.get('okx_passphrase', '')
         self.okx_simulated_trading_header = {'x-simulated-trading': '1'} if use_testnet else {}
+        self.credentials_invalid = False
 
     def request(self, method, path, params=None, body_dict=None, max_retries=3):
         if self.credentials_invalid: return None

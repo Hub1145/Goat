@@ -12,6 +12,8 @@ from handlers.account_manager import AccountManager
 from handlers.position_manager import PositionManager
 from handlers.order_manager import OrderManager
 from handlers.auto_cal_manager import AutoCalManager
+from handlers.indicator_manager import IndicatorManager
+from handlers.strategy_manager import StrategyManager
 
 class TradingBotEngine:
     def __init__(self, config_file, emit_func):
@@ -21,7 +23,7 @@ class TradingBotEngine:
         self.is_running = False
         self.stop_event = threading.Event()
         self.console_logs = deque(maxlen=200)
-        self.product_info = {}
+        self.product_info = {'contractSize': 1.0, 'lotSz': '1', 'tickSz': '0.01', 'pricePrecision': 2, 'qtyPrecision': 2}
         self.latest_trade_price = 0.0
         self.total_trades_count = 0
         self.last_emit_time = 0
@@ -32,14 +34,7 @@ class TradingBotEngine:
         self.last_add_price = 0.0
         self.authoritative_exit_in_progress = False
         self.exit_lock = threading.Lock()
-
-        # Metrics (will be updated by handlers)
-        self.total_equity = 0.0
-        self.account_balance = 0.0
-        self.available_balance = 0.0
-        self.net_trade_profit = 0.0
-        self.total_trade_profit = 0.0
-        self.total_trade_loss = 0.0
+        self.intervals = {'1m': 60, '3m': 180, '5m': 300, '15m': 900, '1h': 3600}
 
         # Handlers
         self.okx_client = OKXClient(self.log, self.config)
@@ -47,6 +42,8 @@ class TradingBotEngine:
         self.position_manager = PositionManager(self)
         self.order_manager = OrderManager(self)
         self.auto_cal_manager = AutoCalManager(self)
+        self.indicator_manager = IndicatorManager(self)
+        self.strategy_manager = StrategyManager(self)
         self.ws_handler = WebSocketHandler(self.log, self.config, self.okx_client, self._on_ws_message)
 
         self.mgmt_thread = None
@@ -91,15 +88,23 @@ class TradingBotEngine:
     @property
     def need_add_usdt_above_zero(self): return self.auto_cal_manager.need_add_usdt_above_zero
     @property
-    def trade_fees(self): return 0.0
+    def trade_fees(self): return self.position_manager.total_fees
+    @property
+    def net_trade_profit(self): return 0.0
+    @property
+    def total_trade_profit(self): return 0.0
+    @property
+    def total_trade_loss(self): return 0.0
     @property
     def cumulative_margin_used(self): return 0.0
 
     def start(self, passive_monitoring=False):
         if not passive_monitoring: self.is_running = True
         self.stop_event.clear()
+        self.okx_client.apply_api_credentials()
         self.account_manager.sync_server_time()
         self.account_manager.fetch_product_info(self.config['symbol'])
+        self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
         self.ws_handler.start()
         if not self.mgmt_thread or not self.mgmt_thread.is_alive():
             self.mgmt_thread = threading.Thread(target=self._mgmt_loop, daemon=True)
@@ -108,39 +113,48 @@ class TradingBotEngine:
 
     def stop(self):
         self.is_running = False
-        self.log("Bot trading stopped (Passive monitoring active)")
+        self.log("Bot trading stopped")
 
     def stop_bot(self):
         self.stop_event.set()
         self.is_running = False
         self.ws_handler.stop()
-        self.log("Bot completely shut down")
 
     def _mgmt_loop(self):
         while not self.stop_event.is_set():
             try:
                 self.monitoring_tick += 1
-                if self.monitoring_tick % 10 == 0: self.account_manager.sync_account_data()
+                if self.monitoring_tick % 15 == 0:
+                    self.account_manager.sync_account_data()
+                    self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
 
-                # Auto Features (Run always as requested)
-                self.auto_cal_manager.calculate_need_add_metrics()
-                self.auto_cal_manager.check_auto_add()
+                if not self.authoritative_exit_in_progress:
+                    self.auto_cal_manager.calculate_need_add_metrics()
+                    self.auto_cal_manager.check_auto_add()
+                    self.auto_cal_manager.check_auto_margin()
 
-                # Periodic TP/SL Sync
-                if self.monitoring_tick % 5 == 0:
+                    fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
+                    net_pnl = self.cached_unrealized_pnl - self.trade_fees - (self.cached_pos_notional * fee_pct)
+                    triggered, reason = self.auto_cal_manager.check_auto_exit(net_pnl, self.cached_unrealized_pnl)
+                    if triggered:
+                        threading.Thread(target=self.emergency_sl, args=(reason,), daemon=True).start()
+
+                if self.is_running and not self.authoritative_exit_in_progress:
+                    self.strategy_manager.execute_strategy()
+
+                if self.monitoring_tick % 10 == 0:
                     algos = self.order_manager.fetch_algo_orders(self.config['symbol'])
                     for a in algos:
                         side = self.position_manager._map_side(a.get('posSide', 'net'))
-                        sl = safe_float(a.get('slTriggerPx'))
+                        sl, tp = safe_float(a.get('slTriggerPx')), safe_float(a.get('tpTriggerPx'))
                         if sl > 0: self.current_stop_loss[side] = sl
-                        tp = safe_float(a.get('tpTriggerPx'))
                         if tp > 0: self.current_take_profit[side] = tp
 
                 self.account_manager.check_daily_report()
                 if time.time() - self.last_emit_time >= 1.5:
                     self._emit_socket_updates()
                     self.last_emit_time = time.time()
-            except Exception as e: self.log(f"Error in mgmt loop: {e}", level="error")
+            except Exception as e: self.log(f"Error: {e}", level="error")
             time.sleep(1)
 
     def _on_ws_message(self, msg, is_private):
@@ -152,6 +166,9 @@ class TradingBotEngine:
                 if price > 0:
                     self.latest_trade_price = price
                     self.position_manager.update_realtime_metrics(price)
+                    if not self.authoritative_exit_in_progress:
+                        self.auto_cal_manager.calculate_need_add_metrics()
+                        self.auto_cal_manager.check_auto_add()
                     self._emit_socket_updates(throttle=True)
             elif channel == 'positions' and data:
                 self.position_manager.process_positions(data)
@@ -163,6 +180,10 @@ class TradingBotEngine:
                         self.total_equity = safe_float(data[0].get('totalEq'))
                         self.available_balance = safe_float(d.get('availBal'))
                 self._emit_socket_updates()
+            elif channel == 'orders' and data:
+                for o in data:
+                    fee = safe_float(o.get('fillFee', 0))
+                    if fee != 0: self.position_manager.add_fee(fee)
 
     def _emit_socket_updates(self, throttle=False):
         if throttle and time.time() - self.last_emit_time < 0.2: return
@@ -183,17 +204,39 @@ class TradingBotEngine:
         self.emit('bot_status', {'running': self.is_running})
         self.emit('trades_update', {'trades': self.open_trades})
 
-    def emergency_sl(self):
-        self.log("🚨 EMERGENCY SL", level="warning")
-        for side, in_pos in self.in_position.items():
-            if in_pos:
-                self.order_manager.place_order(self.config['symbol'], "sell" if side == "long" else "buy", abs(self.position_qty[side]), order_type="Market", posSide=side)
+    def emergency_sl(self, reason="Manual"):
+        with self.exit_lock:
+            if self.authoritative_exit_in_progress: return
+            self.authoritative_exit_in_progress = True
+        try:
+            self.log(f"🚨 EMERGENCY SL: {reason}", level="warning")
+            self.order_manager.batch_cancel_orders(self.config['symbol'], [o['ordId'] for o in self.open_trades])
+            for a in self.order_manager.fetch_algo_orders(self.config['symbol']):
+                self.okx_client.request("POST", "/api/v5/trade/cancel-algos", body_dict=[{"instId": self.config['symbol'], "algoId": a['algoId']}])
+            for s, in_p in self.in_position.items():
+                if in_p:
+                    self.order_manager.place_order(self.config['symbol'], "sell" if s == "long" else "buy", abs(self.position_qty[s]), order_type="Market", posSide=s)
+            time.sleep(2)
+            self.account_manager.sync_account_data()
+        finally:
+            with self.exit_lock: self.authoritative_exit_in_progress = False
+
+    def apply_live_config_update(self, new_config):
+        old = self.config
+        self.config = new_config
+        for h in [self.okx_client, self.account_manager, self.position_manager, self.order_manager, self.auto_cal_manager, self.indicator_manager, self.strategy_manager, self.ws_handler]:
+            h.config = new_config
+        self.okx_client.apply_api_credentials()
+        keys = ['okx_api_key', 'okx_demo_api_key', 'use_testnet', 'symbol']
+        if any(old.get(k) != new_config.get(k) for k in keys):
+            self.position_manager.reset(); self.order_manager.reset()
+            if old.get('symbol') != new_config.get('symbol'):
+                self.account_manager.fetch_product_info(new_config['symbol'])
+                self.auto_cal_manager.auto_add_step_count = 0
+                self.last_add_price = 0.0
+            self.ws_handler.restart()
+        return {'success': True}
 
     def batch_modify_tpsl(self): self.log("Batch Modify TP/SL triggered")
-    def batch_cancel_orders(self): self.log("Batch Cancel Orders triggered")
+    def batch_cancel_orders(self): self.order_manager.batch_cancel_orders(self.config['symbol'], [o['ordId'] for o in self.open_trades])
     def test_api_credentials(self): return self.okx_client.sync_server_time()
-    def apply_live_config_update(self, new_config):
-        self.config = new_config
-        for h in [self.okx_client, self.account_manager, self.position_manager, self.order_manager, self.auto_cal_manager, self.ws_handler]:
-            h.config = new_config
-        return {'success': True}

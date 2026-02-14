@@ -22,6 +22,7 @@ class WebSocketHandler:
         self.ws_subscriptions_ready = threading.Event()
         self.pending_subscriptions = set()
         self.confirmed_subscriptions = set()
+        self.current_url_params = {'use_testnet': None, 'symbol': None}
 
     def _get_ws_url(self, ws_type="public"):
         use_testnet = self.config.get('use_testnet', False)
@@ -31,10 +32,14 @@ class WebSocketHandler:
             return "wss://wspap.okx.com:8443/ws/v5/private?brokerId=9999" if use_testnet else "wss://ws.okx.com:8443/ws/v5/private"
 
     def start(self):
+        self.stop()
         self.stop_event.clear()
         self.ws_subscriptions_ready.clear()
         self.pending_subscriptions.clear()
         self.confirmed_subscriptions.clear()
+
+        self.current_url_params['use_testnet'] = self.config.get('use_testnet', False)
+        self.current_url_params['symbol'] = self.config.get('symbol')
 
         url_public = self._get_ws_url("public")
         url_private = self._get_ws_url("private")
@@ -63,8 +68,18 @@ class WebSocketHandler:
 
     def stop(self):
         self.stop_event.set()
-        if self.ws_public: self.ws_public.close()
-        if self.ws_private: self.ws_private.close()
+        if self.ws_public:
+            try: self.ws_public.close()
+            except: pass
+        if self.ws_private:
+            try: self.ws_private.close()
+            except: pass
+
+    def restart(self):
+        self.log("Restarting WebSocket connections...", level="info")
+        self.stop()
+        time.sleep(1) # Give it a moment to close
+        self.start()
 
     def _on_message(self, ws, message):
         is_private = (ws == self.ws_private)
