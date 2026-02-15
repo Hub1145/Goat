@@ -157,6 +157,8 @@ class TradingBotEngine:
         while not self.stop_event.is_set():
             try:
                 self.monitoring_tick += 1
+                if self.is_running and self.monitoring_tick % max(1, int(self.config.get('loop_time_seconds', 10))) == 0:
+                    self.log(">>> Strategy Management Loop Execution Start", level="debug")
                 if self.monitoring_tick % 15 == 0:
                     self.account_manager.sync_account_data()
                     self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
@@ -241,6 +243,7 @@ class TradingBotEngine:
             'size_amount': self.size_amount,
             'net_profit': self.net_profit, 'in_position': self.in_position,
             'position_qty': self.position_qty, 'position_entry_price': self.position_entry_price,
+            'position_liq': self.position_manager.position_liq,
             'daily_reports': self.daily_reports, 'need_add_usdt': self.need_add_usdt_profit_target,
             'need_add_above_zero': self.need_add_usdt_above_zero, 'running': self.is_running,
             'trade_fees': self.trade_fees, 'net_trade_profit': self.net_trade_profit,

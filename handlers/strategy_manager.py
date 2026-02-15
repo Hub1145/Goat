@@ -54,6 +54,7 @@ class StrategyManager:
         return signals
 
     def execute_strategy(self):
+        self.engine.log("--- Executing Strategy Analysis ---", level="debug")
         signals = self.check_entry_conditions()
         for sig in signals:
             self.engine.order_manager.initiate_entry_batch(sig['price'], sig['side'], self.config.get('batch_size_per_loop', 1))

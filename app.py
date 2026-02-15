@@ -311,6 +311,7 @@ def get_status():
         'in_position': bot_engine.in_position,
         'position_entry_price': bot_engine.position_entry_price,
         'position_qty': bot_engine.position_qty,
+        'position_liq': bot_engine.position_manager.position_liq,
         'current_take_profit': bot_engine.current_take_profit,
         'current_stop_loss': bot_engine.current_stop_loss,
         'positions': {
@@ -384,6 +385,7 @@ def handle_connect(auth=None):
             'in_position': bot_engine.in_position,
             'position_entry_price': bot_engine.position_entry_price,
             'position_qty': bot_engine.position_qty,
+            'position_liq': bot_engine.position_manager.position_liq,
             'current_take_profit': bot_engine.current_take_profit,
             'current_stop_loss': bot_engine.current_stop_loss
         }, room=sid)

@@ -555,6 +555,7 @@ function updateAccountMetrics(data) {
     }
 
     updateAutoCalDisplay();
+    updatePositionDisplay(data);
 }
 
 function updateDailyReport(reports) {
@@ -621,7 +622,7 @@ function updateAutoCalDisplay() {
 function updatePositionDisplay(positionData) {
     const mlResultsContainer = document.getElementById('mlStrategyResults');
 
-    if (!positionData || (!positionData.in_position && (!positionData.positions || (!positionData.positions.long.in && !positionData.positions.short.in)))) {
+    if (!positionData) {
         mlResultsContainer.innerHTML = '<p class="text-muted">No active position.</p>';
         return;
     }
@@ -635,15 +636,25 @@ function updatePositionDisplay(positionData) {
         if (positionData.positions.short.in) {
             positionsToRender.push({ side: 'SHORT', ...positionData.positions.short });
         }
-    } else if (positionData.in_position) {
-        // Fallback for older data format or primary display
-        positionsToRender.push({
-            side: (positionData.position_qty > 0 ? 'LONG' : 'SHORT'),
-            price: positionData.position_entry_price,
-            qty: positionData.position_qty,
-            tp: positionData.current_take_profit,
-            sl: positionData.current_stop_loss
+    } else if (positionData.in_position && typeof positionData.in_position === 'object') {
+        // Handle dictionary format: {'long': True, 'short': False}
+        ['long', 'short'].forEach(side => {
+            if (positionData.in_position[side]) {
+                positionsToRender.push({
+                    side: side.toUpperCase(),
+                    price: positionData.position_entry_price ? positionData.position_entry_price[side] : 0,
+                    qty: positionData.position_qty ? positionData.position_qty[side] : 0,
+                    tp: positionData.current_take_profit ? positionData.current_take_profit[side] : 0,
+                    sl: positionData.current_stop_loss ? positionData.current_stop_loss[side] : 0,
+                    liq: positionData.position_liq ? positionData.position_liq[side] : 0
+                });
+            }
         });
+    }
+
+    if (positionsToRender.length === 0) {
+        mlResultsContainer.innerHTML = '<p class="text-muted">No active position.</p>';
+        return;
     }
 
     let positionHtml = '';
@@ -863,7 +874,7 @@ function updateOpenTrades(trades) {
     const tradesContainer = document.getElementById('openTrades');
 
     if (!trades || trades.length === 0) {
-        tradesContainer.innerHTML = '<p class="text-muted">No open positions</p>';
+        tradesContainer.innerHTML = '<p class="text-muted">No open orders</p>';
         return;
     }
 
