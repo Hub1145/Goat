@@ -11,13 +11,6 @@ class StrategyManager:
     def check_entry_conditions(self):
         if not self.engine.is_running: return []
 
-        now = time.time()
-        cooldown = self.config.get('loop_time_seconds', 10)
-        should_log = (now - self.last_eval_log_time) >= max(30, cooldown)
-
-        if now - self.last_entry_time < cooldown:
-            return []
-
         if not self.engine.indicator_manager.check_candlestick_conditions():
             return []
 
@@ -30,9 +23,7 @@ class StrategyManager:
         long_line = self.config.get('long_safety_line_price', 0)
         short_line = self.config.get('short_safety_line_price', 0)
 
-        if should_log:
-            self.engine.log(f"Strategy Evaluation - Price: {price}, Safety Lines: [Long <= {long_line}, Short >= {short_line}], Direction: {direction}", level="debug")
-            self.last_eval_log_time = now
+        self.engine.log(f"Strategy Evaluation - Price: {price}, Safety Lines: [Long <= {long_line}, Short >= {short_line}], Direction: {direction}", level="info")
 
         signals = []
         # Check Long
@@ -54,7 +45,6 @@ class StrategyManager:
         return signals
 
     def execute_strategy(self):
-        self.engine.log("--- Executing Strategy Analysis ---", level="debug")
         signals = self.check_entry_conditions()
         for sig in signals:
             self.engine.order_manager.initiate_entry_batch(sig['price'], sig['side'], self.config.get('batch_size_per_loop', 1))

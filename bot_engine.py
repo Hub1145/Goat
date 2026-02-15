@@ -156,9 +156,10 @@ class TradingBotEngine:
     def _mgmt_loop(self):
         while not self.stop_event.is_set():
             try:
+                loop_interval = max(1, int(self.config.get('loop_time_seconds', 10)))
                 self.monitoring_tick += 1
-                if self.is_running and self.monitoring_tick % max(1, int(self.config.get('loop_time_seconds', 10))) == 0:
-                    self.log(">>> Strategy Management Loop Execution Start", level="debug")
+
+                # 1. Background Tasks (Silent syncs)
                 if self.monitoring_tick % 15 == 0:
                     self.account_manager.sync_account_data()
                     self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
@@ -171,7 +172,9 @@ class TradingBotEngine:
                             self.order_manager.place_position_tpsl(side, self.position_manager.position_entry_price[side])
                     self._should_update_tpsl = False
 
-                if not self.authoritative_exit_in_progress:
+                # 2. Auto-Cal / Add / Margin (Always active, even in Stop mode as requested)
+                # We can run these checks frequently or at loop interval
+                if not self.authoritative_exit_in_progress and self.monitoring_tick % 5 == 0:
                     self.auto_cal_manager.calculate_need_add_metrics()
                     self.auto_cal_manager.check_auto_add()
                     self.auto_cal_manager.check_auto_margin()
@@ -182,9 +185,16 @@ class TradingBotEngine:
                     if triggered:
                         threading.Thread(target=self.execute_auto_exit, args=(reason,), daemon=True).start()
 
-                if self.is_running and not self.authoritative_exit_in_progress:
-                    self.strategy_manager.execute_strategy()
+                # 3. Strategy Analysis Loop (Structured logs, respects loop_interval)
+                if self.is_running and self.monitoring_tick % loop_interval == 0:
+                    self.log("-" * 46)
+                    self.log("Entry check logs")
+                    if not self.authoritative_exit_in_progress:
+                        self.strategy_manager.execute_strategy()
+                    self.log("Waiting for next loop")
+                    self.log("-" * 46)
 
+                # 4. Other periodic checks
                 if self.monitoring_tick % 10 == 0:
                     algos = self.order_manager.fetch_algo_orders(self.config['symbol'])
                     for a in algos:

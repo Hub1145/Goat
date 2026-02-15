@@ -54,10 +54,10 @@ class IndicatorManager:
             min_val = self.config.get('min_chg_open_close', 0)
             max_val = self.config.get('max_chg_open_close', 100)
             if not (min_val <= chg <= max_val):
-                self.engine.log(f"Candlestick Fail: Open-Close Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="debug")
+                self.engine.log(f"Candlestick Fail: Open-Close Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="info")
                 return False
             else:
-                self.engine.log(f"Candlestick Pass: Open-Close Chg {chg:.4f}% within range", level="debug")
+                self.engine.log(f"Candlestick Pass: Open-Close Chg {chg:.4f}% within range", level="info")
 
         # High-Low Chg
         if self.config.get('use_chg_high_low'):
@@ -65,10 +65,10 @@ class IndicatorManager:
             min_val = self.config.get('min_chg_high_low', 0)
             max_val = self.config.get('max_chg_high_low', 100)
             if not (min_val <= chg <= max_val):
-                self.engine.log(f"Candlestick Fail: High-Low Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="debug")
+                self.engine.log(f"Candlestick Fail: High-Low Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="info")
                 return False
             else:
-                self.engine.log(f"Candlestick Pass: High-Low Chg {chg:.4f}% within range", level="debug")
+                self.engine.log(f"Candlestick Pass: High-Low Chg {chg:.4f}% within range", level="info")
 
         # High-Close Chg
         if self.config.get('use_chg_high_close'):
@@ -76,9 +76,9 @@ class IndicatorManager:
             min_val = self.config.get('min_chg_high_close', 0)
             max_val = self.config.get('max_chg_high_close', 100)
             if not (min_val <= chg <= max_val):
-                self.engine.log(f"Candlestick Fail: High-Close Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="debug")
+                self.engine.log(f"Candlestick Fail: High-Close Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="info")
                 return False
             else:
-                self.engine.log(f"Candlestick Pass: High-Close Chg {chg:.4f}% within range", level="debug")
+                self.engine.log(f"Candlestick Pass: High-Close Chg {chg:.4f}% within range", level="info")
 
         return True
