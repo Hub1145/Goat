@@ -17,6 +17,12 @@
             "total_capital": 80459.95921357245,
             "net_trade_profit": 0.0,
             "compound_interest": 1.041
+        },
+        {
+            "date": "2026-02-15",
+            "total_capital": 0.0,
+            "net_trade_profit": 0.0,
+            "compound_interest": 0.0
         }
     ]
 }

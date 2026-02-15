@@ -268,6 +268,7 @@ class TradingBotEngine:
         keys = ['okx_api_key', 'okx_api_secret', 'okx_passphrase', 'okx_demo_api_key', 'okx_demo_api_secret', 'okx_demo_api_passphrase', 'use_developer_api', 'use_testnet', 'symbol']
         if any(old.get(k) != new_config.get(k) for k in keys):
             self.position_manager.reset(); self.order_manager.reset()
+            self.position_manager.reset_session_metrics()
             if old.get('symbol') != new_config.get('symbol'):
                 self.account_manager.fetch_product_info(new_config['symbol'])
                 self.auto_cal_manager.auto_add_step_count = 0

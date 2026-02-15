@@ -20,44 +20,62 @@ class AutoCalManager:
         for side in ['long', 'short']:
             if self.engine.in_position[side]:
                 entry = self.engine.position_entry_price[side]
-                notional = self.engine.position_manager.position_notional[side]
-                if entry <= 0 or notional <= 0: continue
+                qty = abs(self.engine.position_qty[side])
+                if entry <= 0 or qty <= 0: continue
+
+                initial_notional = qty * entry
+                notional = qty * mkt
 
                 rec = self.config.get('add_pos_recovery_percent', 0.6) / 100.0
-                is_against = (side == 'long' and mkt <= entry) or (side == 'short' and mkt >= entry)
+                fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
+                mult = self.config.get('add_pos_profit_multiplier', 1.5)
 
-                if is_against:
+                # Minimum margin to cover fees (Entry + Exit)
+                K_zero = fee_pct * 2
+                # Target margin for profit
+                K_profit = fee_pct * (mult + 2)
+
+                if rec > K_zero:
+                    # Mode 1: To make PnL always above 0
                     if side == 'long':
-                        target_be = min(mkt * (1 + rec), entry - 1e-8)
-                        if (denom := target_be - mkt) > 0:
-                            self.need_add_usdt_above_zero += notional * (entry - target_be) / denom
+                        val_zero = (initial_notional - notional * (1 + rec - K_zero)) / (rec - K_zero)
                     else:
-                        target_be = max(mkt * (1 - rec), entry + 1e-8)
-                        if (denom := mkt - target_be) > 0:
-                            self.need_add_usdt_above_zero += notional * (target_be - entry) / denom
+                        val_zero = (initial_notional - notional * (1 - rec + K_zero)) / (K_zero - rec)
+                        # Re-check Short Zero:
+                        # qM(rec-K) = -(initial - notional(1-rec+K)) = -initial + notional(1-rec+K)
+                        # val_zero = (notional * (1 - rec + K_zero) - initial_notional) / (rec - K_zero)
 
-                    mult = self.config.get('add_pos_profit_multiplier', 1.5)
-                    fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
-                    target_pnl = notional * fee_pct * (mult + 2)
-                    qty = notional / entry
-                    target_avg = (entry - (target_pnl / qty)) if side == 'long' else (entry + (target_pnl / qty))
+                    if side == 'short': # Correcting Short formula to be positive
+                        val_zero = (notional * (1 - rec + K_zero) - initial_notional) / (rec - K_zero)
 
+                    if val_zero > 0:
+                        self.need_add_usdt_above_zero += val_zero
+
+                if rec > K_profit:
+                    # Mode 2: To reach Profit Target & Close
+                    target_pnl = initial_notional * K_profit # Desired profit based on current initial cost
                     if side == 'long':
-                        if (denom_p := target_avg - mkt) > 0:
-                            self.need_add_usdt_profit_target += notional * (entry - target_avg) / denom_p
+                        val_profit = (target_pnl + initial_notional - notional * (1 + rec - K_profit)) / (rec - K_profit)
                     else:
-                        if (denom_p := mkt - target_avg) > 0:
-                            self.need_add_usdt_profit_target += notional * (target_avg - entry) / denom_p
+                        val_profit = (target_pnl - initial_notional + notional * (1 - rec + K_profit)) / (rec - K_profit)
+
+                    if val_profit > 0:
+                        self.need_add_usdt_profit_target += val_profit
 
     def check_auto_exit(self, net_pnl, unrealized_pnl):
         notional = self.engine.cached_pos_notional
         if notional <= 0: return False, ""
-        if self.config.get('use_add_pos_above_zero') and net_pnl >= 0: return True, "Mode 1"
+
+        if self.config.get('use_add_pos_above_zero') and net_pnl >= 0:
+            return True, "Above Zero Target Met"
+
         if self.config.get('use_add_pos_profit_target'):
             mult = self.config.get('add_pos_profit_multiplier', 1.5)
-            fee = notional * (self.config.get('trade_fee_percentage', 0.08) / 100.0)
-            if unrealized_pnl >= fee * (mult + 2): return True, "Mode 2"
-        # Standard features...
+            fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
+            target = notional * fee_pct * (mult + 2)
+            if unrealized_pnl >= target:
+                return True, "Profit Target Met"
+
         return False, ""
 
     def check_auto_margin(self):
