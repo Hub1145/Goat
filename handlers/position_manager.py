@@ -42,7 +42,7 @@ class PositionManager:
                 if pos.get('instId', '').strip().upper() == target_symbol:
                     qty_raw = safe_float(pos.get('pos'))
                     if qty_raw == 0 and is_snapshot: continue
-                    side_key = self._map_side(pos.get('posSide', 'net'))
+                    side_key = self._map_side(pos.get('posSide', 'net'), qty=qty_raw)
                     if qty_raw != 0:
                         found_sides.add(side_key)
                         mkt_px = self.engine.latest_trade_price if self.engine.latest_trade_price else safe_float(pos.get('avgPx'))
@@ -54,13 +54,14 @@ class PositionManager:
 
                         # Session margin tracking
                         if self.engine.is_running:
-                            session_qty = max(0, abs(qty_raw * contract_size) - self.session_baseline_qty.get(side_key, 0.0))
-                            temp_used_notional += session_qty * mkt_px
+                            # Baseline is also in contracts now
+                            session_qty = max(0, abs(qty_raw) - self.session_baseline_qty.get(side_key, 0.0))
+                            temp_used_notional += session_qty * mkt_px * contract_size
                         else:
                             # In stop mode, we might want to update baseline or just track total
-                            temp_used_notional += abs(qty_raw * contract_size) * mkt_px
+                            temp_used_notional += abs(qty_raw) * mkt_px * contract_size
 
-                        new_qty = qty_raw * contract_size
+                        new_qty = qty_raw
                         if abs(new_qty - prev_qtys.get(side_key, 0.0)) > 1e-6:
                             self.engine._should_update_tpsl = True
                             if abs(new_qty) > abs(prev_qtys.get(side_key, 0.0)):
@@ -77,7 +78,7 @@ class PositionManager:
                     if s not in found_sides and self.in_position[s]: self._handle_closure(s)
                 else:
                     for pos in positions_data:
-                        if self._map_side(pos.get('posSide', 'net')) == s and safe_float(pos.get('pos')) == 0:
+                        if self._map_side(pos.get('posSide', 'net'), qty=safe_float(pos.get('pos'))) == s and safe_float(pos.get('pos')) == 0:
                             self._handle_closure(s)
                             break
 
@@ -104,17 +105,20 @@ class PositionManager:
             if self.in_position[side]:
                 qty = abs(self.position_qty[side])
                 entry = self.position_entry_price[side]
-                if side == 'long': temp_upl += (current_price - entry) * qty
-                else: temp_upl += (entry - current_price) * qty
-                side_notional = qty * current_price
+                if side == 'long': temp_upl += (current_price - entry) * qty * contract_size
+                else: temp_upl += (entry - current_price) * qty * contract_size
+                side_notional = qty * current_price * contract_size
                 self.position_notional[side] = side_notional
                 temp_notional += side_notional
         self.cached_unrealized_pnl = temp_upl
         self.cached_pos_notional = temp_notional
 
-    def _map_side(self, raw_side):
+    def _map_side(self, raw_side, qty=0):
         if raw_side == 'short': return 'short'
         if raw_side == 'long': return 'long'
+        if raw_side == 'net' or not raw_side:
+            if qty > 0: return 'long'
+            if qty < 0: return 'short'
         side_key = self.config.get('direction', 'long')
         return 'long' if side_key == 'both' else side_key
 

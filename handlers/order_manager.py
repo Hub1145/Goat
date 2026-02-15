@@ -43,6 +43,10 @@ class OrderManager:
             res = self.engine.okx_client.request("POST", path, body_dict=body)
             if res and res.get('code') == '0':
                 return res.get('data', [{}])[0]
+            else:
+                msg = res.get('msg') if res else 'Unknown error'
+                code = res.get('code') if res else 'N/A'
+                self.engine.log(f"Order failed: {msg} (Code: {code})", level="error")
             return None
         except Exception as e:
             self.engine.log(f"Order fail: {e}", level="error")

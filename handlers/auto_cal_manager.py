@@ -23,8 +23,9 @@ class AutoCalManager:
                 qty = abs(self.engine.position_qty[side])
                 if entry <= 0 or qty <= 0: continue
 
-                initial_notional = qty * entry
-                notional = qty * mkt
+                contract_size = safe_float(self.engine.product_info.get('contractSize', 1.0))
+                initial_notional = qty * entry * contract_size
+                notional = qty * mkt * contract_size
 
                 rec = self.config.get('add_pos_recovery_percent', 0.6) / 100.0
                 fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
