@@ -388,8 +388,10 @@ def handle_connect(auth=None):
             'current_stop_loss': bot_engine.current_stop_loss
         }, room=sid)
  
-        for log in list(bot_engine.console_logs):
-            emit('console_log', log, room=sid)
+        # Batch logs to avoid flooding and race conditions on client side
+        logs = list(bot_engine.console_logs)
+        if logs:
+            emit('console_log_batch', {'logs': logs}, room=sid)
 
 @socketio.on('disconnect')
 def handle_disconnect():

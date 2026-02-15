@@ -326,6 +326,14 @@ function setupSocketListeners() {
         addConsoleLog(data);
     });
 
+    socket.on('console_log_batch', (data) => {
+        if (data && data.logs) {
+            const consoleEl = document.getElementById('consoleOutput');
+            if (consoleEl) consoleEl.innerHTML = ''; // Clear once before batch
+            data.logs.forEach(log => addConsoleLog(log));
+        }
+    });
+
     socket.on('console_cleared', () => {
         document.getElementById('consoleOutput').innerHTML = '<p class="text-muted">Console cleared</p>';
     });
@@ -348,9 +356,6 @@ function setupSocketListeners() {
 
     socket.on('connect', () => {
         console.log('WebSocket connected');
-        // Clear console on reconnect to avoid duplicate history logs
-        const consoleEl = document.getElementById('consoleOutput');
-        if (consoleEl) consoleEl.innerHTML = '';
         loadStatus();
     });
 

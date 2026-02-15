@@ -22,7 +22,7 @@ class TradingBotEngine:
         self.config = self._load_config()
         self.is_running = False
         self.stop_event = threading.Event()
-        self.console_logs = deque(maxlen=200)
+        self.console_logs = deque(maxlen=1000)
         self.product_info = {'contractSize': 1.0, 'lotSz': '1', 'tickSz': '0.01', 'pricePrecision': 2, 'qtyPrecision': 2, 'qtyStepSize': 1.0, 'minOrderQty': 0.01}
         self.latest_trade_price = 0.0
         self.total_trades_count = 0
@@ -161,6 +161,13 @@ class TradingBotEngine:
                     self.account_manager.sync_account_data()
                     self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
                     self.order_manager.sync_open_orders(self.config['symbol'])
+                    self.order_manager.check_unfilled_timeouts()
+
+                if self._should_update_tpsl:
+                    for side, in_pos in self.position_manager.in_position.items():
+                        if in_pos:
+                            self.order_manager.place_position_tpsl(side, self.position_manager.position_entry_price[side])
+                    self._should_update_tpsl = False
 
                 if not self.authoritative_exit_in_progress:
                     self.auto_cal_manager.calculate_need_add_metrics()
@@ -299,5 +306,5 @@ class TradingBotEngine:
             self.ws_handler.restart()
         return {'success': True}
 
-    def batch_modify_tpsl(self): self.log("Batch Modify TP/SL triggered")
+    def batch_modify_tpsl(self): self.order_manager.batch_modify_tpsl(self.config['symbol'])
     def batch_cancel_orders(self): self.order_manager.batch_cancel_orders(self.config['symbol'], [o['ordId'] for o in self.open_trades])

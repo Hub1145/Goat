@@ -106,12 +106,79 @@ class OrderManager:
 
         return res.get('data', []) if res and res.get('code') == '0' else []
 
+    def place_position_tpsl(self, side, entry_price):
+        if not entry_price: return
+
+        tp_offset = safe_float(self.config.get('tp_price_offset'))
+        if tp_offset <= 0: tp_offset = safe_float(self.config.get('tp_amount'))
+
+        sl_offset = safe_float(self.config.get('sl_price_offset'))
+        if sl_offset <= 0: sl_offset = safe_float(self.config.get('sl_amount'))
+
+        tp_price = 0.0
+        sl_price = 0.0
+        p_prec = self.engine.product_info.get('pricePrecision', 2)
+
+        if side == 'long':
+            if tp_offset > 0: tp_price = round(entry_price + tp_offset, p_prec)
+            if sl_offset > 0: sl_price = round(entry_price - sl_offset, p_prec)
+        else:
+            if tp_offset > 0: tp_price = round(entry_price - tp_offset, p_prec)
+            if sl_offset > 0: sl_price = round(entry_price + sl_offset, p_prec)
+
+        if tp_price > 0 or sl_price > 0:
+            qty = abs(self.engine.position_qty[side])
+            if qty > 0:
+                self.engine.log(f"Placing dynamic TP/SL for {side} position: TP={tp_price}, SL={sl_price}")
+                # Cancel existing first to prevent duplicates
+                self.cancel_all_algo_orders(self.config['symbol'])
+
+                if tp_price > 0:
+                    body = {
+                        "instId": self.config['symbol'], "tdMode": self.config.get('mode', 'cross'),
+                        "side": "sell" if side == "long" else "buy", "posSide": side,
+                        "ordType": "conditional", "sz": str(qty),
+                        "tpTriggerPx": str(tp_price), "tpOrdPx": "-1"
+                    }
+                    self.engine.okx_client.request("POST", "/api/v5/trade/order-algo", body_dict=body)
+                if sl_price > 0:
+                    body = {
+                        "instId": self.config['symbol'], "tdMode": self.config.get('mode', 'cross'),
+                        "side": "sell" if side == "long" else "buy", "posSide": side,
+                        "ordType": "conditional", "sz": str(qty),
+                        "slTriggerPx": str(sl_price), "slOrdPx": "-1"
+                    }
+                    self.engine.okx_client.request("POST", "/api/v5/trade/order-algo", body_dict=body)
+
+    def cancel_all_algo_orders(self, symbol):
+        algos = self.fetch_algo_orders(symbol)
+        if algos:
+            body = [{"instId": symbol, "algoId": a['algoId']} for a in algos]
+            return self.engine.okx_client.request("POST", "/api/v5/trade/cancel-algos", body_dict=body)
+        return True
+
+    def batch_modify_tpsl(self, symbol):
+        self.engine.log("Executing Batch Modify TP/SL for all positions")
+        for side, in_pos in self.engine.in_position.items():
+            if in_pos:
+                entry = self.engine.position_entry_price[side]
+                self.place_position_tpsl(side, entry)
+
     def sync_open_orders(self, symbol):
         res = self.engine.okx_client.request("GET", "/api/v5/trade/orders-pending", params={"instType": "SWAP", "instId": symbol})
         if res and res.get('code') == '0':
             raw_orders = res.get('data', [])
             formatted = []
+            now_ms = time.time() * 1000
+            limit = self.config.get('cancel_unfilled_seconds', 30)
+
             for o in raw_orders:
+                c_time = safe_float(o.get('cTime'))
+                time_left = None
+                if c_time > 0:
+                    elapsed = (now_ms - c_time) / 1000
+                    time_left = max(0, int(limit - elapsed))
+
                 # Map OKX fields to dashboard fields
                 formatted.append({
                     'id': o.get('ordId'),
@@ -120,8 +187,26 @@ class OrderManager:
                     'stake': safe_float(o.get('sz')) * safe_float(o.get('px')) * safe_float(self.engine.product_info.get('contractSize', 1.0)),
                     'tp_price': safe_float(o.get('tpTriggerPx')),
                     'sl_price': safe_float(o.get('slTriggerPx')),
-                    'time_left': None, # OKX orders don't have built-in expiry in this way
-                    'ordId': o.get('ordId')
+                    'time_left': time_left,
+                    'ordId': o.get('ordId'),
+                    'cTime': c_time
                 })
             self.open_trades = formatted
         return self.open_trades
+
+    def check_unfilled_timeouts(self):
+        limit = self.config.get('cancel_unfilled_seconds', 0)
+        if limit <= 0: return
+
+        now_ms = time.time() * 1000
+        to_cancel = []
+        for o in self.open_trades:
+            c_time = o.get('cTime')
+            if c_time and (now_ms - c_time) > (limit * 1000):
+                to_cancel.append(o['ordId'])
+
+        if to_cancel:
+            self.engine.log(f"Auto-canceling {len(to_cancel)} unfilled orders after {limit}s")
+            self.batch_cancel_orders(self.config['symbol'], to_cancel)
+            with self.engine.lock:
+                self.pending_entry_ids -= set(to_cancel)
