@@ -91,7 +91,15 @@ class OrderManager:
         return self.engine.okx_client.request("POST", "/api/v5/trade/cancel-batch-orders", body_dict=body)
 
     def fetch_algo_orders(self, symbol):
-        res = self.engine.okx_client.request("GET", "/api/v5/trade/orders-algo-pending", params={"instType": "SWAP", "instId": symbol})
+        # instType is required. instId is optional but recommended.
+        params = {"instType": "SWAP", "instId": symbol}
+        res = self.engine.okx_client.request("GET", "/api/v5/trade/orders-algo-pending", params=params)
+
+        # If 400 with code 51000, it might be an issue with instId/instType combination
+        if res and res.get('code') == '51000':
+             # Try without instId, just instType
+             res = self.engine.okx_client.request("GET", "/api/v5/trade/orders-algo-pending", params={"instType": "SWAP"})
+
         return res.get('data', []) if res and res.get('code') == '0' else []
 
     def sync_open_orders(self, symbol):

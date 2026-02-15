@@ -5,12 +5,23 @@ import logging
 import os
 import functools
 import threading
+from logging.handlers import RotatingFileHandler
 from bot_engine import TradingBotEngine
 
-logging.basicConfig(
-    level=logging.DEBUG, # Changed to DEBUG for more verbose logging
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+# Configure root logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(console_handler)
+
+# File handler for INFO logs (required for Download Logs)
+info_handler = RotatingFileHandler('info.log', maxBytes=10*1024*1024, backupCount=5)
+info_handler.setLevel(logging.INFO)
+info_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(info_handler)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
@@ -467,7 +478,7 @@ def handle_emergency_sl(data=None):
          bot_engine = TradingBotEngine(config_file, emit_to_client)
          bot_engine.start(passive_monitoring=True)
     
-    bot_engine.emergency_sl()
+    bot_engine.execute_auto_exit(reason="Manual Emergency SL Triggered")
 
 
 if __name__ == '__main__':

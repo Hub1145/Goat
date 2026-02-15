@@ -171,7 +171,7 @@ class TradingBotEngine:
                     net_pnl = self.cached_unrealized_pnl - self.trade_fees - (self.cached_pos_notional * fee_pct)
                     triggered, reason = self.auto_cal_manager.check_auto_exit(net_pnl, self.cached_unrealized_pnl)
                     if triggered:
-                        threading.Thread(target=self.emergency_sl, args=(reason,), daemon=True).start()
+                        threading.Thread(target=self.execute_auto_exit, args=(reason,), daemon=True).start()
 
                 if self.is_running and not self.authoritative_exit_in_progress:
                     self.strategy_manager.execute_strategy()
@@ -244,22 +244,43 @@ class TradingBotEngine:
         self.emit('bot_status', {'running': self.is_running})
         self.emit('trades_update', {'trades': self.open_trades})
 
-    def emergency_sl(self, reason="Manual"):
+    def execute_auto_exit(self, reason="Manual"):
         with self.exit_lock:
             if self.authoritative_exit_in_progress: return
             self.authoritative_exit_in_progress = True
         try:
-            self.log(f"🚨 EMERGENCY SL: {reason}", level="warning")
+            if "Target" in reason or "Above Zero" in reason:
+                self.log(f"🎯 AUTO-CAL EXIT: {reason}", level="info")
+            else:
+                self.log(f"🚨 EMERGENCY EXIT: {reason}", level="warning")
+
             self.order_manager.batch_cancel_orders(self.config['symbol'], [o['ordId'] for o in self.open_trades])
             for a in self.order_manager.fetch_algo_orders(self.config['symbol']):
                 self.okx_client.request("POST", "/api/v5/trade/cancel-algos", body_dict=[{"instId": self.config['symbol'], "algoId": a['algoId']}])
+
             for s, in_p in self.in_position.items():
                 if in_p:
-                    self.order_manager.place_order(self.config['symbol'], "sell" if s == "long" else "buy", abs(self.position_qty[s]), order_type="Market", posSide=s)
-            time.sleep(2)
+                    qty = abs(self.position_qty[s])
+                    if qty > 0:
+                        self.log(f"Closing {s} position: {qty} contracts", level="info")
+                        self.order_manager.place_order(
+                            self.config['symbol'],
+                            "sell" if s == "long" else "buy",
+                            qty,
+                            order_type="Market",
+                            posSide=s,
+                            reduce_only=True
+                        )
+
+            time.sleep(3)
             self.account_manager.sync_account_data()
+            self.order_manager.sync_open_orders(self.config['symbol'])
         finally:
+            time.sleep(2)
             with self.exit_lock: self.authoritative_exit_in_progress = False
+
+    def emergency_sl(self, reason="Manual"):
+        self.execute_auto_exit(reason)
 
     def apply_live_config_update(self, new_config):
         old = self.config

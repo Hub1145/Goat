@@ -67,14 +67,14 @@ class AutoCalManager:
         if notional <= 0: return False, ""
 
         if self.config.get('use_add_pos_above_zero') and net_pnl >= 0:
-            return True, "Above Zero Target Met"
+            return True, "Above Zero Target Met (Mode 1)"
 
         if self.config.get('use_add_pos_profit_target'):
             mult = self.config.get('add_pos_profit_multiplier', 1.5)
             fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
             target = notional * fee_pct * (mult + 2)
             if unrealized_pnl >= target:
-                return True, "Profit Target Met"
+                return True, "Profit Target Met (Mode 2)"
 
         return False, ""
 
