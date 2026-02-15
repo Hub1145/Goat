@@ -62,6 +62,8 @@ class TradingBotEngine:
         self.emit('console_log', log_entry)
         if level == 'info': logging.info(message)
         elif level == 'error': logging.error(message)
+        elif level == 'debug': logging.debug(message)
+        elif level == 'warning': logging.warning(message)
 
     @property
     def in_position(self): return self.position_manager.in_position
