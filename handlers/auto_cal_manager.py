@@ -67,15 +67,50 @@ class AutoCalManager:
         notional = self.engine.cached_pos_notional
         if notional <= 0: return False, ""
 
+        fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
+        used_fees = self.engine.position_manager.current_entry_fees
+        size_fees = notional * fee_pct
+
+        # 1. Above Zero (Mode 1)
         if self.config.get('use_add_pos_above_zero') and net_pnl >= 0:
             return True, "Above Zero Target Met (Mode 1)"
 
+        # 2. Profit Target (Mode 2)
         if self.config.get('use_add_pos_profit_target'):
             mult = self.config.get('add_pos_profit_multiplier', 1.5)
-            fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
             target = notional * fee_pct * (mult + 2)
             if unrealized_pnl >= target:
                 return True, "Profit Target Met (Mode 2)"
+
+        # 3. Auto-Manual Threshold
+        if self.config.get('use_pnl_auto_manual'):
+            threshold = self.config.get('pnl_auto_manual_threshold', 100.0)
+            if unrealized_pnl >= threshold:
+                return True, f"Manual PnL Threshold {threshold} Met"
+
+        # 4. Auto-Cal Profit (Based on Entry Fees)
+        if self.config.get('use_pnl_auto_cal'):
+            times = self.config.get('pnl_auto_cal_times', 1.2)
+            if unrealized_pnl >= (used_fees * times):
+                return True, f"Auto-Cal Profit Met ({times}x Entry Fees)"
+
+        # 5. Auto-Cal Loss (Based on Entry Fees)
+        if self.config.get('use_pnl_auto_cal_loss'):
+            times = self.config.get('pnl_auto_cal_loss_times', 15.0)
+            if unrealized_pnl <= -(used_fees * times):
+                return True, f"Auto-Cal Loss Met ({times}x Entry Fees)"
+
+        # 6. Size Auto-Cal Profit (Based on Current Notional Fee)
+        if self.config.get('use_size_auto_cal'):
+            times = self.config.get('size_auto_cal_times', 2.0)
+            if unrealized_pnl >= (size_fees * times):
+                return True, f"Size Auto-Cal Profit Met ({times}x Size Fees)"
+
+        # 7. Size Auto-Cal Loss (Based on Current Notional Fee)
+        if self.config.get('use_size_auto_cal_loss'):
+            times = self.config.get('size_auto_cal_loss_times', 1.5)
+            if unrealized_pnl <= -(size_fees * times):
+                return True, f"Size Auto-Cal Loss Met ({times}x Size Fees)"
 
         return False, ""
 

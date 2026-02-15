@@ -173,7 +173,10 @@ class OrderManager:
             now_ms = time.time() * 1000
             limit = self.config.get('cancel_unfilled_seconds', 30)
 
+            current_ids = set()
             for o in raw_orders:
+                oid = o.get('ordId')
+                current_ids.add(oid)
                 c_time = safe_float(o.get('cTime'))
                 time_left = None
                 if c_time > 0:
@@ -182,32 +185,69 @@ class OrderManager:
 
                 # Map OKX fields to dashboard fields
                 formatted.append({
-                    'id': o.get('ordId'),
+                    'id': oid,
                     'type': o.get('side', '').upper(),
+                    'posSide': o.get('posSide'),
                     'entry_spot_price': safe_float(o.get('px')),
-                    'stake': safe_float(o.get('sz')) * safe_float(o.get('px')) * safe_float(self.engine.product_info.get('contractSize', 1.0)),
+                    'stake': abs(safe_float(o.get('sz'))) * safe_float(o.get('px')) * safe_float(self.engine.product_info.get('contractSize', 1.0)),
                     'tp_price': safe_float(o.get('tpTriggerPx')),
                     'sl_price': safe_float(o.get('slTriggerPx')),
                     'time_left': time_left,
-                    'ordId': o.get('ordId'),
+                    'ordId': oid,
                     'cTime': c_time
                 })
             self.open_trades = formatted
+            with self.engine.lock:
+                self.pending_entry_ids &= current_ids
         return self.open_trades
 
     def check_unfilled_timeouts(self):
         limit = self.config.get('cancel_unfilled_seconds', 0)
-        if limit <= 0: return
-
         now_ms = time.time() * 1000
+        mkt = self.engine.latest_trade_price
+
+        cancel_tp_below = self.config.get('cancel_on_tp_price_below_market')
+        cancel_tp_above = self.config.get('cancel_on_tp_price_above_market')
+        cancel_ent_below = self.config.get('cancel_on_entry_price_below_market')
+        cancel_ent_above = self.config.get('cancel_on_entry_price_above_market')
+
         to_cancel = []
+        reasons = []
+
         for o in self.open_trades:
+            # We generally only auto-cancel ENTRY orders based on these conditions
+            if o['ordId'] not in self.pending_entry_ids: continue
+
+            # 1. Time-based cancel
             c_time = o.get('cTime')
-            if c_time and (now_ms - c_time) > (limit * 1000):
+            if limit > 0 and c_time and (now_ms - c_time) > (limit * 1000):
                 to_cancel.append(o['ordId'])
+                reasons.append(f"Timeout ({limit}s)")
+                continue
+
+            # 2. Condition-based cancel
+            if mkt <= 0: continue
+
+            ent = o.get('entry_spot_price', 0)
+            tp = o.get('tp_price', 0)
+            if tp <= 0:
+                side = 'long' if o.get('type') == 'BUY' else 'short'
+                tp_off = safe_float(self.config.get('tp_price_offset'))
+                if tp_off > 0:
+                    tp = (ent + tp_off) if side == 'long' else (ent - tp_off)
+
+            if cancel_ent_below and ent > 0 and ent < mkt:
+                to_cancel.append(o['ordId']); reasons.append(f"Entry {ent} < Market {mkt}")
+            elif cancel_ent_above and ent > 0 and ent > mkt:
+                to_cancel.append(o['ordId']); reasons.append(f"Entry {ent} > Market {mkt}")
+            elif cancel_tp_below and tp > 0 and tp < mkt:
+                to_cancel.append(o['ordId']); reasons.append(f"TP {tp} < Market {mkt}")
+            elif cancel_tp_above and tp > 0 and tp > mkt:
+                to_cancel.append(o['ordId']); reasons.append(f"TP {tp} > Market {mkt}")
 
         if to_cancel:
-            self.engine.log(f"Auto-canceling {len(to_cancel)} unfilled orders after {limit}s")
+            for i, oid in enumerate(to_cancel):
+                self.engine.log(f"Auto-canceling order {oid}: {reasons[i]}", level="info")
             self.batch_cancel_orders(self.config['symbol'], to_cancel)
             with self.engine.lock:
                 self.pending_entry_ids -= set(to_cancel)

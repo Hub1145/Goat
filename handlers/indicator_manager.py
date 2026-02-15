@@ -70,4 +70,15 @@ class IndicatorManager:
             else:
                 self.engine.log(f"Candlestick Pass: High-Low Chg {chg:.4f}% within range", level="debug")
 
+        # High-Close Chg
+        if self.config.get('use_chg_high_close'):
+            chg = abs(last_row['h'] - last_row['c']) / last_row['c'] * 100
+            min_val = self.config.get('min_chg_high_close', 0)
+            max_val = self.config.get('max_chg_high_close', 100)
+            if not (min_val <= chg <= max_val):
+                self.engine.log(f"Candlestick Fail: High-Close Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="debug")
+                return False
+            else:
+                self.engine.log(f"Candlestick Pass: High-Close Chg {chg:.4f}% within range", level="debug")
+
         return True

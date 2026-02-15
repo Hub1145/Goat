@@ -26,6 +26,7 @@ class PositionManager:
         self.cached_pos_notional = 0.0
         self.cached_unrealized_pnl = 0.0
         self.used_amount_notional = 0.0
+        self.current_entry_fees = 0.0 # Fees paid for CURRENT active position(s)
 
     def process_positions(self, positions_data, is_snapshot=True):
         temp_active_count = 0
@@ -96,6 +97,9 @@ class PositionManager:
         self.position_details[s] = {}
         self.engine.current_take_profit[s] = 0.0
         self.engine.current_stop_loss[s] = 0.0
+        # If no positions left, clear current entry fees
+        if not any(self.in_position.values()):
+            self.current_entry_fees = 0.0
 
     def update_realtime_metrics(self, current_price):
         if not current_price: return
@@ -123,7 +127,11 @@ class PositionManager:
         side_key = self.config.get('direction', 'long')
         return 'long' if side_key == 'both' else side_key
 
-    def add_fee(self, fee): self.total_fees += abs(fee)
+    def add_fee(self, fee):
+        self.total_fees += abs(fee)
+        # We also add to current_entry_fees, but we should clear it when position closes
+        self.current_entry_fees += abs(fee)
+
     def add_realized_pnl(self, pnl, fee):
         net = pnl + fee
         if net > 0: self.total_trade_profit += net

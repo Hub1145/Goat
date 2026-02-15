@@ -808,15 +808,19 @@ function updateParametersDisplay() {
                 <span class="param-value">${currentConfig.cancel_unfilled_seconds}</span>
             </div>
             <div class="param-item">
-                <span class="param-label">Short: Cancel if TP below market:</span>
+                <span class="param-label">Cancel if TP below market:</span>
                 <span class="param-value">${currentConfig.cancel_on_tp_price_below_market ? 'Yes' : 'No'}</span>
             </div>
             <div class="param-item">
-                <span class="param-label">Short: Cancel if Entry below market:</span>
+                <span class="param-label">Cancel if TP above market:</span>
+                <span class="param-value">${currentConfig.cancel_on_tp_price_above_market ? 'Yes' : 'No'}</span>
+            </div>
+            <div class="param-item">
+                <span class="param-label">Cancel if Entry below market:</span>
                 <span class="param-value">${currentConfig.cancel_on_entry_price_below_market ? 'Yes' : 'No'}</span>
             </div>
             <div class="param-item">
-                <span class="param-label">Long: Cancel if Entry above market:</span>
+                <span class="param-label">Cancel if Entry above market:</span>
                 <span class="param-value">${currentConfig.cancel_on_entry_price_above_market ? 'Yes' : 'No'}</span>
             </div>
            <div class="param-item">
@@ -1185,6 +1189,8 @@ function loadConfigToModal() {
     safeSetVal('minOrderAmount', currentConfig.min_order_amount);
     safeSetVal('targetOrderAmount', currentConfig.target_order_amount);
     safeSetVal('cancelUnfilledSeconds', currentConfig.cancel_unfilled_seconds);
+    safeSetChecked('cancelOnTpPriceBelowMarket', currentConfig.cancel_on_tp_price_below_market);
+    safeSetChecked('cancelOnTpPriceAboveMarket', currentConfig.cancel_on_tp_price_above_market);
     safeSetChecked('cancelOnEntryPriceBelowMarket', currentConfig.cancel_on_entry_price_below_market);
     safeSetChecked('cancelOnEntryPriceAboveMarket', currentConfig.cancel_on_entry_price_above_market);
     safeSetVal('tradeFeePercentage', currentConfig.trade_fee_percentage || 0.07);
@@ -1260,6 +1266,8 @@ async function saveConfig() {
         min_order_amount: parseFloat(document.getElementById('minOrderAmount').value),
         target_order_amount: parseFloat(document.getElementById('targetOrderAmount').value),
         cancel_unfilled_seconds: parseInt(document.getElementById('cancelUnfilledSeconds').value),
+        cancel_on_tp_price_below_market: document.getElementById('cancelOnTpPriceBelowMarket').checked,
+        cancel_on_tp_price_above_market: document.getElementById('cancelOnTpPriceAboveMarket').checked,
         cancel_on_entry_price_below_market: document.getElementById('cancelOnEntryPriceBelowMarket').checked,
         cancel_on_entry_price_above_market: document.getElementById('cancelOnEntryPriceAboveMarket').checked,
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),

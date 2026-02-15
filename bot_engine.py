@@ -234,6 +234,8 @@ class TradingBotEngine:
     def _emit_socket_updates(self, throttle=False):
         if throttle and time.time() - self.last_emit_time < 0.2: return
         self.last_emit_time = time.time()
+
+        fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
         payload = {
             'total_trades': self.total_trades_count, 'total_capital': self.total_equity,
             'total_capital_2nd': self.total_capital_2nd,
@@ -247,6 +249,8 @@ class TradingBotEngine:
             'daily_reports': self.daily_reports, 'need_add_usdt': self.need_add_usdt_profit_target,
             'need_add_above_zero': self.need_add_usdt_above_zero, 'running': self.is_running,
             'trade_fees': self.trade_fees, 'net_trade_profit': self.net_trade_profit,
+            'used_fees': self.position_manager.current_entry_fees,
+            'size_fees': self.size_amount * fee_pct,
             'total_trade_profit': self.total_trade_profit, 'total_trade_loss': self.total_trade_loss,
             'current_take_profit': self.current_take_profit, 'current_stop_loss': self.current_stop_loss
         }
