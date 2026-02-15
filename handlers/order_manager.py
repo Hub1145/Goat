@@ -109,11 +109,12 @@ class OrderManager:
     def place_position_tpsl(self, side, entry_price):
         if not entry_price: return
 
-        tp_offset = safe_float(self.config.get('tp_price_offset'))
-        if tp_offset <= 0: tp_offset = safe_float(self.config.get('tp_amount'))
+        # Respect 'null' or 0 as 'disabled' as requested
+        tp_offset_cfg = self.config.get('tp_price_offset')
+        sl_offset_cfg = self.config.get('sl_price_offset')
 
-        sl_offset = safe_float(self.config.get('sl_price_offset'))
-        if sl_offset <= 0: sl_offset = safe_float(self.config.get('sl_amount'))
+        tp_offset = safe_float(tp_offset_cfg) if tp_offset_cfg is not None else 0
+        sl_offset = safe_float(sl_offset_cfg) if sl_offset_cfg is not None else 0
 
         tp_price = 0.0
         sl_price = 0.0
