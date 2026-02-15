@@ -15,18 +15,23 @@ class StrategyManager:
         price = self.engine.latest_trade_price
         if price <= 0: return []
 
+        direction = self.config.get('direction', 'both')
+        offset = safe_float(self.config.get('entry_price_offset', 0))
+
         signals = []
         # Check Long
-        if not self.engine.in_position['long'] and not any(oid in self.engine.order_manager.pending_entry_ids for oid in self.engine.order_manager.pending_entry_ids):
-            long_line = self.config.get('long_safety_line_price', 0)
-            if long_line > 0 and price <= long_line:
-                signals.append({'side': 'long', 'price': price})
+        if direction in ['long', 'both']:
+            if not self.engine.in_position['long'] and not self.engine.order_manager.pending_entry_ids:
+                long_line = self.config.get('long_safety_line_price', 0)
+                if long_line > 0 and price <= long_line:
+                    signals.append({'side': 'long', 'price': price - offset})
 
         # Check Short
-        if not self.engine.in_position['short'] and not any(oid in self.engine.order_manager.pending_entry_ids for oid in self.engine.order_manager.pending_entry_ids):
-            short_line = self.config.get('short_safety_line_price', 0)
-            if short_line > 0 and price >= short_line:
-                signals.append({'side': 'short', 'price': price})
+        if direction in ['short', 'both']:
+            if not self.engine.in_position['short'] and not self.engine.order_manager.pending_entry_ids:
+                short_line = self.config.get('short_safety_line_price', 0)
+                if short_line > 0 and price >= short_line:
+                    signals.append({'side': 'short', 'price': price + offset})
 
         return signals
 
