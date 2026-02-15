@@ -88,6 +88,7 @@ class PositionManager:
             self.used_amount_notional = temp_used_notional
 
     def _handle_closure(self, s):
+        self.engine.log(f"Position Detected Closed: {s.upper()}", level="info")
         self.in_position[s] = False
         self.position_qty[s] = 0.0
         self.position_entry_price[s] = 0.0
@@ -128,3 +129,4 @@ class PositionManager:
         if net > 0: self.total_trade_profit += net
         else: self.total_trade_loss += abs(net)
         self.net_trade_profit = self.total_trade_profit - self.total_trade_loss
+        self.engine.log(f"Trade Closed - Realized PnL: {pnl:.4f}, Fee: {fee:.4f}, Net: {net:.4f}", level="info")

@@ -41,7 +41,9 @@ class IndicatorManager:
 
     def check_candlestick_conditions(self):
         if not self.config.get('use_candlestick_conditions'): return True
-        if not self.historical_data: return False
+        if not self.historical_data:
+            self.engine.log("No historical data available for candlestick conditions", level="warning")
+            return False
 
         df = pd.DataFrame(self.historical_data)
         last_row = df.iloc[-1]
@@ -49,13 +51,23 @@ class IndicatorManager:
         # Open-Close Chg
         if self.config.get('use_chg_open_close'):
             chg = abs(last_row['c'] - last_row['o']) / last_row['o'] * 100
-            if not (self.config.get('min_chg_open_close', 0) <= chg <= self.config.get('max_chg_open_close', 100)):
+            min_val = self.config.get('min_chg_open_close', 0)
+            max_val = self.config.get('max_chg_open_close', 100)
+            if not (min_val <= chg <= max_val):
+                self.engine.log(f"Candlestick Fail: Open-Close Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="debug")
                 return False
+            else:
+                self.engine.log(f"Candlestick Pass: Open-Close Chg {chg:.4f}% within range", level="debug")
 
         # High-Low Chg
         if self.config.get('use_chg_high_low'):
             chg = abs(last_row['h'] - last_row['l']) / last_row['l'] * 100
-            if not (self.config.get('min_chg_high_low', 0) <= chg <= self.config.get('max_chg_high_low', 100)):
+            min_val = self.config.get('min_chg_high_low', 0)
+            max_val = self.config.get('max_chg_high_low', 100)
+            if not (min_val <= chg <= max_val):
+                self.engine.log(f"Candlestick Fail: High-Low Chg {chg:.4f}% not in range [{min_val}, {max_val}]", level="debug")
                 return False
+            else:
+                self.engine.log(f"Candlestick Pass: High-Low Chg {chg:.4f}% within range", level="debug")
 
         return True
