@@ -33,14 +33,20 @@ class AccountManager:
     def sync_server_time(self):
         return self.engine.okx_client.sync_server_time()
 
+    def _get_precision(self, sz_str):
+        if not sz_str: return 0
+        sz_str = str(sz_str)
+        if '.' in sz_str:
+            return len(sz_str.split('.')[-1].rstrip('0'))
+        return 0
+
     def fetch_product_info(self, symbol):
         info = self.engine.okx_client.fetch_product_info(symbol)
         if info:
-            import math
             self.engine.product_info = {
                 'priceTickSize': float(info.get('tickSz')),
-                'qtyPrecision': int(abs(math.log10(float(info.get('lotSz'))))),
-                'pricePrecision': int(abs(math.log10(float(info.get('tickSz'))))),
+                'qtyPrecision': self._get_precision(info.get('lotSz')),
+                'pricePrecision': self._get_precision(info.get('tickSz')),
                 'qtyStepSize': float(info.get('lotSz')),
                 'minOrderQty': float(info.get('minSz')),
                 'contractSize': float(info.get('ctVal', '1'))

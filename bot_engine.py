@@ -311,7 +311,11 @@ class TradingBotEngine:
         self.config = new_config
         for h in [self.okx_client, self.account_manager, self.position_manager, self.order_manager, self.auto_cal_manager, self.indicator_manager, self.strategy_manager, self.ws_handler]:
             h.config = new_config
+
+        self.log("Live configuration updated. Propagating changes to all handlers.", level="debug")
         self.okx_client.apply_api_credentials()
+
+        # Immediate sync for sensitive changes
         keys = ['okx_api_key', 'okx_api_secret', 'okx_passphrase', 'okx_demo_api_key', 'okx_demo_api_secret', 'okx_demo_api_passphrase', 'use_developer_api', 'use_testnet', 'symbol']
         if any(old.get(k) != new_config.get(k) for k in keys):
             self.position_manager.reset(); self.order_manager.reset()

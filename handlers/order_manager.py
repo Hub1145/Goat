@@ -44,9 +44,10 @@ class OrderManager:
             if res and res.get('code') == '0':
                 return res.get('data', [{}])[0]
             else:
-                msg = res.get('msg') if res else 'Unknown error'
+                msg = res.get('msg') if res else 'No Response'
                 code = res.get('code') if res else 'N/A'
-                self.engine.log(f"Order failed: {msg} (Code: {code})", level="error")
+                # Log more details for non-zero codes to help debugging
+                self.engine.log(f"Order failed: {msg} (Code: {code}). Request: sz={body.get('sz')}, px={body.get('px')}, side={body.get('side')}, algo={bool(body.get('attachAlgoOrds'))}", level="error")
             return None
         except Exception as e:
             self.engine.log(f"Order fail: {e}", level="error")
@@ -78,7 +79,8 @@ class OrderManager:
             qty_contracts = trade_amt / (price * self.engine.product_info.get('contractSize', 1.0))
 
             lot_sz = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))
-            qty = math.floor(qty_contracts / lot_sz) * lot_sz
+            q_prec = self.engine.product_info.get('qtyPrecision', 2)
+            qty = round(math.floor(qty_contracts / lot_sz) * lot_sz, q_prec)
 
             if qty < safe_float(self.engine.product_info.get('minOrderQty', 0)): continue
 

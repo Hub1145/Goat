@@ -192,6 +192,10 @@ function setupEventListeners() {
 
     document.getElementById('tradeFeePercentage').addEventListener('change', saveLiveConfigs);
 
+    // Safety Line live listeners
+    document.getElementById('shortSafetyLinePrice').addEventListener('change', saveLiveConfigs);
+    document.getElementById('longSafetyLinePrice').addEventListener('change', saveLiveConfigs);
+
     // Sync Dashboard Card with Modal Inputs
     document.querySelectorAll('.dashboard-sync').forEach(el => {
         el.addEventListener('change', (e) => {
@@ -1371,6 +1375,10 @@ async function saveLiveConfigs() {
         size_auto_cal_loss_times: parseFloat(document.getElementById('sizeAutoCalLossTimes').value),
 
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),
+
+        // Safety Lines (Add to live updates)
+        short_safety_line_price: parseFloat(document.getElementById('shortSafetyLinePrice').value),
+        long_safety_line_price: parseFloat(document.getElementById('longSafetyLinePrice').value),
 
         // Auto-Add Margin
         use_auto_margin: document.getElementById('useAutoMargin').checked,

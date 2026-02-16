@@ -1,4 +1,5 @@
 import math
+import time
 from handlers.utils import safe_float
 
 class AutoCalManager:
@@ -9,6 +10,7 @@ class AutoCalManager:
         self.need_add_usdt_above_zero = 0.0
         self.auto_add_step_count = 0
         self.last_add_price = 0.0
+        self.last_order_time = 0
 
     def calculate_need_add_metrics(self):
         self.need_add_usdt_profit_target = 0.0
@@ -47,13 +49,17 @@ class AutoCalManager:
                         self.need_add_usdt_above_zero += val_zero
 
                 # Mode 2: To reach Profit Target & Close
-                K_profit = fee_pct * (mult + 2)
-                if rec > K_profit:
-                    target_pnl = initial_notional * fee_pct * mult
+                # User math: Target UPL = notional * fee_pct * mult
+                K_target = fee_pct * mult
+                if rec > K_target:
+                    # Solving for val where: (qty + val/(mkt*csize)) * mkt * csize * (+/-rec) = (notional + val) * K_target
+                    # (+/-rec) is just rec here as we use mkt*(1+/-rec)
+                    # (notional + val) * rec = (notional + val) * K_target + initial_notional - notional + current_fees
+                    # (notional + val) * (rec - K_target) = initial_notional - notional + current_fees
                     if side == 'long':
-                        val_profit = (target_pnl + current_fees + initial_notional - notional * (1 + rec - K_profit)) / (rec - K_profit)
+                        val_profit = (current_fees + initial_notional - notional * (1 + rec - K_target)) / (rec - K_target)
                     else:
-                        val_profit = (target_pnl + current_fees - initial_notional + notional * (1 - rec + K_profit)) / (rec - K_profit)
+                        val_profit = (current_fees - initial_notional + notional * (1 - rec + K_target)) / (rec - K_target)
 
                     if val_profit > 0:
                         self.need_add_usdt_profit_target += val_profit
@@ -73,7 +79,8 @@ class AutoCalManager:
         # 2. Profit Target (Mode 2)
         if self.config.get('use_add_pos_profit_target'):
             mult = self.config.get('add_pos_profit_multiplier', 1.5)
-            target = notional * fee_pct * (mult + 2)
+            # Match user math: Target = notional * fee_pct * multiplier
+            target = notional * fee_pct * mult
             if unrealized_pnl >= target:
                 return True, "Profit Target Met (Mode 2)"
 
@@ -123,22 +130,48 @@ class AutoCalManager:
 
     def check_auto_add(self):
         if not any(self.config.get(k) for k in ['use_add_pos_auto_cal', 'use_add_pos_above_zero', 'use_add_pos_profit_target']): return
+
+        # Lockout to prevent rapid-fire adds before position sync
+        if time.time() - self.last_order_time < 10: return
+
         side = 'long' if self.engine.in_position['long'] else ('short' if self.engine.in_position['short'] else None)
-        if not side: return
+        if not side:
+            self.auto_add_step_count = 0
+            self.last_add_price = 0.0
+            return
+
         mkt = self.engine.latest_trade_price
-        if self.last_add_price == 0: self.last_add_price = self.engine.position_entry_price[side]
         if not mkt: return
-        gap = self.config.get('add_pos_gap_threshold', 5.0) + (self.auto_add_step_count * self.config.get('add_pos_gap_offset', 0.0))
-        if ((self.last_add_price - mkt) if side == 'long' else (mkt - self.last_add_price)) >= gap:
+
+        # Robust initialization of last_add_price
+        if self.last_add_price == 0:
+            self.last_add_price = self.engine.position_entry_price[side]
+            if self.last_add_price == 0: return # Still waiting for sync
+
+        gap_threshold = float(self.config.get('add_pos_gap_threshold', 5.0))
+        gap_offset = float(self.config.get('add_pos_gap_offset', 0.0))
+        gap = gap_threshold + (self.auto_add_step_count * gap_offset)
+
+        price_diff = (self.last_add_price - mkt) if side == 'long' else (mkt - self.last_add_price)
+
+        if price_diff >= gap:
+            self.engine.log(f"Auto-Add Gap Triggered: {side} position, last add {self.last_add_price}, mkt {mkt}, gap {gap:.2f}")
             self.last_add_price = mkt
             self._execute_add(side, mkt)
 
     def _execute_add(self, side, price):
-        if self.auto_add_step_count >= self.config.get('add_pos_max_count', 10): return
+        max_adds = int(self.config.get('add_pos_max_count', 10))
+        if self.auto_add_step_count >= max_adds:
+            self.engine.log(f"Auto-Add: Max steps reached ({self.auto_add_step_count}/{max_adds}). Skipping.", level="info")
+            return
 
+        current_notional = self.engine.position_manager.position_notional[side]
         # Calculate size based on percentage
-        pct = (self.config.get('add_pos_size_pct', 5.0) + (self.auto_add_step_count * self.config.get('add_pos_size_pct_offset', 0.0))) / 100.0
-        sz_pct_notional = self.engine.position_manager.position_notional[side] * pct
+        pct_base = float(self.config.get('add_pos_size_pct', 5.0))
+        pct_offset = float(self.config.get('add_pos_size_pct_offset', 0.0))
+        pct = (pct_base + (self.auto_add_step_count * pct_offset)) / 100.0
+
+        sz_pct_notional = current_notional * pct
 
         # Calculate size based on Need Add metrics if enabled
         # Note: self.need_add_usdt_profit_target and self.need_add_usdt_above_zero are updated in calculate_need_add_metrics
@@ -149,6 +182,7 @@ class AutoCalManager:
             target_notional = max(target_notional, self.need_add_usdt_above_zero)
 
         final_notional = max(sz_pct_notional, target_notional)
+        self.engine.log(f"Auto-Add Calculation: Current {current_notional:.2f}, Pct {pct*100:.1f}% -> {sz_pct_notional:.2f}. Need-Add target {target_notional:.2f}. Final target {final_notional:.2f}")
 
         # Limit by remaining capacity
         remaining = self.engine.remaining_amount_notional
@@ -172,3 +206,4 @@ class AutoCalManager:
 
         if self.engine.order_manager.place_order(self.config['symbol'], "buy" if side == "long" else "sell", sz, order_type="Market", posSide=side):
             self.auto_add_step_count += 1
+            self.last_order_time = time.time()
