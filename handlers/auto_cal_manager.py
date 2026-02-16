@@ -31,34 +31,29 @@ class AutoCalManager:
                 fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
                 mult = self.config.get('add_pos_profit_multiplier', 1.5)
 
-                # Minimum margin to cover fees (Entry + Exit)
-                K_zero = fee_pct * 2
-                # Target margin for profit
-                K_profit = fee_pct * (mult + 2)
+                current_fees = self.engine.position_manager.current_entry_fees
 
-                if rec > K_zero:
-                    # Mode 1: To make PnL always above 0
+                # Refined Formula: Incorporate current_entry_fees and exit fees
+                K_entry_exit = fee_pct * 2
+
+                # Mode 1: To make PnL always above 0 (Above Zero)
+                if rec > K_entry_exit:
                     if side == 'long':
-                        val_zero = (initial_notional - notional * (1 + rec - K_zero)) / (rec - K_zero)
+                        val_zero = (current_fees + initial_notional - notional * (1 + rec - K_entry_exit)) / (rec - K_entry_exit)
                     else:
-                        val_zero = (initial_notional - notional * (1 - rec + K_zero)) / (K_zero - rec)
-                        # Re-check Short Zero:
-                        # qM(rec-K) = -(initial - notional(1-rec+K)) = -initial + notional(1-rec+K)
-                        # val_zero = (notional * (1 - rec + K_zero) - initial_notional) / (rec - K_zero)
-
-                    if side == 'short': # Correcting Short formula to be positive
-                        val_zero = (notional * (1 - rec + K_zero) - initial_notional) / (rec - K_zero)
+                        val_zero = (current_fees - initial_notional + notional * (1 - rec + K_entry_exit)) / (rec - K_entry_exit)
 
                     if val_zero > 0:
                         self.need_add_usdt_above_zero += val_zero
 
+                # Mode 2: To reach Profit Target & Close
+                K_profit = fee_pct * (mult + 2)
                 if rec > K_profit:
-                    # Mode 2: To reach Profit Target & Close
-                    target_pnl = initial_notional * K_profit # Desired profit based on current initial cost
+                    target_pnl = initial_notional * fee_pct * mult
                     if side == 'long':
-                        val_profit = (target_pnl + initial_notional - notional * (1 + rec - K_profit)) / (rec - K_profit)
+                        val_profit = (target_pnl + current_fees + initial_notional - notional * (1 + rec - K_profit)) / (rec - K_profit)
                     else:
-                        val_profit = (target_pnl - initial_notional + notional * (1 - rec + K_profit)) / (rec - K_profit)
+                        val_profit = (target_pnl + current_fees - initial_notional + notional * (1 - rec + K_profit)) / (rec - K_profit)
 
                     if val_profit > 0:
                         self.need_add_usdt_profit_target += val_profit
@@ -140,7 +135,40 @@ class AutoCalManager:
 
     def _execute_add(self, side, price):
         if self.auto_add_step_count >= self.config.get('add_pos_max_count', 10): return
+
+        # Calculate size based on percentage
         pct = (self.config.get('add_pos_size_pct', 5.0) + (self.auto_add_step_count * self.config.get('add_pos_size_pct_offset', 0.0))) / 100.0
-        sz = (self.engine.position_manager.position_notional[side] * pct) / (price * self.engine.product_info.get('contractSize', 1.0))
+        sz_pct_notional = self.engine.position_manager.position_notional[side] * pct
+
+        # Calculate size based on Need Add metrics if enabled
+        # Note: self.need_add_usdt_profit_target and self.need_add_usdt_above_zero are updated in calculate_need_add_metrics
+        target_notional = 0.0
+        if self.config.get('use_add_pos_profit_target'):
+            target_notional = max(target_notional, self.need_add_usdt_profit_target)
+        if self.config.get('use_add_pos_above_zero'):
+            target_notional = max(target_notional, self.need_add_usdt_above_zero)
+
+        final_notional = max(sz_pct_notional, target_notional)
+
+        # Limit by remaining capacity
+        remaining = self.engine.remaining_amount_notional
+        if final_notional > remaining:
+            self.engine.log(f"Auto-Add notional {final_notional:.2f} exceeds remaining capacity {remaining:.2f}. Capping.", level="warning")
+            final_notional = remaining
+
+        if final_notional < self.config.get('min_order_amount', 10.0):
+            self.engine.log(f"Auto-Add notional {final_notional:.2f} is below min_order_amount. Skipping.", level="info")
+            return
+
+        sz = final_notional / (price * self.engine.product_info.get('contractSize', 1.0))
+
+        # Apply quantity precision and step size
+        lot_sz = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))
+        sz = math.floor(sz / lot_sz) * lot_sz
+
+        if sz < safe_float(self.engine.product_info.get('minOrderQty', 0)):
+            self.engine.log(f"Auto-Add quantity {sz} is below minOrderQty. Skipping.", level="info")
+            return
+
         if self.engine.order_manager.place_order(self.config['symbol'], "buy" if side == "long" else "sell", sz, order_type="Market", posSide=side):
             self.auto_add_step_count += 1
