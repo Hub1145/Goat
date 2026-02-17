@@ -78,23 +78,24 @@ class OrderManager:
                 data = res.get('data', [{}])[0]
                 oid = data.get('ordId')
                 if not reduce_only and oid:
-                    # Optimistic update for UI responsiveness and capital management
-                    self.pending_entry_ids.add(oid)
-                    new_order = {
-                        'id': oid,
-                        'type': side.upper(),
-                        'posSide': posSide,
-                        'entry_spot_price': price if price else self.engine.latest_trade_price,
-                        'stake': qty * (price if price else self.engine.latest_trade_price) * self.engine.product_info.get('contractSize', 1.0),
-                        'tp_price': take_profit_price,
-                        'sl_price': stop_loss_price,
-                        'time_left': self.config.get('cancel_unfilled_seconds', 30),
-                        'ordId': oid,
-                        'cTime': time.time() * 1000
-                    }
-                    # Check if already exists (shouldn't, but safety first)
-                    if not any(o['id'] == oid for o in self.open_trades):
-                        self.open_trades.append(new_order)
+                    with self.engine.lock:
+                        # Optimistic update for UI responsiveness and capital management
+                        self.pending_entry_ids.add(oid)
+                        new_order = {
+                            'id': oid,
+                            'type': side.upper(),
+                            'posSide': posSide,
+                            'entry_spot_price': price if price else self.engine.latest_trade_price,
+                            'stake': qty * (price if price else self.engine.latest_trade_price) * self.engine.product_info.get('contractSize', 1.0),
+                            'tp_price': take_profit_price,
+                            'sl_price': stop_loss_price,
+                            'time_left': self.config.get('cancel_unfilled_seconds', 30),
+                            'ordId': oid,
+                            'cTime': time.time() * 1000
+                        }
+                        # Check if already exists (shouldn't, but safety first)
+                        if not any(o['id'] == oid for o in self.open_trades):
+                            self.open_trades.append(new_order)
                 return data
             else:
                 msg = res.get('msg') if res else 'No Response'
@@ -209,8 +210,12 @@ class OrderManager:
                     }
                     self.engine.okx_client.request("POST", "/api/v5/trade/order-algo", body_dict=body)
 
-    def cancel_all_algo_orders(self, symbol):
+    def cancel_algo_orders(self, symbol, side=None):
         algos = self.fetch_algo_orders(symbol)
+        if side:
+            # Map posSide to what OKX returns
+            algos = [a for a in algos if a.get('posSide') == side]
+
         if algos:
             body = [{"instId": symbol, "algoId": a['algoId']} for a in algos]
             return self.engine.okx_client.request("POST", "/api/v5/trade/cancel-algos", body_dict=body)
@@ -254,8 +259,9 @@ class OrderManager:
                     'ordId': oid,
                     'cTime': c_time
                 })
-            self.open_trades = formatted
+
             with self.engine.lock:
+                self.open_trades = formatted
                 self.pending_entry_ids &= current_ids
         return self.open_trades
 
@@ -272,7 +278,11 @@ class OrderManager:
         to_cancel = []
         reasons = []
 
-        for o in self.open_trades:
+        with self.engine.lock:
+            # Create a copy for safe iteration
+            trades_to_check = list(self.open_trades)
+
+        for o in trades_to_check:
             # We generally only auto-cancel ENTRY orders based on these conditions
             if o['ordId'] not in self.pending_entry_ids: continue
 

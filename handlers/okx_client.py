@@ -31,17 +31,26 @@ class RateLimiter:
     def acquire(self, path, tokens=1):
         category = self._get_category(path)
         lock = self.locks[category]
-        with lock:
-            while True:
+        while True:
+            sleep_time = 0
+            with lock:
                 now = time.time()
                 bucket = self.buckets[category]
                 limit = self.limits[category]
-                bucket['tokens'] = min(limit['capacity'], bucket['tokens'] + (now - bucket['last_update']) * limit['rate'])
+                # Update tokens based on time elapsed
+                elapsed = now - bucket['last_update']
+                bucket['tokens'] = min(limit['capacity'], bucket['tokens'] + (elapsed * limit['rate']))
                 bucket['last_update'] = now
+
                 if bucket['tokens'] >= tokens:
                     bucket['tokens'] -= tokens
                     return
-                time.sleep(min((tokens - bucket['tokens']) / limit['rate'], 0.5))
+
+                # Calculate required sleep time to get enough tokens
+                sleep_time = (tokens - bucket['tokens']) / limit['rate']
+
+            if sleep_time > 0:
+                time.sleep(min(sleep_time, 1.0))
 
 class OKXClient:
     def __init__(self, logger_func, config):
@@ -101,7 +110,11 @@ class OKXClient:
                 if not req_func: return None
                 kwargs = {'headers': headers, 'timeout': 15}
                 if body_dict and method.upper() in ['POST', 'PUT', 'DELETE']: kwargs['data'] = body_str
+
+                # self.log(f"API Request: {method} {path} (Attempt {attempt+1})")
                 response = req_func(final_url, **kwargs)
+                # self.log(f"API Response: {response.status_code} for {method} {path}")
+
                 if response.status_code != 200:
                     try:
                         error_json = response.json()

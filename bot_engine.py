@@ -81,7 +81,9 @@ class TradingBotEngine:
     def used_amount_notional(self):
         # Sum of active position notional + pending entry orders notional
         pos_notional = self.position_manager.used_amount_notional
-        pending_notional = sum(o.get('stake', 0.0) for o in self.order_manager.open_trades if o.get('id') in self.order_manager.pending_entry_ids)
+        with self.lock:
+            # We copy the list or use a lock during iteration to prevent RuntimeError
+            pending_notional = sum(o.get('stake', 0.0) for o in self.order_manager.open_trades if o.get('id') in self.order_manager.pending_entry_ids)
         return pos_notional + pending_notional
     @property
     def remaining_amount_notional(self):

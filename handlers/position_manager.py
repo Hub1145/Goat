@@ -22,6 +22,7 @@ class PositionManager:
         self.position_details = {'long': {}, 'short': {}}
         self.position_notional = {'long': 0.0, 'short': 0.0}
         self.session_baseline_qty = {'long': 0.0, 'short': 0.0}
+        self.baseline_initialized = False
         self.cached_active_positions_count = 0
         self.cached_pos_notional = 0.0
         self.cached_unrealized_pnl = 0.0
@@ -38,6 +39,16 @@ class PositionManager:
         contract_size = safe_float(self.engine.product_info.get('contractSize', 1.0))
 
         with self.engine.lock:
+            if not self.baseline_initialized and is_snapshot:
+                for pos in positions_data:
+                    if pos.get('instId', '').strip().upper() == target_symbol:
+                        q = abs(safe_float(pos.get('pos')))
+                        if q > 0:
+                            s_key = self._map_side(pos.get('posSide', 'net'), qty=safe_float(pos.get('pos')))
+                            self.session_baseline_qty[s_key] = q
+                self.baseline_initialized = True
+                self.engine.log(f"Baseline initialized: Long={self.session_baseline_qty['long']}, Short={self.session_baseline_qty['short']} contracts (Manual positions ignored in used margin)")
+
             prev_qtys = {k: v for k, v in self.position_qty.items()}
             for pos in positions_data:
                 if pos.get('instId', '').strip().upper() == target_symbol:
@@ -53,14 +64,9 @@ class PositionManager:
                         temp_unrealized_pnl += safe_float(pos.get('upl', '0'))
                         temp_active_count += 1
 
-                        # Session margin tracking
-                        if self.engine.is_running:
-                            # Baseline is also in contracts now
-                            session_qty = max(0, abs(qty_raw) - self.session_baseline_qty.get(side_key, 0.0))
-                            temp_used_notional += session_qty * mkt_px * contract_size
-                        else:
-                            # In stop mode, we might want to update baseline or just track total
-                            temp_used_notional += abs(qty_raw) * mkt_px * contract_size
+                        # Session margin tracking (consistent whether running or stopped)
+                        session_qty = max(0, abs(qty_raw) - self.session_baseline_qty.get(side_key, 0.0))
+                        temp_used_notional += session_qty * mkt_px * contract_size
 
                         new_qty = qty_raw
                         if abs(new_qty - prev_qtys.get(side_key, 0.0)) > 1e-6:

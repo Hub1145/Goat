@@ -1,11 +1,13 @@
 import math
 import time
+import threading
 from handlers.utils import safe_float
 
 class AutoCalManager:
     def __init__(self, engine):
         self.engine = engine
         self.config = engine.config
+        self.lock = threading.Lock()
         self.need_add_usdt_profit_target = 0.0
         self.need_add_usdt_above_zero = 0.0
         self.auto_add_step_count = 0
@@ -13,6 +15,10 @@ class AutoCalManager:
         self.last_order_time = 0
 
     def calculate_need_add_metrics(self):
+        with self.lock:
+            self._calculate_need_add_metrics_internal()
+
+    def _calculate_need_add_metrics_internal(self):
         self.need_add_usdt_profit_target = 0.0
         self.need_add_usdt_above_zero = 0.0
 
@@ -124,35 +130,36 @@ class AutoCalManager:
                         self.engine.okx_client.request("POST", "/api/v5/account/position/margin-balance", body_dict={"instId": self.config['symbol'], "posSide": pos.get('posSide', 'net'), "type": "add", "amt": str(round(amt, 2))})
 
     def check_auto_add(self):
-        if not any(self.config.get(k) for k in ['use_add_pos_auto_cal', 'use_add_pos_above_zero', 'use_add_pos_profit_target']): return
+        with self.lock:
+            if not any(self.config.get(k) for k in ['use_add_pos_auto_cal', 'use_add_pos_above_zero', 'use_add_pos_profit_target']): return
 
-        # Lockout to prevent rapid-fire adds before position sync
-        if time.time() - self.last_order_time < 10: return
+            # Lockout to prevent rapid-fire adds before position sync
+            if time.time() - self.last_order_time < 10: return
 
-        side = 'long' if self.engine.in_position['long'] else ('short' if self.engine.in_position['short'] else None)
-        if not side:
-            self.auto_add_step_count = 0
-            self.last_add_price = 0.0
-            return
+            side = 'long' if self.engine.in_position['long'] else ('short' if self.engine.in_position['short'] else None)
+            if not side:
+                self.auto_add_step_count = 0
+                self.last_add_price = 0.0
+                return
 
-        mkt = self.engine.latest_trade_price
-        if not mkt: return
+            mkt = self.engine.latest_trade_price
+            if not mkt: return
 
-        # Robust initialization of last_add_price
-        if self.last_add_price == 0:
-            self.last_add_price = self.engine.position_entry_price[side]
-            if self.last_add_price == 0: return # Still waiting for sync
+            # Robust initialization of last_add_price
+            if self.last_add_price == 0:
+                self.last_add_price = self.engine.position_entry_price[side]
+                if self.last_add_price == 0: return # Still waiting for sync
 
-        gap_threshold = float(self.config.get('add_pos_gap_threshold', 5.0))
-        gap_offset = float(self.config.get('add_pos_gap_offset', 0.0))
-        gap = gap_threshold + (self.auto_add_step_count * gap_offset)
+            gap_threshold = float(self.config.get('add_pos_gap_threshold', 5.0))
+            gap_offset = float(self.config.get('add_pos_gap_offset', 0.0))
+            gap = gap_threshold + (self.auto_add_step_count * gap_offset)
 
-        price_diff = (self.last_add_price - mkt) if side == 'long' else (mkt - self.last_add_price)
+            price_diff = (self.last_add_price - mkt) if side == 'long' else (mkt - self.last_add_price)
 
-        if price_diff >= gap:
-            self.engine.log(f"Auto-Add Gap Triggered: {side} position, last add {self.last_add_price}, mkt {mkt}, gap {gap:.2f}")
-            self.last_add_price = mkt
-            self._execute_add(side, mkt)
+            if price_diff >= gap:
+                self.engine.log(f"Auto-Add Gap Triggered: {side} position, last add {self.last_add_price}, mkt {mkt}, gap {gap:.2f}")
+                self.last_add_price = mkt
+                self._execute_add(side, mkt)
 
     def _execute_add(self, side, price):
         max_adds = int(self.config.get('add_pos_max_count', 10))
