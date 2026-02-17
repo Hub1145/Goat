@@ -70,7 +70,6 @@ class PositionManager:
 
                         new_qty = qty_raw
                         if abs(new_qty - prev_qtys.get(side_key, 0.0)) > 1e-6:
-                            self.engine._should_update_tpsl = True
                             if abs(new_qty) > abs(prev_qtys.get(side_key, 0.0)):
                                 self.engine.total_trades_count += 1
 

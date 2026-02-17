@@ -15,6 +15,21 @@ class OrderManager:
         self.open_trades = []
         self.batch_counter = 0
 
+    def _calculate_tpsl_prices(self, side, entry_price):
+        tp_offset = safe_float(self.config.get('tp_price_offset'), 0)
+        sl_offset = safe_float(self.config.get('sl_price_offset'), 0)
+        tp_price = 0.0
+        sl_price = 0.0
+        p_prec = self.engine.product_info.get('pricePrecision', 2)
+
+        if side == 'long':
+            if tp_offset > 0: tp_price = round(entry_price + tp_offset, p_prec)
+            if sl_offset > 0: sl_price = round(entry_price - sl_offset, p_prec)
+        else:
+            if tp_offset > 0: tp_price = round(entry_price - tp_offset, p_prec)
+            if sl_offset > 0: sl_price = round(entry_price + sl_offset, p_prec)
+        return tp_price, sl_price
+
     def _round_to_step(self, value, step):
         if not step or step <= 0: return value
         # Use decimal-safe rounding
@@ -142,8 +157,10 @@ class OrderManager:
 
             if qty < safe_float(self.engine.product_info.get('minOrderQty', 0)): continue
 
+            tp, sl = self._calculate_tpsl_prices(side, price)
             # place_order now handles pending_entry_ids and open_trades internally for better sync
-            self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price, order_type="Limit", posSide=side)
+            self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price,
+                             order_type="Limit", posSide=side, take_profit_price=tp, stop_loss_price=sl)
 
     def cancel_order(self, symbol, order_id, reason=None):
         return self.engine.okx_client.request("POST", "/api/v5/trade/cancel-order", body_dict={"instId": symbol, "ordId": order_id})
@@ -166,32 +183,18 @@ class OrderManager:
         return res.get('data', []) if res and res.get('code') == '0' else []
 
     def place_position_tpsl(self, side, entry_price):
+        # NOTE: Dynamic TP/SL updates are generally discouraged in favor of setting on order placement.
+        # This method is kept for manual batch updates if triggered via UI.
         if not entry_price: return
 
-        # Respect 'null' or 0 as 'disabled' as requested
-        tp_offset_cfg = self.config.get('tp_price_offset')
-        sl_offset_cfg = self.config.get('sl_price_offset')
-
-        tp_offset = safe_float(tp_offset_cfg) if tp_offset_cfg is not None else 0
-        sl_offset = safe_float(sl_offset_cfg) if sl_offset_cfg is not None else 0
-
-        tp_price = 0.0
-        sl_price = 0.0
-        p_prec = self.engine.product_info.get('pricePrecision', 2)
-
-        if side == 'long':
-            if tp_offset > 0: tp_price = round(entry_price + tp_offset, p_prec)
-            if sl_offset > 0: sl_price = round(entry_price - sl_offset, p_prec)
-        else:
-            if tp_offset > 0: tp_price = round(entry_price - tp_offset, p_prec)
-            if sl_offset > 0: sl_price = round(entry_price + sl_offset, p_prec)
+        tp_price, sl_price = self._calculate_tpsl_prices(side, entry_price)
 
         if tp_price > 0 or sl_price > 0:
             qty = abs(self.engine.position_qty[side])
             if qty > 0:
                 self.engine.log(f"Placing dynamic TP/SL for {side} position: TP={tp_price}, SL={sl_price}")
-                # Cancel existing first to prevent duplicates
-                self.cancel_all_algo_orders(self.config['symbol'])
+                # Cancel existing for this side first to prevent duplicates
+                self.cancel_algo_orders(self.config['symbol'], side=side)
 
                 if tp_price > 0:
                     body = {

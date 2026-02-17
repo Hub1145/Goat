@@ -28,19 +28,27 @@ class StrategyManager:
         signals = []
         # Check Long
         if direction in ['long', 'both']:
-            if self.engine.in_position['long']:
-                pass # Already in long
-            elif long_line > 0 and price <= long_line:
-                self.engine.log(f"Long Signal Triggered: Price {price} <= {long_line}", level="info")
-                signals.append({'side': 'long', 'price': price - offset})
+            if long_line > 0 and price <= long_line:
+                # Continuous placement: check if we have remaining budget
+                if self.engine.remaining_amount_notional > self.config.get('min_order_amount', 10):
+                    self.engine.log(f"Long Signal Triggered: Price {price} <= {long_line}", level="info")
+                    signals.append({'side': 'long', 'price': price - offset})
+                else:
+                    if time.time() - self.last_eval_log_time > 60:
+                        self.engine.log("Long entry signal exists but no remaining capacity.", level="debug")
+                        self.last_eval_log_time = time.time()
 
         # Check Short
         if direction in ['short', 'both']:
-            if self.engine.in_position['short']:
-                pass # Already in short
-            elif short_line > 0 and price >= short_line:
-                self.engine.log(f"Short Signal Triggered: Price {price} >= {short_line}", level="info")
-                signals.append({'side': 'short', 'price': price + offset})
+            if short_line > 0 and price >= short_line:
+                # Continuous placement: check if we have remaining budget
+                if self.engine.remaining_amount_notional > self.config.get('min_order_amount', 10):
+                    self.engine.log(f"Short Signal Triggered: Price {price} >= {short_line}", level="info")
+                    signals.append({'side': 'short', 'price': price + offset})
+                else:
+                    if time.time() - self.last_eval_log_time > 60:
+                        self.engine.log("Short entry signal exists but no remaining capacity.", level="debug")
+                        self.last_eval_log_time = time.time()
 
         return signals
 

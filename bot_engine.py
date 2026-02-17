@@ -172,11 +172,7 @@ class TradingBotEngine:
                     self.order_manager.sync_open_orders(self.config['symbol'])
                     self.order_manager.check_unfilled_timeouts()
 
-                if self._should_update_tpsl:
-                    for side, in_pos in self.position_manager.in_position.items():
-                        if in_pos:
-                            self.order_manager.place_position_tpsl(side, self.position_manager.position_entry_price[side])
-                    self._should_update_tpsl = False
+                # Dynamic TP/SL updates removed per client request to set them on order placement
 
                 # 2. Auto-Cal / Add / Margin (Always active, even in Stop mode as requested)
                 # We can run these checks frequently or at loop interval
@@ -286,8 +282,7 @@ class TradingBotEngine:
                 self.log(f"🚨 EMERGENCY EXIT: {reason}", level="warning")
 
             self.order_manager.batch_cancel_orders(self.config['symbol'], [o['ordId'] for o in self.open_trades])
-            for a in self.order_manager.fetch_algo_orders(self.config['symbol']):
-                self.okx_client.request("POST", "/api/v5/trade/cancel-algos", body_dict=[{"instId": self.config['symbol'], "algoId": a['algoId']}])
+            self.order_manager.cancel_algo_orders(self.config['symbol'])
 
             for s, in_p in self.in_position.items():
                 if in_p:

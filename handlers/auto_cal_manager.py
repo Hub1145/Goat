@@ -206,6 +206,8 @@ class AutoCalManager:
             self.engine.log(f"Auto-Add quantity {sz} is below minOrderQty. Skipping.", level="info")
             return
 
-        if self.engine.order_manager.place_order(self.config['symbol'], "buy" if side == "long" else "sell", sz, order_type="Market", posSide=side):
+        tp, sl = self.engine.order_manager._calculate_tpsl_prices(side, price)
+        if self.engine.order_manager.place_order(self.config['symbol'], "buy" if side == "long" else "sell", sz,
+                                                 order_type="Market", posSide=side, take_profit_price=tp, stop_loss_price=sl):
             self.auto_add_step_count += 1
             self.last_order_time = time.time()
