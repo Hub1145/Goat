@@ -410,32 +410,32 @@ function updateAccountMetrics(data) {
         return;
     }
 
+    const safeFix = (val, prec = 2) => {
+        const n = Number(val);
+        return isNaN(n) ? '0.00' : n.toFixed(prec);
+    };
+
     const safeSetText = (id, text) => {
         const el = document.getElementById(id);
         if (el) el.textContent = text;
     };
 
-    const safeSetValue = (id, val) => {
-        const el = document.getElementById(id);
-        if (el) el.value = val;
-    };
-
     if (data.total_capital !== undefined) {
-        safeSetText('totalCapital', `$${Number(data.total_capital).toFixed(2)}`);
+        safeSetText('totalCapital', `$${safeFix(data.total_capital)}`);
     }
     if (data.total_capital_2nd !== undefined) {
-        safeSetText('totalCapital2nd', `$${Number(data.total_capital_2nd).toFixed(2)}`);
+        safeSetText('totalCapital2nd', `$${safeFix(data.total_capital_2nd)}`);
     }
     if (data.max_allowed_used_display !== undefined) {
-        safeSetText('maxAllowedUsedDisplay', `$${Number(data.max_allowed_used_display).toFixed(2)}`);
+        safeSetText('maxAllowedUsedDisplay', `$${safeFix(data.max_allowed_used_display)}`);
     }
     if (data.max_amount_display !== undefined) {
-        safeSetText('maxAmountDisplay', `$${Number(data.max_amount_display).toFixed(2)}`);
+        safeSetText('maxAmountDisplay', `$${safeFix(data.max_amount_display)}`);
     }
     if (data.used_amount !== undefined) {
-        safeSetText('usedAmount', `$${Number(data.used_amount).toFixed(2)}`);
+        safeSetText('usedAmount', `$${safeFix(data.used_amount)}`);
     }
-    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
+    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0;
     const minOrder = currentConfig?.min_order_amount || 0;
     const remainingEl = document.getElementById('remainingAmount');
     if (remainingEl) {
@@ -449,10 +449,10 @@ function updateAccountMetrics(data) {
             remainingEl.style.fontSize = '';
         }
     }
-    safeSetText('needAddProfitTargetDisplay', `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`);
-    safeSetText('needAddAboveZeroDisplay', `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`);
+    safeSetText('needAddProfitTargetDisplay', `$${safeFix(data.need_add_usdt)}`);
+    safeSetText('needAddAboveZeroDisplay', `$${safeFix(data.need_add_above_zero)}`);
     if (data.available_balance !== undefined) {
-        safeSetText('balance', `$${Number(data.available_balance).toFixed(2)}`);
+        safeSetText('balance', `$${safeFix(data.available_balance)}`);
     }
 
     // Update Auto-Cal Add Header based on position side
@@ -503,11 +503,11 @@ function updateAccountMetrics(data) {
     }
 
     // New Advanced Profit Analytics
-    safeSetText('totalTradeProfit', `$${(data.total_trade_profit || 0).toFixed(2)}`);
-    safeSetText('totalTradeLoss', `$${(data.total_trade_loss || 0).toFixed(2)}`);
-    safeSetText('netTradeProfit', `$${(data.net_trade_profit || 0).toFixed(2)}`);
+    safeSetText('totalTradeProfit', `$${safeFix(data.total_trade_profit)}`);
+    safeSetText('totalTradeLoss', `$${safeFix(data.total_trade_loss)}`);
+    safeSetText('netTradeProfit', `$${safeFix(data.net_trade_profit)}`);
 
-    safeSetText('totalTrades', data.total_trades !== undefined ? data.total_trades : '0');
+    safeSetText('totalTrades', data.total_trades !== undefined ? String(data.total_trades) : '0');
 
     // Update daily report if present
     if (data.daily_reports) {
@@ -521,12 +521,12 @@ function updateAccountMetrics(data) {
     const sizeFee = data.size_fees || 0;
     const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
 
-    safeSetText('tradeFees', `$${Number(tradeFees).toFixed(2)}`);
-    safeSetText('usedFee', `$${Number(usedFee).toFixed(2)}`);
-    safeSetText('remainingFee', `$${Number(remainingFee).toFixed(2)}`);
-    safeSetText('feeRateDisplay', `${Number(feeRate).toFixed(3)}%`);
-    safeSetText('sizeAmountDisplay', `$${Number(data.size_amount || 0).toFixed(2)}`);
-    safeSetText('sizeFeeDisplay', `$${Number(sizeFee).toFixed(2)}`);
+    safeSetText('tradeFees', `$${safeFix(tradeFees)}`);
+    safeSetText('usedFee', `$${safeFix(usedFee)}`);
+    safeSetText('remainingFee', `$${safeFix(remainingFee)}`);
+    safeSetText('feeRateDisplay', `${safeFix(feeRate, 3)}%`);
+    safeSetText('sizeAmountDisplay', `$${safeFix(data.size_amount)}`);
+    safeSetText('sizeFeeDisplay', `$${safeFix(sizeFee)}`);
 
     lastUsedFee = usedFee;
     lastSizeFee = sizeFee;
@@ -663,6 +663,7 @@ function updatePositionDisplay(positionData) {
 
     let positionHtml = '';
     positionsToRender.forEach(pos => {
+        const safeFix4 = (v) => safeFix(v, 4);
         positionHtml += `
             <div class="position-card mb-2 p-2 border rounded ${pos.side.toLowerCase()}-bg">
                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -671,13 +672,13 @@ function updatePositionDisplay(positionData) {
                 </div>
                 <div class="row g-0">
                     <div class="col-6 small text-white-50">Entry Price:</div>
-                    <div class="col-6 small text-end">${Number(pos.price || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end">${safeFix4(pos.price)}</div>
                     <div class="col-6 small text-white-50">Quantity:</div>
-                    <div class="col-6 small text-end">${Number(pos.qty || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end">${safeFix4(pos.qty)}</div>
                     <div class="col-6 small text-white-50">Current TP:</div>
-                    <div class="col-6 small text-end text-success">${Number(pos.tp || (positionData && positionData.current_take_profit) || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end text-success">${safeFix4(pos.tp)}</div>
                     <div class="col-6 small text-white-50">Current SL:</div>
-                    <div class="col-6 small text-end text-danger">${Number(pos.sl || (positionData && positionData.current_stop_loss) || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end text-danger">${safeFix4(pos.sl)}</div>
                 </div>
             </div>
         `;

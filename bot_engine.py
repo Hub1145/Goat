@@ -198,14 +198,12 @@ class TradingBotEngine:
                     self.log("Waiting for next loop")
                     self.log("-" * 46)
 
-                # 4. Other periodic checks
-                if self.monitoring_tick % 10 == 0:
-                    algos = self.order_manager.fetch_algo_orders(self.config['symbol'])
-                    for a in algos:
-                        side = self.position_manager._map_side(a.get('posSide', 'net'))
-                        sl, tp = safe_float(a.get('slTriggerPx')), safe_float(a.get('tpTriggerPx'))
-                        if sl > 0: self.current_stop_loss[side] = sl
-                        if tp > 0: self.current_take_profit[side] = tp
+                # 4. WebSocket Health Check (Fallback)
+                if self.monitoring_tick % 30 == 0:
+                    last_ws = self.ws_handler.last_message_time
+                    if time.time() - last_ws > 60:
+                        self.log("WebSocket Health Check Failed: No data for 60s. Forcing restart.", level="warning")
+                        self.ws_handler.restart()
 
                 self.account_manager.check_daily_report()
                 self.position_manager.flush_fill_logs()

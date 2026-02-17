@@ -25,6 +25,10 @@ class WebSocketHandler:
         self.pending_subscriptions = set()
         self.confirmed_subscriptions = set()
         self.current_url_params = {'use_testnet': None, 'symbol': None}
+        self.last_message_time = time.time()
+        self.reconnect_count = 0
+        self._reconnect_timer = None
+        self.session_id = 0
 
     def _get_ws_url(self, ws_type="public"):
         use_testnet = self.config.get('use_testnet', False)
@@ -36,6 +40,8 @@ class WebSocketHandler:
     def start(self):
         with self.lock:
             self.reconnecting = False
+            self.session_id = time.time()
+
         self.stop()
         self.stop_event.clear()
         self.ws_subscriptions_ready.clear()
@@ -48,29 +54,32 @@ class WebSocketHandler:
         url_public = self._get_ws_url("public")
         url_private = self._get_ws_url("private")
 
+        current_sid = self.session_id
+
         self.ws_public = websocket.WebSocketApp(
             url_public,
             on_open=self._on_open,
             on_message=self._on_message,
             on_error=self._on_error,
-            on_close=self._on_close
+            on_close=lambda ws, c, m: self._on_close(ws, c, m, current_sid)
         )
         self.ws_private = websocket.WebSocketApp(
             url_private,
             on_open=self._on_open,
             on_message=self._on_message,
             on_error=self._on_error,
-            on_close=self._on_close
+            on_close=lambda ws, c, m: self._on_close(ws, c, m, current_sid)
         )
 
+        # OKX recommends 30s ping interval
         self.ws_thread_public = threading.Thread(
             target=self.ws_public.run_forever,
-            kwargs={"ping_interval": 20, "ping_timeout": 10},
+            kwargs={"ping_interval": 30, "ping_timeout": 20},
             daemon=True
         )
         self.ws_thread_private = threading.Thread(
             target=self.ws_private.run_forever,
-            kwargs={"ping_interval": 20, "ping_timeout": 10},
+            kwargs={"ping_interval": 30, "ping_timeout": 20},
             daemon=True
         )
 
@@ -94,14 +103,36 @@ class WebSocketHandler:
 
         self.log("Restarting WebSocket connections...", level="info")
         try:
-            self.stop()
-            time.sleep(2) # Give it a moment to close
+            # Cancel any pending timer-based restart
+            if self._reconnect_timer:
+                try: self._reconnect_timer.cancel()
+                except: pass
+                self._reconnect_timer = None
+
+            # Tell _on_close not to trigger a new restart during this process
+            self.stop_event.set()
+
+            if self.ws_public:
+                try: self.ws_public.close()
+                except: pass
+            if self.ws_private:
+                try: self.ws_private.close()
+                except: pass
+
+            time.sleep(2) # Give it a moment to close properly
+
+            self.stop_event.clear()
             self.start()
+
+            # Keep 'reconnecting' flag for a bit to absorb late on_close calls from the OLD threads
+            time.sleep(5)
         finally:
             with self.lock:
                 self.reconnecting = False
 
     def _on_message(self, ws, message):
+        self.last_message_time = time.time()
+        self.reconnect_count = 0 # Reset on any successful message
         is_private = (ws == self.ws_private)
         try:
             msg = json.loads(message)
@@ -151,14 +182,29 @@ class WebSocketHandler:
 
     def _on_error(self, ws, error):
         # Avoid logging common broken pipe errors during shutdown/restart
-        if "closed file" not in str(error):
-            self.log(f"WebSocket error: {error}", level="error")
+        err_str = str(error)
+        if any(x in err_str for x in ["closed file", "107", "104", "Broken pipe"]):
+            return
+        self.log(f"WebSocket error: {error}", level="error")
 
-    def _on_close(self, ws, code, msg):
+    def _on_close(self, ws, code, msg, sid):
+        # Ignore close events from previous sessions to prevent reconnection loops
+        if sid != self.session_id:
+            return
+
         self.log(f"WebSocket closed: {code} {msg}", level="debug")
-        # Auto-reconnect if not deliberately stopped
+        # Auto-reconnect if not deliberately stopped and not already reconnecting
         if not self.stop_event.is_set():
             with self.lock:
                 if self.reconnecting: return
-            # Use a slightly longer delay to avoid rapid fire
-            threading.Timer(10, self.restart).start()
+
+                # Debounce: only one thread starts the restart timer
+                if self._reconnect_timer and self._reconnect_timer.is_alive():
+                    return
+
+                self.reconnect_count += 1
+                delay = min(60, 5 * (2 ** (self.reconnect_count - 1)))
+                self.log(f"Reconnecting in {delay} seconds (Attempt {self.reconnect_count})...", level="debug")
+
+                self._reconnect_timer = threading.Timer(delay, self.restart)
+                self._reconnect_timer.start()

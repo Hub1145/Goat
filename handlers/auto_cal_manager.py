@@ -136,30 +136,33 @@ class AutoCalManager:
             # Lockout to prevent rapid-fire adds before position sync
             if time.time() - self.last_order_time < 10: return
 
-            side = 'long' if self.engine.in_position['long'] else ('short' if self.engine.in_position['short'] else None)
-            if not side:
-                self.auto_add_step_count = 0
-                self.last_add_price = 0.0
-                return
-
             mkt = self.engine.latest_trade_price
             if not mkt: return
 
-            # Robust initialization of last_add_price
-            if self.last_add_price == 0:
-                self.last_add_price = self.engine.position_entry_price[side]
-                if self.last_add_price == 0: return # Still waiting for sync
+            any_in_pos = False
+            for side in ['long', 'short']:
+                if self.engine.in_position[side]:
+                    any_in_pos = True
+                    # Robust initialization of last_add_price
+                    if self.last_add_price == 0:
+                        self.last_add_price = self.engine.position_entry_price[side]
+                        if self.last_add_price == 0: continue
 
-            gap_threshold = float(self.config.get('add_pos_gap_threshold', 5.0))
-            gap_offset = float(self.config.get('add_pos_gap_offset', 0.0))
-            gap = gap_threshold + (self.auto_add_step_count * gap_offset)
+                    gap_threshold = float(self.config.get('add_pos_gap_threshold', 5.0))
+                    gap_offset = float(self.config.get('add_pos_gap_offset', 0.0))
+                    gap = gap_threshold + (self.auto_add_step_count * gap_offset)
 
-            price_diff = (self.last_add_price - mkt) if side == 'long' else (mkt - self.last_add_price)
+                    price_diff = (self.last_add_price - mkt) if side == 'long' else (mkt - self.last_add_price)
 
-            if price_diff >= gap:
-                self.engine.log(f"Auto-Add Gap Triggered: {side} position, last add {self.last_add_price}, mkt {mkt}, gap {gap:.2f}")
-                self.last_add_price = mkt
-                self._execute_add(side, mkt)
+                    if price_diff >= gap:
+                        self.engine.log(f"Auto-Add Gap Triggered: {side} position, last add {self.last_add_price}, mkt {mkt}, gap {gap:.2f}")
+                        self.last_add_price = mkt
+                        self._execute_add(side, mkt)
+                        break # Only one add per check loop to maintain sanity
+
+            if not any_in_pos:
+                self.auto_add_step_count = 0
+                self.last_add_price = 0.0
 
     def _execute_add(self, side, price):
         max_adds = int(self.config.get('add_pos_max_count', 10))
@@ -207,6 +210,21 @@ class AutoCalManager:
             return
 
         tp, sl = self.engine.order_manager._calculate_tpsl_prices(side, price)
+
+        # Step 2 Exit Offset Override (Relative to New Average Entry)
+        step2 = safe_float(self.config.get('add_pos_step2_offset'), 0)
+        if step2 > 0:
+            p_prec = self.engine.product_info.get('pricePrecision', 2)
+            entry = self.engine.position_entry_price[side]
+            qty = abs(self.engine.position_qty[side])
+            # Estimate new average entry
+            new_total_qty = qty + sz
+            if new_total_qty > 0:
+                new_avg_entry = ((qty * entry) + (sz * price)) / new_total_qty
+                if side == 'long': tp = round(new_avg_entry + step2, p_prec)
+                else: tp = round(new_avg_entry - step2, p_prec)
+                self.engine.log(f"Auto-Add Step 2: New Avg Entry Est {new_avg_entry:.4f}, TP set at {tp:.4f} (Offset {step2})")
+
         if self.engine.order_manager.place_order(self.config['symbol'], "buy" if side == "long" else "sell", sz,
                                                  order_type="Market", posSide=side, take_profit_price=tp, stop_loss_price=sl):
             self.auto_add_step_count += 1
