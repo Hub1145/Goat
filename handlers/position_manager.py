@@ -29,7 +29,8 @@ class PositionManager:
         self.cached_pos_notional = 0.0
         self.cached_unrealized_pnl = 0.0
         self.used_amount_notional = 0.0
-        self.current_entry_fees = 0.0 # Fees paid for CURRENT active position(s)
+        self.current_entry_fees = {'long': 0.0, 'short': 0.0}
+        self.realized_loss_this_cycle = {'long': 0.0, 'short': 0.0}
 
     def process_positions(self, positions_data, is_snapshot=True):
         temp_active_count = 0
@@ -104,9 +105,9 @@ class PositionManager:
         self.position_details[s] = {}
         self.engine.current_take_profit[s] = 0.0
         self.engine.current_stop_loss[s] = 0.0
-        # If no positions left, clear current entry fees
-        if not any(self.in_position.values()):
-            self.current_entry_fees = 0.0
+        # Reset side-specific cycle metrics
+        self.current_entry_fees[s] = 0.0
+        self.realized_loss_this_cycle[s] = 0.0
 
     def update_realtime_metrics(self, current_price):
         if not current_price: return
@@ -134,10 +135,10 @@ class PositionManager:
         side_key = self.config.get('direction', 'long')
         return 'long' if side_key == 'both' else side_key
 
-    def add_fee(self, fee):
+    def add_fee(self, fee, raw_side, qty=0):
         self.total_fees += abs(fee)
-        # We also add to current_entry_fees, but we should clear it when position closes
-        self.current_entry_fees += abs(fee)
+        side = self._map_side(raw_side, qty=qty)
+        self.current_entry_fees[side] += abs(fee)
 
     def sync_positions(self):
         target_symbol = self.config['symbol'].strip().upper()
@@ -145,11 +146,15 @@ class PositionManager:
         if res and res.get('code') == '0':
             self.process_positions(res.get('data', []), is_snapshot=True)
 
-    def add_realized_pnl(self, ord_id, pnl, fee):
+    def add_realized_pnl(self, ord_id, pnl, fee, raw_side, qty=0):
         with self.engine.lock:
             net = pnl + fee
             if net > 0: self.total_trade_profit += net
-            else: self.total_trade_loss += abs(net)
+            else:
+                self.total_trade_loss += abs(net)
+                # Track cycle losses to include in "Need Add" calculation
+                side = self._map_side(raw_side, qty=qty)
+                self.realized_loss_this_cycle[side] += abs(net)
             self.net_trade_profit = self.total_trade_profit - self.total_trade_loss
 
             # Aggregate fill logs to avoid spamming

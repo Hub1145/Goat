@@ -1,0 +1,35 @@
+2026-02-17 22:43:34,151 - INFO - Bot started (Mode: Passive)
+2026-02-17 22:43:34,969 - INFO - Websocket connected
+2026-02-17 22:43:35,005 - INFO - Websocket connected
+2026-02-17 22:43:35,230 - INFO - WebSocket Login Successful.
+2026-02-17 22:43:38,154 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:43:43,160 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:43:48,761 - INFO - Baseline initialized: Long=0.0, Short=0.0 contracts (Manual positions ignored in used margin)
+2026-02-17 22:43:49,414 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:43:54,421 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:43:59,428 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:05,657 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:10,661 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:15,668 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:21,950 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:26,955 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:31,962 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:38,198 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:43,203 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:48,208 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:44:55,305 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:45:00,311 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:45:05,316 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:45:11,524 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:45:16,530 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:45:21,537 - ERROR - Error: unsupported operand type(s) for -: 'float' and 'dict'
+2026-02-17 22:45:50,312 - INFO - Bot started (Mode: Passive)
+2026-02-17 22:45:51,072 - INFO - Websocket connected
+2026-02-17 22:45:51,303 - INFO - WebSocket Login Successful.
+2026-02-17 22:45:58,198 - INFO - Websocket connected
+2026-02-17 22:46:04,933 - INFO - Baseline initialized: Long=0.0, Short=0.0 contracts (Manual positions ignored in used margin)
+2026-02-17 22:50:17,311 - INFO - Bot started (Mode: Passive)
+2026-02-17 22:50:18,145 - INFO - Websocket connected
+2026-02-17 22:50:18,238 - INFO - Websocket connected
+2026-02-17 22:50:18,369 - INFO - WebSocket Login Successful.
+2026-02-17 22:50:31,955 - INFO - Baseline initialized: Long=0.0, Short=0.0 contracts (Manual positions ignored in used margin)

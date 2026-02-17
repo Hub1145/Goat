@@ -183,8 +183,9 @@ class TradingBotEngine:
                     self.auto_cal_manager.check_auto_margin()
 
                     fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
-                    # Use current_entry_fees (position-specific) instead of trade_fees (session-wide)
-                    net_pnl = self.cached_unrealized_pnl - self.position_manager.current_entry_fees - (self.cached_pos_notional * fee_pct)
+                    # Sum fees for the net_pnl calculation used in check_auto_exit
+                    total_cycle_fees = sum(self.position_manager.current_entry_fees.values())
+                    net_pnl = self.cached_unrealized_pnl - total_cycle_fees - (self.cached_pos_notional * fee_pct)
                     triggered, reason = self.auto_cal_manager.check_auto_exit(net_pnl, self.cached_unrealized_pnl)
                     if triggered:
                         threading.Thread(target=self.execute_auto_exit, args=(reason,), daemon=True).start()
@@ -239,10 +240,12 @@ class TradingBotEngine:
             elif channel == 'orders' and data:
                 for o in data:
                     ord_id = o.get('ordId')
+                    raw_side = o.get('posSide', 'net')
+                    sz = safe_float(o.get('sz'))
                     fee = safe_float(o.get('fillFee', 0))
-                    if fee != 0: self.position_manager.add_fee(fee)
+                    if fee != 0: self.position_manager.add_fee(fee, raw_side, qty=sz)
                     pnl = safe_float(o.get('fillPnl', 0))
-                    if pnl != 0: self.position_manager.add_realized_pnl(ord_id, pnl, fee)
+                    if pnl != 0: self.position_manager.add_realized_pnl(ord_id, pnl, fee, raw_side, qty=sz)
                 self.order_manager.sync_open_orders(self.config['symbol'])
 
     def _emit_socket_updates(self, throttle=False):
@@ -263,7 +266,7 @@ class TradingBotEngine:
             'daily_reports': self.daily_reports, 'need_add_usdt': self.need_add_usdt_profit_target,
             'need_add_above_zero': self.need_add_usdt_above_zero, 'running': self.is_running,
             'trade_fees': self.trade_fees, 'net_trade_profit': self.net_trade_profit,
-            'used_fees': self.position_manager.current_entry_fees,
+            'used_fees': sum(self.position_manager.current_entry_fees.values()),
             'size_fees': self.size_amount * fee_pct,
             'total_trade_profit': self.total_trade_profit, 'total_trade_loss': self.total_trade_loss,
             'current_take_profit': self.current_take_profit, 'current_stop_loss': self.current_stop_loss

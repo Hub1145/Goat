@@ -39,28 +39,32 @@ class AutoCalManager:
                 fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
                 mult = self.config.get('add_pos_profit_multiplier', 1.5)
 
-                current_fees = self.engine.position_manager.current_entry_fees
+                # Side-specific cycle metrics
+                current_fees = self.engine.position_manager.current_entry_fees[side]
+                realized_loss = self.engine.position_manager.realized_loss_this_cycle[side]
+                costs = current_fees + realized_loss
 
-                # Refined Formula: Incorporate current_entry_fees and exit fees
+                # Refined Formula: Incorporate cycle costs (fees + previous losses)
                 K = fee_pct
                 # Mode 1: Above Zero (Target Net = 0)
                 # Denominator: rec - 2*K (requires recovery > twice fees)
                 denom_zero = max(0.0001, rec - 2*K)
                 if side == 'long':
-                    val_zero = (initial_notional + current_fees - notional * (1 + rec - K)) / denom_zero
+                    val_zero = (costs + initial_notional - notional * (1 + rec - K)) / denom_zero
                 else:
-                    val_zero = (current_fees + notional * (1 - rec + K) - initial_notional) / denom_zero
+                    val_zero = (costs + notional * (1 - rec + K) - initial_notional) / denom_zero
 
                 if val_zero > 0:
                     self.need_add_usdt_above_zero += val_zero
 
                 # Mode 2: Profit Target & Close
+                # Target Profit: (initial_notional + V) * K * mult
                 # Denominator: rec - K * (mult + 2)
                 denom_profit = max(0.0001, rec - K * (mult + 2))
                 if side == 'long':
-                    val_profit = (initial_notional + current_fees - notional * (1 + rec - K * (mult + 1))) / denom_profit
+                    val_profit = (costs + initial_notional - notional * (1 + rec - K * (mult + 1))) / denom_profit
                 else:
-                    val_profit = (current_fees + notional * (1 - rec + K * (mult + 1)) - initial_notional) / denom_profit
+                    val_profit = (costs + notional * (1 - rec + K * (mult + 1)) - initial_notional) / denom_profit
 
                 if val_profit > 0:
                     self.need_add_usdt_profit_target += val_profit
@@ -203,10 +207,10 @@ class AutoCalManager:
 
         # Apply quantity precision and step size
         lot_sz = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))
-        sz = math.floor(sz / lot_sz) * lot_sz
+        sz = round(math.floor(sz / lot_sz) * lot_sz, 8)
 
         if sz < safe_float(self.engine.product_info.get('minOrderQty', 0)):
-            self.engine.log(f"Auto-Add quantity {sz} is below minOrderQty. Skipping.", level="info")
+            self.engine.log(f"Auto-Add quantity {sz} is below minOrderQty (Target Notional {final_notional:.2f}). Skipping.", level="info")
             return
 
         tp, sl = self.engine.order_manager._calculate_tpsl_prices(side, price)
