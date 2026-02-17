@@ -75,7 +75,27 @@ class OrderManager:
             if verbose: self.engine.log(f"Placing {order_type} {side} order for {qty} {symbol}")
             res = self.engine.okx_client.request("POST", path, body_dict=body)
             if res and res.get('code') == '0':
-                return res.get('data', [{}])[0]
+                data = res.get('data', [{}])[0]
+                oid = data.get('ordId')
+                if not reduce_only and oid:
+                    # Optimistic update for UI responsiveness and capital management
+                    self.pending_entry_ids.add(oid)
+                    new_order = {
+                        'id': oid,
+                        'type': side.upper(),
+                        'posSide': posSide,
+                        'entry_spot_price': price if price else self.engine.latest_trade_price,
+                        'stake': qty * (price if price else self.engine.latest_trade_price) * self.engine.product_info.get('contractSize', 1.0),
+                        'tp_price': take_profit_price,
+                        'sl_price': stop_loss_price,
+                        'time_left': self.config.get('cancel_unfilled_seconds', 30),
+                        'ordId': oid,
+                        'cTime': time.time() * 1000
+                    }
+                    # Check if already exists (shouldn't, but safety first)
+                    if not any(o['id'] == oid for o in self.open_trades):
+                        self.open_trades.append(new_order)
+                return data
             else:
                 msg = res.get('msg') if res else 'No Response'
                 code = res.get('code') if res else 'N/A'
@@ -111,7 +131,7 @@ class OrderManager:
 
             rate_divisor = max(1, self.config.get('rate_divisor', 1))
             capacity = (max_allowed / rate_divisor) * leverage
-            remaining = capacity - self.engine.position_manager.used_amount_notional
+            remaining = capacity - self.engine.used_amount_notional
 
             target = self.config.get('target_order_amount', 100)
             if remaining < self.config.get('min_order_amount', 10): break
@@ -121,9 +141,8 @@ class OrderManager:
 
             if qty < safe_float(self.engine.product_info.get('minOrderQty', 0)): continue
 
-            order = self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price, order_type="Limit", posSide=side)
-            if order:
-                self.pending_entry_ids.add(order['ordId'])
+            # place_order now handles pending_entry_ids and open_trades internally for better sync
+            self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price, order_type="Limit", posSide=side)
 
     def cancel_order(self, symbol, order_id, reason=None):
         return self.engine.okx_client.request("POST", "/api/v5/trade/cancel-order", body_dict={"instId": symbol, "ordId": order_id})

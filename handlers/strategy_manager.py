@@ -28,16 +28,16 @@ class StrategyManager:
         signals = []
         # Check Long
         if direction in ['long', 'both']:
-            if self.engine.in_position['long'] or self.engine.order_manager.pending_entry_ids:
-                pass # Already in long or pending
+            if self.engine.in_position['long']:
+                pass # Already in long
             elif long_line > 0 and price <= long_line:
                 self.engine.log(f"Long Signal Triggered: Price {price} <= {long_line}", level="info")
                 signals.append({'side': 'long', 'price': price - offset})
 
         # Check Short
         if direction in ['short', 'both']:
-            if self.engine.in_position['short'] or self.engine.order_manager.pending_entry_ids:
-                pass # Already in short or pending
+            if self.engine.in_position['short']:
+                pass # Already in short
             elif short_line > 0 and price >= short_line:
                 self.engine.log(f"Short Signal Triggered: Price {price} >= {short_line}", level="info")
                 signals.append({'side': 'short', 'price': price + offset})

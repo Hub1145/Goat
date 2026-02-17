@@ -78,7 +78,11 @@ class TradingBotEngine:
     @property
     def open_trades(self): return self.order_manager.open_trades
     @property
-    def used_amount_notional(self): return self.position_manager.used_amount_notional
+    def used_amount_notional(self):
+        # Sum of active position notional + pending entry orders notional
+        pos_notional = self.position_manager.used_amount_notional
+        pending_notional = sum(o.get('stake', 0.0) for o in self.order_manager.open_trades if o.get('id') in self.order_manager.pending_entry_ids)
+        return pos_notional + pending_notional
     @property
     def remaining_amount_notional(self):
         leverage = safe_float(self.config.get('leverage', 1), 1.0)
@@ -180,7 +184,8 @@ class TradingBotEngine:
                     self.auto_cal_manager.check_auto_margin()
 
                     fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
-                    net_pnl = self.cached_unrealized_pnl - self.trade_fees - (self.cached_pos_notional * fee_pct)
+                    # Use current_entry_fees (position-specific) instead of trade_fees (session-wide)
+                    net_pnl = self.cached_unrealized_pnl - self.position_manager.current_entry_fees - (self.cached_pos_notional * fee_pct)
                     triggered, reason = self.auto_cal_manager.check_auto_exit(net_pnl, self.cached_unrealized_pnl)
                     if triggered:
                         threading.Thread(target=self.execute_auto_exit, args=(reason,), daemon=True).start()
