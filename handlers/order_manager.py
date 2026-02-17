@@ -106,7 +106,7 @@ class OrderManager:
                             'sl_price': stop_loss_price,
                             'time_left': self.config.get('cancel_unfilled_seconds', 30),
                             'ordId': oid,
-                            'cTime': time.time() * 1000
+                            'cTime': (time.time() * 1000) + self.engine.okx_client.server_time_offset
                         }
                         # Check if already exists (shouldn't, but safety first)
                         if not any(o['id'] == oid for o in self.open_trades):
@@ -251,7 +251,7 @@ class OrderManager:
         if res and res.get('code') == '0':
             raw_orders = res.get('data', [])
             formatted = []
-            now_ms = time.time() * 1000
+            now_ms = (time.time() * 1000) + self.engine.okx_client.server_time_offset
             limit = self.config.get('cancel_unfilled_seconds', 30)
 
             current_ids = set()
@@ -279,13 +279,27 @@ class OrderManager:
                 })
 
             with self.engine.lock:
-                self.open_trades = formatted
+                # Merge logic: keep optimistic orders that are very new but not yet in the sync result
+                now_ms = (time.time() * 1000) + self.engine.okx_client.server_time_offset
+                merged = formatted
+                sync_ids = {o['id'] for o in formatted}
+
+                for opt_o in self.open_trades:
+                    # If it's an entry order we placed but not yet seen in sync
+                    if opt_o['id'] in self.pending_entry_ids and opt_o['id'] not in sync_ids:
+                        # Keep it if it's less than 10 seconds old
+                        if (now_ms - opt_o['cTime']) < 10000:
+                            merged.append(opt_o)
+                            current_ids.add(opt_o['id'])
+
+                self.open_trades = merged
                 self.pending_entry_ids &= current_ids
         return self.open_trades
 
     def check_unfilled_timeouts(self):
         limit = self.config.get('cancel_unfilled_seconds', 0)
-        now_ms = time.time() * 1000
+        # Use server-time adjusted "now" for accurate timeout checks
+        now_ms = (time.time() * 1000) + self.engine.okx_client.server_time_offset
         mkt = self.engine.latest_trade_price
 
         cancel_tp_below = self.config.get('cancel_on_tp_price_below_market')
@@ -319,19 +333,26 @@ class OrderManager:
 
             ent = o.get('entry_spot_price', 0)
             tp = o.get('tp_price', 0)
-            # If tp is 0, it means it wasn't synced or set. We should be careful about re-calculating it
-            # as it might cause premature cancels if the offset logic doesn't perfectly match the order.
+            is_long = (o.get('type') == 'BUY')
 
-            if cancel_ent_below and ent > 0 and ent < mkt:
-                to_cancel.append(o['ordId']); reasons.append(f"Entry {ent} < Market {mkt}")
-            elif cancel_ent_above and ent > 0 and ent > mkt:
-                to_cancel.append(o['ordId']); reasons.append(f"Entry {ent} > Market {mkt}")
-            elif tp > 0:
-                # Only use TP for cancellation if we actually have a valid TP price
-                if cancel_tp_below and tp < mkt:
-                    to_cancel.append(o['ordId']); reasons.append(f"TP {tp} < Market {mkt}")
-                elif cancel_tp_above and tp > mkt:
-                    to_cancel.append(o['ordId']); reasons.append(f"TP {tp} > Market {mkt}")
+            # 1. Entry conditions (Only if enabled in config)
+            if is_long:
+                if cancel_ent_above and ent > 0 and mkt > ent:
+                    to_cancel.append(o['ordId']); reasons.append(f"Long Entry {ent} already passed by Market {mkt}")
+            else: # short
+                if cancel_ent_below and ent > 0 and mkt < ent:
+                    to_cancel.append(o['ordId']); reasons.append(f"Short Entry {ent} already passed by Market {mkt}")
+
+            # 2. TP conditions (Only if we have a valid TP price)
+            if tp > 0:
+                if is_long:
+                    # Target is ABOVE entry. Cancel if price hit target.
+                    if cancel_tp_above and mkt >= tp:
+                        to_cancel.append(o['ordId']); reasons.append(f"Long TP {tp} reached by Market {mkt}")
+                else: # short
+                    # Target is BELOW entry. Cancel if price hit target.
+                    if cancel_tp_below and mkt <= tp:
+                        to_cancel.append(o['ordId']); reasons.append(f"Short TP {tp} reached by Market {mkt}")
 
         if to_cancel:
             for i, oid in enumerate(to_cancel):

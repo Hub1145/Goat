@@ -12,6 +12,8 @@ class WebSocketHandler:
         self.config = config
         self.okx_client = okx_client
         self.message_callback = message_callback
+        self.lock = threading.Lock()
+        self.reconnecting = False
 
         self.ws_public = None
         self.ws_private = None
@@ -32,6 +34,8 @@ class WebSocketHandler:
             return "wss://wspap.okx.com:8443/ws/v5/private?brokerId=9999" if use_testnet else "wss://ws.okx.com:8443/ws/v5/private"
 
     def start(self):
+        with self.lock:
+            self.reconnecting = False
         self.stop()
         self.stop_event.clear()
         self.ws_subscriptions_ready.clear()
@@ -84,10 +88,18 @@ class WebSocketHandler:
             except: pass
 
     def restart(self):
+        with self.lock:
+            if self.reconnecting: return
+            self.reconnecting = True
+
         self.log("Restarting WebSocket connections...", level="info")
-        self.stop()
-        time.sleep(1) # Give it a moment to close
-        self.start()
+        try:
+            self.stop()
+            time.sleep(2) # Give it a moment to close
+            self.start()
+        finally:
+            with self.lock:
+                self.reconnecting = False
 
     def _on_message(self, ws, message):
         is_private = (ws == self.ws_private)
@@ -137,9 +149,16 @@ class WebSocketHandler:
         ws.send(json.dumps({"op": "subscribe", "args": channels}))
         self.pending_subscriptions.update({f"{prefix}:{arg['channel']}:{arg.get('instId', '')}" for arg in channels})
 
-    def _on_error(self, ws, error): self.log(f"WebSocket error: {error}", level="error")
+    def _on_error(self, ws, error):
+        # Avoid logging common broken pipe errors during shutdown/restart
+        if "closed file" not in str(error):
+            self.log(f"WebSocket error: {error}", level="error")
+
     def _on_close(self, ws, code, msg):
         self.log(f"WebSocket closed: {code} {msg}", level="debug")
         # Auto-reconnect if not deliberately stopped
         if not self.stop_event.is_set():
-            threading.Timer(5, self.restart).start()
+            with self.lock:
+                if self.reconnecting: return
+            # Use a slightly longer delay to avoid rapid fire
+            threading.Timer(10, self.restart).start()
