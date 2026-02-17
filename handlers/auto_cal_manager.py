@@ -36,33 +36,28 @@ class AutoCalManager:
                 current_fees = self.engine.position_manager.current_entry_fees
 
                 # Refined Formula: Incorporate current_entry_fees and exit fees
-                K_entry_exit = fee_pct * 2
+                K = fee_pct
+                # Mode 1: Above Zero (Target Net = 0)
+                # Denominator: rec - 2*K (requires recovery > twice fees)
+                denom_zero = max(0.0001, rec - 2*K)
+                if side == 'long':
+                    val_zero = (initial_notional + current_fees - notional * (1 + rec - K)) / denom_zero
+                else:
+                    val_zero = (current_fees + notional * (1 - rec + K) - initial_notional) / denom_zero
 
-                # Mode 1: To make PnL always above 0 (Above Zero)
-                if rec > K_entry_exit:
-                    if side == 'long':
-                        val_zero = (current_fees + initial_notional - notional * (1 + rec - K_entry_exit)) / (rec - K_entry_exit)
-                    else:
-                        val_zero = (current_fees - initial_notional + notional * (1 - rec + K_entry_exit)) / (rec - K_entry_exit)
+                if val_zero > 0:
+                    self.need_add_usdt_above_zero += val_zero
 
-                    if val_zero > 0:
-                        self.need_add_usdt_above_zero += val_zero
+                # Mode 2: Profit Target & Close
+                # Denominator: rec - K * (mult + 2)
+                denom_profit = max(0.0001, rec - K * (mult + 2))
+                if side == 'long':
+                    val_profit = (initial_notional + current_fees - notional * (1 + rec - K * (mult + 1))) / denom_profit
+                else:
+                    val_profit = (current_fees + notional * (1 - rec + K * (mult + 1)) - initial_notional) / denom_profit
 
-                # Mode 2: To reach Profit Target & Close
-                # User math: Target UPL = notional * fee_pct * mult
-                K_target = fee_pct * mult
-                if rec > K_target:
-                    # Solving for val where: (qty + val/(mkt*csize)) * mkt * csize * (+/-rec) = (notional + val) * K_target
-                    # (+/-rec) is just rec here as we use mkt*(1+/-rec)
-                    # (notional + val) * rec = (notional + val) * K_target + initial_notional - notional + current_fees
-                    # (notional + val) * (rec - K_target) = initial_notional - notional + current_fees
-                    if side == 'long':
-                        val_profit = (current_fees + initial_notional - notional * (1 + rec - K_target)) / (rec - K_target)
-                    else:
-                        val_profit = (current_fees - initial_notional + notional * (1 - rec + K_target)) / (rec - K_target)
-
-                    if val_profit > 0:
-                        self.need_add_usdt_profit_target += val_profit
+                if val_profit > 0:
+                    self.need_add_usdt_profit_target += val_profit
 
     def check_auto_exit(self, net_pnl, unrealized_pnl):
         notional = self.engine.cached_pos_notional

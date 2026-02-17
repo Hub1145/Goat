@@ -79,8 +79,16 @@ class OrderManager:
             else:
                 msg = res.get('msg') if res else 'No Response'
                 code = res.get('code') if res else 'N/A'
+
+                # Extract detailed error from data if available
+                detail_msg = ""
+                if res and 'data' in res and isinstance(res['data'], list) and len(res['data']) > 0:
+                    d = res['data'][0]
+                    if 'sMsg' in d:
+                        detail_msg = f" | Detail: {d.get('sMsg')} (sCode: {d.get('sCode')})"
+
                 # Log more details for non-zero codes to help debugging
-                self.engine.log(f"Order failed: {msg} (Code: {code}). Request: sz={body.get('sz')}, px={body.get('px')}, side={body.get('side')}, algo={bool(body.get('attachAlgoOrds'))}", level="error")
+                self.engine.log(f"Order failed: {msg}{detail_msg} (Code: {code}). Request: sz={body.get('sz')}, px={body.get('px', 'MKT')}, side={body.get('side')}, algo={bool(body.get('attachAlgoOrds'))}", level="error")
             return None
         except Exception as e:
             self.engine.log(f"Order fail: {e}", level="error")
