@@ -168,6 +168,7 @@ class TradingBotEngine:
                 # 1. Background Tasks (Silent syncs)
                 if self.monitoring_tick % 15 == 0:
                     self.account_manager.sync_account_data()
+                    self.position_manager.sync_positions()
                     self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
                     self.order_manager.sync_open_orders(self.config['symbol'])
                     self.order_manager.check_unfilled_timeouts()
@@ -207,6 +208,7 @@ class TradingBotEngine:
                         if tp > 0: self.current_take_profit[side] = tp
 
                 self.account_manager.check_daily_report()
+                self.position_manager.flush_fill_logs()
                 if time.time() - self.last_emit_time >= 1.5:
                     self._emit_socket_updates()
                     self.last_emit_time = time.time()
@@ -238,10 +240,11 @@ class TradingBotEngine:
                 self._emit_socket_updates()
             elif channel == 'orders' and data:
                 for o in data:
+                    ord_id = o.get('ordId')
                     fee = safe_float(o.get('fillFee', 0))
                     if fee != 0: self.position_manager.add_fee(fee)
                     pnl = safe_float(o.get('fillPnl', 0))
-                    if pnl != 0: self.position_manager.add_realized_pnl(pnl, fee)
+                    if pnl != 0: self.position_manager.add_realized_pnl(ord_id, pnl, fee)
                 self.order_manager.sync_open_orders(self.config['symbol'])
 
     def _emit_socket_updates(self, throttle=False):

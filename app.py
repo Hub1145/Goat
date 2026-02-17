@@ -1,3 +1,6 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for, flash
 from flask_socketio import SocketIO, emit
 import json
@@ -25,7 +28,7 @@ logger.addHandler(info_handler)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 config_file = 'config.json'
 login_file = 'login.json'
@@ -492,4 +495,4 @@ if __name__ == '__main__':
         bot_engine = TradingBotEngine(config_file, emit_to_client)
         bot_engine.start(passive_monitoring=True)
         
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True, allow_unsafe_werkzeug=True)
+    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)

@@ -119,9 +119,9 @@ class WebSocketHandler:
             self._send_subscriptions(is_private=False)
 
     def _login_websocket(self):
+        from handlers.utils import generate_okx_signature
         timestamp = str(int(time.time()))
-        message = timestamp + "GET/users/self/verify"
-        signature = base64.b64encode(hmac.new(self.okx_client.okx_api_secret.encode('utf-8'), message.encode('utf-8'), hashlib.sha256).digest()).decode('utf-8')
+        signature = generate_okx_signature(self.okx_client.okx_api_secret, timestamp, "GET", "/users/self/verify")
         payload = {"op": "login", "args": [{"apiKey": self.okx_client.okx_api_key, "passphrase": self.okx_client.okx_passphrase, "timestamp": timestamp, "sign": signature}]}
         self.ws_private.send(json.dumps(payload))
 

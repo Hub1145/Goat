@@ -15,6 +15,7 @@ class PositionManager:
         self.total_fees = 0.0
 
     def reset(self):
+        self.pending_fill_logs = {} # ordId -> {pnl, fee, time}
         self.in_position = {'long': False, 'short': False}
         self.position_qty = {'long': 0.0, 'short': 0.0}
         self.position_entry_price = {'long': 0.0, 'short': 0.0}
@@ -137,9 +138,34 @@ class PositionManager:
         # We also add to current_entry_fees, but we should clear it when position closes
         self.current_entry_fees += abs(fee)
 
-    def add_realized_pnl(self, pnl, fee):
+    def sync_positions(self):
+        target_symbol = self.config['symbol'].strip().upper()
+        res = self.engine.okx_client.request("GET", "/api/v5/account/positions", params={"instId": target_symbol})
+        if res and res.get('code') == '0':
+            self.process_positions(res.get('data', []), is_snapshot=True)
+
+    def add_realized_pnl(self, ord_id, pnl, fee):
         net = pnl + fee
         if net > 0: self.total_trade_profit += net
         else: self.total_trade_loss += abs(net)
         self.net_trade_profit = self.total_trade_profit - self.total_trade_loss
-        self.engine.log(f"Trade Closed - Realized PnL: {pnl:.4f}, Fee: {fee:.4f}, Net: {net:.4f}", level="info")
+
+        # Aggregate fill logs to avoid spamming
+        if ord_id not in self.pending_fill_logs:
+            self.pending_fill_logs[ord_id] = {'pnl': 0.0, 'fee': 0.0, 'time': time.time()}
+
+        self.pending_fill_logs[ord_id]['pnl'] += pnl
+        self.pending_fill_logs[ord_id]['fee'] += fee
+        self.pending_fill_logs[ord_id]['time'] = time.time()
+
+    def flush_fill_logs(self, force=False):
+        now = time.time()
+        to_remove = []
+        for ord_id, data in self.pending_fill_logs.items():
+            if force or (now - data['time'] > 1.0):
+                pnl, fee = data['pnl'], data['fee']
+                net = pnl + fee
+                self.engine.log(f"Trade Closed (Order {ord_id}) - Realized PnL: {pnl:.4f}, Fee: {fee:.4f}, Net: {net:.4f}", level="info")
+                to_remove.append(ord_id)
+        for oid in to_remove:
+            del self.pending_fill_logs[oid]

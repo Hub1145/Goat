@@ -134,10 +134,18 @@ class OrderManager:
         batch_offset = self.config.get('batch_offset', 0)
         self.batch_counter += 1
 
+        placed_count = 0
+        total_qty = 0
+
+        # Determine extra offset for this loop to "place differently"
+        # We rotate through 3 different sub-offsets to stagger orders across loops
+        loop_stagger = (self.batch_counter % 3) * (batch_offset / 3.0) if batch_offset > 0 else 0
+
         for i in range(batch_size):
             price = initial_limit_price
-            if i > 0:
-                price = (price - (batch_offset * i)) if side == 'long' else (price + (batch_offset * i))
+            # Stagger prices: each batch order is offset, and each loop is staggered
+            price_offset = (batch_offset * i) + loop_stagger
+            price = (price - price_offset) if side == 'long' else (price + price_offset)
 
             if price <= 0: continue
 
@@ -150,7 +158,9 @@ class OrderManager:
             remaining = capacity - self.engine.used_amount_notional
 
             target = self.config.get('target_order_amount', 100)
-            if remaining < self.config.get('min_order_amount', 10): break
+            if remaining < self.config.get('min_order_amount', 10):
+                if i == 0: self.engine.log(f"Insufficient capacity to place new {side} orders (Remaining: {remaining:.2f})", level="debug")
+                break
 
             trade_amt = min(target, remaining)
             qty = trade_amt / (price * self.engine.product_info.get('contractSize', 1.0))
@@ -158,9 +168,14 @@ class OrderManager:
             if qty < safe_float(self.engine.product_info.get('minOrderQty', 0)): continue
 
             tp, sl = self._calculate_tpsl_prices(side, price)
-            # place_order now handles pending_entry_ids and open_trades internally for better sync
-            self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price,
-                             order_type="Limit", posSide=side, take_profit_price=tp, stop_loss_price=sl)
+            # Use verbose=False to suppress individual logs, we'll log the batch instead
+            if self.place_order(self.config['symbol'], "buy" if side == 'long' else "sell", qty, price,
+                                order_type="Limit", posSide=side, take_profit_price=tp, stop_loss_price=sl, verbose=False):
+                placed_count += 1
+                total_qty += qty
+
+        if placed_count > 0:
+            self.engine.log(f"Placed batch #{self.batch_counter} of {placed_count} {side} orders (Total Qty: {total_qty:.4f})")
 
     def cancel_order(self, symbol, order_id, reason=None):
         return self.engine.okx_client.request("POST", "/api/v5/trade/cancel-order", body_dict={"instId": symbol, "ordId": order_id})
@@ -289,32 +304,34 @@ class OrderManager:
             # We generally only auto-cancel ENTRY orders based on these conditions
             if o['ordId'] not in self.pending_entry_ids: continue
 
-            # 1. Time-based cancel
+            # 1. Time-based cancel (Strictly respect limit)
             c_time = o.get('cTime')
-            if limit > 0 and c_time and (now_ms - c_time) > (limit * 1000):
-                to_cancel.append(o['ordId'])
-                reasons.append(f"Timeout ({limit}s)")
-                continue
+            # Use current time in ms to compare with c_time
+            if limit > 0 and c_time:
+                elapsed_seconds = (now_ms - c_time) / 1000
+                if elapsed_seconds >= limit:
+                    to_cancel.append(o['ordId'])
+                    reasons.append(f"Timeout ({int(elapsed_seconds)}s >= {limit}s)")
+                    continue
 
-            # 2. Condition-based cancel
+            # 2. Condition-based cancel (Only if enabled in config)
             if mkt <= 0: continue
 
             ent = o.get('entry_spot_price', 0)
             tp = o.get('tp_price', 0)
-            if tp <= 0:
-                side = 'long' if o.get('type') == 'BUY' else 'short'
-                tp_off = safe_float(self.config.get('tp_price_offset'))
-                if tp_off > 0:
-                    tp = (ent + tp_off) if side == 'long' else (ent - tp_off)
+            # If tp is 0, it means it wasn't synced or set. We should be careful about re-calculating it
+            # as it might cause premature cancels if the offset logic doesn't perfectly match the order.
 
             if cancel_ent_below and ent > 0 and ent < mkt:
                 to_cancel.append(o['ordId']); reasons.append(f"Entry {ent} < Market {mkt}")
             elif cancel_ent_above and ent > 0 and ent > mkt:
                 to_cancel.append(o['ordId']); reasons.append(f"Entry {ent} > Market {mkt}")
-            elif cancel_tp_below and tp > 0 and tp < mkt:
-                to_cancel.append(o['ordId']); reasons.append(f"TP {tp} < Market {mkt}")
-            elif cancel_tp_above and tp > 0 and tp > mkt:
-                to_cancel.append(o['ordId']); reasons.append(f"TP {tp} > Market {mkt}")
+            elif tp > 0:
+                # Only use TP for cancellation if we actually have a valid TP price
+                if cancel_tp_below and tp < mkt:
+                    to_cancel.append(o['ordId']); reasons.append(f"TP {tp} < Market {mkt}")
+                elif cancel_tp_above and tp > mkt:
+                    to_cancel.append(o['ordId']); reasons.append(f"TP {tp} > Market {mkt}")
 
         if to_cancel:
             for i, oid in enumerate(to_cancel):
