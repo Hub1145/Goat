@@ -15,15 +15,48 @@ class OrderManager:
         self.open_trades = []
         self.batch_counter = 0
 
+    def _round_to_step(self, value, step):
+        if not step or step <= 0: return value
+        # Use decimal-safe rounding
+        precision = 0
+        if '.' in str(step):
+            precision = len(str(step).split('.')[-1].rstrip('0'))
+
+        rounded = round(round(value / step) * step, precision)
+        # Final check to ensure we don't return 0.0000000000001
+        return float(f"{rounded:.{precision}f}")
+
     def place_order(self, symbol, side, qty, price=None, order_type="Market",
                     reduce_only=False, stop_loss_price=None, take_profit_price=None, posSide=None, verbose=True):
         try:
             path = "/api/v5/trade/order"
-            q_prec = self.engine.product_info.get('qtyPrecision', 8)
-            p_prec = self.engine.product_info.get('pricePrecision', 4)
-            body = {"instId": symbol, "tdMode": self.config.get('mode', 'cross'), "side": side.lower(), "ordType": order_type.lower(), "sz": f"{qty:.{q_prec}f}"}
-            if self.config.get('okx_pos_mode') == 'long_short_mode' and posSide: body["posSide"] = posSide
-            if order_type.lower() == "limit" and price is not None: body["px"] = f"{price:.{p_prec}f}"
+
+            # Apply precision and step size rounding
+            q_step = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))
+            p_step = safe_float(self.engine.product_info.get('priceTickSize', 0.01))
+            q_prec = self.engine.product_info.get('qtyPrecision', 0)
+            p_prec = self.engine.product_info.get('pricePrecision', 2)
+
+            qty = self._round_to_step(qty, q_step)
+            if qty <= 0:
+                self.engine.log(f"Invalid order quantity after rounding: {qty}", level="warning")
+                return None
+
+            body = {
+                "instId": symbol,
+                "tdMode": self.config.get('mode', 'cross'),
+                "side": side.lower(),
+                "ordType": order_type.lower(),
+                "sz": f"{qty:.{q_prec}f}" if q_prec > 0 else str(int(qty))
+            }
+
+            if self.config.get('okx_pos_mode') == 'long_short_mode' and posSide:
+                body["posSide"] = posSide
+
+            if order_type.lower() == "limit" and price is not None:
+                price = self._round_to_step(price, p_step)
+                body["px"] = f"{price:.{p_prec}f}"
+
             if reduce_only: body["reduceOnly"] = True
 
             algo_list = []
@@ -76,11 +109,7 @@ class OrderManager:
             if remaining < self.config.get('min_order_amount', 10): break
 
             trade_amt = min(target, remaining)
-            qty_contracts = trade_amt / (price * self.engine.product_info.get('contractSize', 1.0))
-
-            lot_sz = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))
-            q_prec = self.engine.product_info.get('qtyPrecision', 2)
-            qty = round(math.floor(qty_contracts / lot_sz) * lot_sz, q_prec)
+            qty = trade_amt / (price * self.engine.product_info.get('contractSize', 1.0))
 
             if qty < safe_float(self.engine.product_info.get('minOrderQty', 0)): continue
 

@@ -59,8 +59,16 @@ class WebSocketHandler:
             on_close=self._on_close
         )
 
-        self.ws_thread_public = threading.Thread(target=self.ws_public.run_forever, daemon=True)
-        self.ws_thread_private = threading.Thread(target=self.ws_private.run_forever, daemon=True)
+        self.ws_thread_public = threading.Thread(
+            target=self.ws_public.run_forever,
+            kwargs={"ping_interval": 20, "ping_timeout": 10},
+            daemon=True
+        )
+        self.ws_thread_private = threading.Thread(
+            target=self.ws_private.run_forever,
+            kwargs={"ping_interval": 20, "ping_timeout": 10},
+            daemon=True
+        )
 
         self.ws_thread_public.start()
         self.ws_thread_private.start()
@@ -130,4 +138,8 @@ class WebSocketHandler:
         self.pending_subscriptions.update({f"{prefix}:{arg['channel']}:{arg.get('instId', '')}" for arg in channels})
 
     def _on_error(self, ws, error): self.log(f"WebSocket error: {error}", level="error")
-    def _on_close(self, ws, code, msg): self.log(f"WebSocket closed: {code} {msg}", level="debug")
+    def _on_close(self, ws, code, msg):
+        self.log(f"WebSocket closed: {code} {msg}", level="debug")
+        # Auto-reconnect if not deliberately stopped
+        if not self.stop_event.is_set():
+            threading.Timer(5, self.restart).start()
