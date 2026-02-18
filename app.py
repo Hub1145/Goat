@@ -28,6 +28,7 @@ logger.addHandler(info_handler)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
+
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
 
 config_file = 'config.json'
