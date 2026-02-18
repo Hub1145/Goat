@@ -88,8 +88,14 @@ class TradingBotEngine:
     @property
     def remaining_amount_notional(self):
         leverage = safe_float(self.config.get('leverage', 1), 1.0)
-        max_allowed = self.config.get('max_allowed_used', 0.0)
-        capacity = max_allowed * leverage
+        equity = self.total_equity
+        # Cap max_allowed by equity to be realistic about margin, but ensure it's at least something
+        # if equity is not yet synced.
+        config_max = float(self.config.get('max_allowed_used', 0.0))
+        max_allowed = min(config_max, equity if equity > 0 else config_max)
+
+        rate_divisor = max(1, self.config.get('rate_divisor', 1))
+        capacity = (max_allowed / rate_divisor) * leverage
         return max(0.0, capacity - self.used_amount_notional)
     @property
     def max_allowed_display(self): return self.config.get('max_allowed_used', 0.0)
@@ -140,15 +146,26 @@ class TradingBotEngine:
     def start(self, passive_monitoring=False):
         if not passive_monitoring: self.is_running = True
         self.stop_event.clear()
-        self.okx_client.apply_api_credentials()
-        self.account_manager.sync_server_time()
-        self.account_manager.fetch_product_info(self.config['symbol'])
-        self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
-        self.ws_handler.start()
-        if not self.mgmt_thread or not self.mgmt_thread.is_alive():
-            self.mgmt_thread = threading.Thread(target=self._mgmt_loop, daemon=True)
-            self.mgmt_thread.start()
-        self.log(f"Bot started (Mode: {'Passive' if passive_monitoring else 'Active'})")
+
+        # Move slow initialization to a background thread to keep the main thread (Flask) responsive
+        threading.Thread(target=self._async_start_init, args=(passive_monitoring,), daemon=True).start()
+
+    def _async_start_init(self, passive_monitoring):
+        try:
+            self.okx_client.apply_api_credentials()
+            self.account_manager.sync_server_time()
+            self.account_manager.fetch_product_info(self.config['symbol'])
+            self.account_manager.sync_account_data() # Ensure equity is known for capacity calcs
+            self.indicator_manager.fetch_historical_data(self.config['symbol'], self.config.get('candlestick_timeframe', '1m'))
+            self.ws_handler.start()
+
+            if not self.mgmt_thread or not self.mgmt_thread.is_alive():
+                self.mgmt_thread = threading.Thread(target=self._mgmt_loop, daemon=True)
+                self.mgmt_thread.start()
+
+            self.log(f"Bot initialized and started (Mode: {'Passive' if passive_monitoring else 'Active'})")
+        except Exception as e:
+            self.log(f"Error during bot initialization: {e}", level="error")
 
     def stop(self):
         self.is_running = False

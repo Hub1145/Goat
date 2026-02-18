@@ -149,13 +149,7 @@ class OrderManager:
 
             if price <= 0: continue
 
-            leverage = safe_float(self.config.get('leverage', 1), 1.0)
-            equity = self.engine.total_equity
-            max_allowed = min(float(self.config.get('max_allowed_used', 1000)), equity if equity > 0 else 1000000)
-
-            rate_divisor = max(1, self.config.get('rate_divisor', 1))
-            capacity = (max_allowed / rate_divisor) * leverage
-            remaining = capacity - self.engine.used_amount_notional
+            remaining = self.engine.remaining_amount_notional
 
             target = self.config.get('target_order_amount', 100)
             if remaining < self.config.get('min_order_amount', 10):

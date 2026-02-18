@@ -35,7 +35,10 @@ class AutoCalManager:
                 initial_notional = qty * entry * contract_size
                 notional = qty * mkt * contract_size
 
-                rec = self.config.get('add_pos_recovery_percent', 0.6) / 100.0
+                # Minimum recovery percentage to ensure formula stability (at least 0.2%)
+                rec_val = self.config.get('add_pos_recovery_percent', 0.6)
+                rec = max(0.2, rec_val) / 100.0
+
                 fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
                 mult = self.config.get('add_pos_profit_multiplier', 1.5)
 
@@ -46,26 +49,32 @@ class AutoCalManager:
 
                 # Refined Formula: Incorporate cycle costs (fees + previous losses)
                 K = fee_pct
+
                 # Mode 1: Above Zero (Target Net = 0)
                 # Denominator: rec - 2*K (requires recovery > twice fees)
-                denom_zero = max(0.0001, rec - 2*K)
-                if side == 'long':
-                    val_zero = (costs + initial_notional - notional * (1 + rec - K)) / denom_zero
-                else:
-                    val_zero = (costs + notional * (1 - rec + K) - initial_notional) / denom_zero
+                # Ensure denominator is at least 0.1% to avoid division by zero or extreme values
+                denom_zero = max(0.001, rec - 2*K)
 
+                if side == 'long':
+                    numerator_zero = costs + initial_notional - notional * (1 + rec - K)
+                else:
+                    numerator_zero = costs + notional * (1 - rec + K) - initial_notional
+
+                val_zero = numerator_zero / denom_zero
                 if val_zero > 0:
                     self.need_add_usdt_above_zero += val_zero
 
                 # Mode 2: Profit Target & Close
                 # Target Profit: (initial_notional + V) * K * mult
                 # Denominator: rec - K * (mult + 2)
-                denom_profit = max(0.0001, rec - K * (mult + 2))
-                if side == 'long':
-                    val_profit = (costs + initial_notional - notional * (1 + rec - K * (mult + 1))) / denom_profit
-                else:
-                    val_profit = (costs + notional * (1 - rec + K * (mult + 1)) - initial_notional) / denom_profit
+                denom_profit = max(0.001, rec - K * (mult + 2))
 
+                if side == 'long':
+                    numerator_profit = costs + initial_notional * (1 + K * mult) - notional * (1 + rec - K)
+                else:
+                    numerator_profit = costs + notional * (1 - rec + K) - initial_notional * (1 - K * mult)
+
+                val_profit = numerator_profit / denom_profit
                 if val_profit > 0:
                     self.need_add_usdt_profit_target += val_profit
 
@@ -74,7 +83,8 @@ class AutoCalManager:
         if notional <= 0: return False, ""
 
         fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
-        used_fees = self.engine.position_manager.current_entry_fees
+        # Use aggregate fees for thresholds
+        used_fees = sum(self.engine.position_manager.current_entry_fees.values())
         size_fees = notional * fee_pct
 
         # 1. Above Zero (Mode 1)
@@ -84,10 +94,14 @@ class AutoCalManager:
         # 2. Profit Target (Mode 2)
         if self.config.get('use_add_pos_profit_target'):
             mult = self.config.get('add_pos_profit_multiplier', 1.5)
-            # Match user math: Target = notional * fee_pct * multiplier
-            target = notional * fee_pct * mult
+            # Match user expectation: Net Profit = One-way Fee * Multiplier
+            # So Target Unrealized PnL = Total Cycle Fees + Estimated Exit Fee + (One-way Fee * Multiplier)
+            one_way_fee = notional * fee_pct
+            total_cycle_fees = sum(self.engine.position_manager.current_entry_fees.values())
+            target = total_cycle_fees + one_way_fee + (one_way_fee * mult)
+
             if unrealized_pnl >= target:
-                return True, "Profit Target Met (Mode 2)"
+                return True, f"Profit Target Met (Mode 2: Net > {one_way_fee * mult:.2f})"
 
         # 3. Auto-Manual Threshold
         if self.config.get('use_pnl_auto_manual'):
@@ -160,9 +174,9 @@ class AutoCalManager:
 
                     if price_diff >= gap:
                         self.engine.log(f"Auto-Add Gap Triggered: {side} position, last add {self.last_add_price}, mkt {mkt}, gap {gap:.2f}")
-                        self.last_add_price = mkt
-                        self._execute_add(side, mkt)
-                        break # Only one add per check loop to maintain sanity
+                        if self._execute_add(side, mkt):
+                            self.last_add_price = mkt
+                            break # Only one add per check loop to maintain sanity
 
             if not any_in_pos:
                 self.auto_add_step_count = 0
@@ -172,7 +186,7 @@ class AutoCalManager:
         max_adds = int(self.config.get('add_pos_max_count', 10))
         if self.auto_add_step_count >= max_adds:
             self.engine.log(f"Auto-Add: Max steps reached ({self.auto_add_step_count}/{max_adds}). Skipping.", level="info")
-            return
+            return False
 
         current_notional = self.engine.position_manager.position_notional[side]
         # Calculate size based on percentage
@@ -201,7 +215,7 @@ class AutoCalManager:
 
         if final_notional < self.config.get('min_order_amount', 10.0):
             self.engine.log(f"Auto-Add notional {final_notional:.2f} is below min_order_amount. Skipping.", level="info")
-            return
+            return False
 
         sz = final_notional / (price * self.engine.product_info.get('contractSize', 1.0))
 
@@ -211,7 +225,7 @@ class AutoCalManager:
 
         if sz < safe_float(self.engine.product_info.get('minOrderQty', 0)):
             self.engine.log(f"Auto-Add quantity {sz} is below minOrderQty (Target Notional {final_notional:.2f}). Skipping.", level="info")
-            return
+            return False
 
         tp, sl = self.engine.order_manager._calculate_tpsl_prices(side, price)
 
@@ -233,3 +247,5 @@ class AutoCalManager:
                                                  order_type="Market", posSide=side, take_profit_price=tp, stop_loss_price=sl):
             self.auto_add_step_count += 1
             self.last_order_time = time.time()
+            return True
+        return False

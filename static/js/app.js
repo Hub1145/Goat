@@ -10,14 +10,15 @@ let lastSizeFee = 0; // Track last known Size Fee for Auto-Cal Size calculation
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
-    // Faster parallel load for Config and Status
-    Promise.all([loadConfig(), loadStatus()]).then(() => {
-        setupEventListeners();
-        setupSocketListeners();
-        startUITimers();
-    }).catch(err => {
-        console.error('Initial load failed:', err);
-    });
+
+    // Setup listeners first so they work even if initial data load is slow/fails
+    setupEventListeners();
+    setupSocketListeners();
+    startUITimers();
+
+    // Load initial data
+    loadConfig().catch(err => console.error('Load Config failed:', err));
+    loadStatus().catch(err => console.error('Load Status failed:', err));
 });
 
 function initializeTheme() {
@@ -412,7 +413,8 @@ function updateAccountMetrics(data) {
 
     const safeFix = (val, prec = 2) => {
         const n = Number(val);
-        return isNaN(n) ? '0.00' : n.toFixed(prec);
+        if (isNaN(n) || !isFinite(n)) return '0.00';
+        return n.toFixed(prec);
     };
 
     const safeSetText = (id, text) => {
@@ -439,12 +441,12 @@ function updateAccountMetrics(data) {
     const minOrder = currentConfig?.min_order_amount || 0;
     const remainingEl = document.getElementById('remainingAmount');
     if (remainingEl) {
-        if (remaining < minOrder && minOrder > 0) {
+        if (!isNaN(remaining) && remaining < minOrder && minOrder > 0) {
             remainingEl.textContent = 'No remaining balance for trade';
             remainingEl.classList.add('text-danger', 'small');
             remainingEl.style.fontSize = '0.75rem';
         } else {
-            remainingEl.textContent = `$${remaining.toFixed(2)}`;
+            remainingEl.textContent = `$${safeFix(remaining)}`;
             remainingEl.classList.remove('text-danger', 'small');
             remainingEl.style.fontSize = '';
         }
