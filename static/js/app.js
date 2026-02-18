@@ -451,8 +451,13 @@ function updateAccountMetrics(data) {
             remainingEl.style.fontSize = '';
         }
     }
-    safeSetText('needAddProfitTargetDisplay', `$${safeFix(data.need_add_usdt)}`);
-    safeSetText('needAddAboveZeroDisplay', `$${safeFix(data.need_add_above_zero)}`);
+    const needAddProfit = safeFix(data.need_add_usdt);
+    const needAddPnl = safeFix(data.need_add_above_zero);
+    const qtyProfit = safeFix(data.need_add_qty_profit, 4);
+    const qtyZero = safeFix(data.need_add_qty_zero, 4);
+
+    safeSetText('needAddProfitTargetDisplay', `$${needAddProfit} (${qtyProfit} ct)`);
+    safeSetText('needAddAboveZeroDisplay', `$${needAddPnl} (${qtyZero} ct)`);
     if (data.available_balance !== undefined) {
         safeSetText('balance', `$${safeFix(data.available_balance)}`);
     }

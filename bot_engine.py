@@ -202,7 +202,9 @@ class TradingBotEngine:
                     fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
                     # Sum fees for the net_pnl calculation used in check_auto_exit
                     total_cycle_fees = sum(self.position_manager.current_entry_fees.values())
+                    # Estimated Exit Fee = cached_pos_notional * fee_pct
                     net_pnl = self.cached_unrealized_pnl - total_cycle_fees - (self.cached_pos_notional * fee_pct)
+
                     triggered, reason = self.auto_cal_manager.check_auto_exit(net_pnl, self.cached_unrealized_pnl)
                     if triggered:
                         threading.Thread(target=self.execute_auto_exit, args=(reason,), daemon=True).start()
@@ -270,6 +272,16 @@ class TradingBotEngine:
         self.last_emit_time = time.time()
 
         fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
+
+        # Calculate Required Contracts for Need Add display
+        mkt = self.latest_trade_price
+        ct_size = self.product_info.get('contractSize', 1.0)
+        need_add_qty_profit = 0.0
+        need_add_qty_zero = 0.0
+        if mkt > 0 and ct_size > 0:
+            need_add_qty_profit = self.need_add_usdt_profit_target / (mkt * ct_size)
+            need_add_qty_zero = self.need_add_usdt_above_zero / (mkt * ct_size)
+
         payload = {
             'total_trades': self.total_trades_count, 'total_capital': self.total_equity,
             'total_capital_2nd': self.total_capital_2nd,
@@ -280,8 +292,12 @@ class TradingBotEngine:
             'net_profit': self.net_profit, 'in_position': self.in_position,
             'position_qty': self.position_qty, 'position_entry_price': self.position_entry_price,
             'position_liq': self.position_manager.position_liq,
-            'daily_reports': self.daily_reports, 'need_add_usdt': self.need_add_usdt_profit_target,
-            'need_add_above_zero': self.need_add_usdt_above_zero, 'running': self.is_running,
+            'daily_reports': self.daily_reports,
+            'need_add_usdt': self.need_add_usdt_profit_target,
+            'need_add_above_zero': self.need_add_usdt_above_zero,
+            'need_add_qty_profit': need_add_qty_profit,
+            'need_add_qty_zero': need_add_qty_zero,
+            'running': self.is_running,
             'trade_fees': self.trade_fees, 'net_trade_profit': self.net_trade_profit,
             'used_fees': sum(self.position_manager.current_entry_fees.values()),
             'size_fees': self.size_amount * fee_pct,

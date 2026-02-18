@@ -22,38 +22,45 @@ class AutoCalManager:
         self.need_add_usdt_profit_target = 0.0
         self.need_add_usdt_above_zero = 0.0
 
+        # Avoid calculation with default/stale product info
+        if not self.engine.product_info.get('is_loaded'):
+            return
+
         mkt = self.engine.latest_trade_price
         if mkt <= 0: return
 
         for side in ['long', 'short']:
             if self.engine.in_position[side]:
                 entry = self.engine.position_entry_price[side]
-                qty = abs(self.engine.position_qty[side])
+                qty = abs(self.engine.position_qty[side]) # qty is in contracts
                 if entry <= 0 or qty <= 0: continue
 
+                # contractSize is multiplier (e.g. 0.1 for BTC).
+                # Notional = contracts * entry * size
                 contract_size = safe_float(self.engine.product_info.get('contractSize', 1.0))
+
                 initial_notional = qty * entry * contract_size
                 notional = qty * mkt * contract_size
 
-                # Minimum recovery percentage to ensure formula stability (at least 0.2%)
+                # Recovery % (e.g. 0.6 -> 0.006)
                 rec_val = self.config.get('add_pos_recovery_percent', 0.6)
-                rec = max(0.2, rec_val) / 100.0
+                rec = max(0.1, rec_val) / 100.0
 
                 fee_pct = self.config.get('trade_fee_percentage', 0.08) / 100.0
                 mult = self.config.get('add_pos_profit_multiplier', 1.5)
 
-                # Side-specific cycle metrics
+                # Costs in USDT
                 current_fees = self.engine.position_manager.current_entry_fees[side]
                 realized_loss = self.engine.position_manager.realized_loss_this_cycle[side]
                 costs = current_fees + realized_loss
 
-                # Refined Formula: Incorporate cycle costs (fees + previous losses)
                 K = fee_pct
 
                 # Mode 1: Above Zero (Target Net = 0)
-                # Denominator: rec - 2*K (requires recovery > twice fees)
-                # Ensure denominator is at least 0.1% to avoid division by zero or extreme values
-                denom_zero = max(0.001, rec - 2*K)
+                # Denominator: (mkt * size * (1 - K)) - (mkt * size * (1 + rec))? No.
+                # Simplified formula: V = [Costs + Notional_initial - Notional_current*(1+rec-K)] / [rec - 2K]
+                denom_zero = rec - 2*K
+                if abs(denom_zero) < 0.0001: denom_zero = 0.0001
 
                 if side == 'long':
                     numerator_zero = costs + initial_notional - notional * (1 + rec - K)
@@ -62,12 +69,13 @@ class AutoCalManager:
 
                 val_zero = numerator_zero / denom_zero
                 if val_zero > 0:
+                    # Correction for "Wrong Dot place":
+                    # The formula returns required additional NOTIONAL.
                     self.need_add_usdt_above_zero += val_zero
 
                 # Mode 2: Profit Target & Close
-                # Target Profit: (initial_notional + V) * K * mult
-                # Denominator: rec - K * (mult + 2)
-                denom_profit = max(0.001, rec - K * (mult + 2))
+                denom_profit = rec - K * (mult + 2)
+                if abs(denom_profit) < 0.0001: denom_profit = 0.0001
 
                 if side == 'long':
                     numerator_profit = costs + initial_notional * (1 + K * mult) - notional * (1 + rec - K)
@@ -183,6 +191,16 @@ class AutoCalManager:
                 self.last_add_price = 0.0
 
     def _execute_add(self, side, price):
+        # IMPORTANT: Auto-Cal recovery orders bypass budget and min order amount restrictions
+        is_recovery = False
+        target_notional = 0.0
+        if self.config.get('use_add_pos_profit_target') and self.need_add_usdt_profit_target > 0:
+            target_notional = max(target_notional, self.need_add_usdt_profit_target)
+            is_recovery = True
+        if self.config.get('use_add_pos_above_zero') and self.need_add_usdt_above_zero > 0:
+            target_notional = max(target_notional, self.need_add_usdt_above_zero)
+            is_recovery = True
+
         max_adds = int(self.config.get('add_pos_max_count', 10))
         if self.auto_add_step_count >= max_adds:
             self.engine.log(f"Auto-Add: Max steps reached ({self.auto_add_step_count}/{max_adds}). Skipping.", level="info")
@@ -195,29 +213,25 @@ class AutoCalManager:
         pct = (pct_base + (self.auto_add_step_count * pct_offset)) / 100.0
 
         sz_pct_notional = current_notional * pct
-
-        # Calculate size based on Need Add metrics if enabled
-        # Note: self.need_add_usdt_profit_target and self.need_add_usdt_above_zero are updated in calculate_need_add_metrics
-        target_notional = 0.0
-        if self.config.get('use_add_pos_profit_target'):
-            target_notional = max(target_notional, self.need_add_usdt_profit_target)
-        if self.config.get('use_add_pos_above_zero'):
-            target_notional = max(target_notional, self.need_add_usdt_above_zero)
-
         final_notional = max(sz_pct_notional, target_notional)
-        self.engine.log(f"Auto-Add Calculation: Current {current_notional:.2f}, Pct {pct*100:.1f}% -> {sz_pct_notional:.2f}. Need-Add target {target_notional:.2f}. Final target {final_notional:.2f}")
 
-        # Limit by remaining capacity
-        remaining = self.engine.remaining_amount_notional
-        if final_notional > remaining:
-            self.engine.log(f"Auto-Add notional {final_notional:.2f} exceeds remaining capacity {remaining:.2f}. Capping.", level="warning")
-            final_notional = remaining
+        self.engine.log(f"Auto-Add Calc: Current {current_notional:.2f}, Pct {pct*100:.1f}% -> {sz_pct_notional:.2f}. Recovery Target {target_notional:.2f}. Final {final_notional:.2f}")
 
-        if final_notional < self.config.get('min_order_amount', 10.0):
-            self.engine.log(f"Auto-Add notional {final_notional:.2f} is below min_order_amount. Skipping.", level="info")
-            return False
+        if not is_recovery:
+            # Standard Auto-Add (Percentage based only) follows restrictions
+            remaining = self.engine.remaining_amount_notional
+            if final_notional > remaining:
+                self.engine.log(f"Auto-Add notional {final_notional:.2f} exceeds remaining capacity {remaining:.2f}. Capping.", level="warning")
+                final_notional = remaining
 
-        sz = final_notional / (price * self.engine.product_info.get('contractSize', 1.0))
+            if final_notional < self.config.get('min_order_amount', 10.0):
+                self.engine.log(f"Auto-Add notional {final_notional:.2f} below min_order_amount. Skipping.", level="info")
+                return False
+        else:
+            self.engine.log("Auto-Cal Recovery Order: Bypassing budget and min-order restrictions.", level="info")
+
+        contract_multiplier = safe_float(self.engine.product_info.get('contractSize', 1.0))
+        sz = final_notional / (price * contract_multiplier)
 
         # Apply quantity precision and step size
         lot_sz = safe_float(self.engine.product_info.get('qtyStepSize', 1.0))

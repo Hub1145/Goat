@@ -49,8 +49,10 @@ class AccountManager:
                 'pricePrecision': self._get_precision(info.get('tickSz')),
                 'qtyStepSize': float(info.get('lotSz')),
                 'minOrderQty': float(info.get('minSz')),
-                'contractSize': float(info.get('ctVal', '1'))
+                'contractSize': float(info.get('ctVal', '1')),
+                'is_loaded': True
             }
+            self.engine.log(f"Product Info Updated for {symbol}: ContractSize={self.engine.product_info['contractSize']}, LotSz={self.engine.product_info['qtyStepSize']}")
             return True
         return False
 
