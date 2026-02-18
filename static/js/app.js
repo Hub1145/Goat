@@ -1,4 +1,12 @@
-const socket = io();
+const socket = io({
+    transports: ['websocket', 'polling'],
+    upgrade: true,
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000
+});
 
 let currentConfig = null;
 const configModal = new bootstrap.Modal(document.getElementById('configModal'));
@@ -307,6 +315,11 @@ async function testApiKey() {
     }
 }
 function setupSocketListeners() {
+    socket.on('connect_error', (err) => {
+        console.error('Socket.IO Connection Error:', err);
+        addConsoleLog({ message: `Dashboard Connection Error: ${err.message}. Retrying...`, level: 'error' });
+    });
+
     socket.on('connection_status', (data) => {
         console.log('Connected to server:', data);
     });
@@ -451,13 +464,18 @@ function updateAccountMetrics(data) {
             remainingEl.style.fontSize = '';
         }
     }
-    const needAddProfit = safeFix(data.need_add_usdt);
-    const needAddPnl = safeFix(data.need_add_above_zero);
-    const qtyProfit = safeFix(data.need_add_qty_profit, 4);
-    const qtyZero = safeFix(data.need_add_qty_zero, 4);
+    const needAddProfitVal = Number(data.need_add_usdt) || 0;
+    const needAddPnlVal = Number(data.need_add_above_zero) || 0;
+    const qtyProfitVal = Number(data.need_add_qty_profit) || 0;
+    const qtyZeroVal = Number(data.need_add_qty_zero) || 0;
 
-    safeSetText('needAddProfitTargetDisplay', `$${needAddProfit} (${qtyProfit} ct)`);
-    safeSetText('needAddAboveZeroDisplay', `$${needAddPnl} (${qtyZero} ct)`);
+    let profitText = `$${safeFix(needAddProfitVal)}`;
+    if (qtyProfitVal > 0) profitText += ` (${safeFix(qtyProfitVal, 4)} ct)`;
+    safeSetText('needAddProfitTargetDisplay', profitText);
+
+    let pnlText = `$${safeFix(needAddPnlVal)}`;
+    if (qtyZeroVal > 0) pnlText += ` (${safeFix(qtyZeroVal, 4)} ct)`;
+    safeSetText('needAddAboveZeroDisplay', pnlText);
     if (data.available_balance !== undefined) {
         safeSetText('balance', `$${safeFix(data.available_balance)}`);
     }

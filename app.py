@@ -29,7 +29,7 @@ logger.addHandler(info_handler)
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
 
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet')
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', ping_timeout=60, ping_interval=25)
 
 config_file = 'config.json'
 login_file = 'login.json'
@@ -496,5 +496,5 @@ if __name__ == '__main__':
         bot_engine = TradingBotEngine(config_file, emit_to_client)
         bot_engine.start(passive_monitoring=True)
         
-    # Use port 3000 for live preview
-    socketio.run(app, host='0.0.0.0', port=5000, debug=False, use_reloader=False, log_output=True)
+    port = int(os.environ.get('PORT', 5000))
+    socketio.run(app, host='0.0.0.0', port=port, debug=False, use_reloader=False, log_output=True)
