@@ -1,19 +1,35 @@
+import eventlet
+eventlet.monkey_patch()
+
 from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for, flash
 from flask_socketio import SocketIO, emit
 import json
 import logging
 import os
 import functools
+import threading
+from logging.handlers import RotatingFileHandler
 from bot_engine import TradingBotEngine
 
-logging.basicConfig(
-    level=logging.DEBUG, # Changed to DEBUG for more verbose logging
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+# Configure root logger
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(console_handler)
+
+# File handler for INFO logs (required for Download Logs)
+info_handler = RotatingFileHandler('info.log', maxBytes=10*1024*1024, backupCount=5)
+info_handler.setLevel(logging.INFO)
+info_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger.addHandler(info_handler)
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.environ.get('SESSION_SECRET', 'dev-secret-key-change-in-production')
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode='eventlet', ping_timeout=60, ping_interval=25)
 
 config_file = 'config.json'
 login_file = 'login.json'
@@ -140,15 +156,13 @@ def update_config():
             save_config(current_config)
 
             warning_msg = None
-            if bot_engine and bot_engine.is_running:
-                # Update the bot's internal config object and trigger dynamic updates
+            if bot_engine:
+                # Bot engine is modular and always runs a management loop once started.
+                # apply_live_config_update handles sensitive changes like API keys and symbol.
                 result = bot_engine.apply_live_config_update(current_config)
                 if result.get('warnings'):
                     warning_msg = " | ".join(result['warnings'])
-                bot_engine.log("Configuration updated live from dashboard.", level="info")
-            elif bot_engine:
-                 # If not running, just sync the config object
-                 bot_engine.config = current_config
+                bot_engine.log("Configuration updated live from dashboard.", level="debug")
 
             def background_init():
                 global bot_engine
@@ -156,20 +170,15 @@ def update_config():
                 if not bot_engine:
                     bot_engine = TradingBotEngine(config_file, emit_to_client)
 
-                # If not trading, we still refresh credentials for background monitoring
-                if not bot_engine.is_running:
+                # Ensure it's started (at least in passive monitoring mode)
+                if not bot_engine.mgmt_thread or not bot_engine.mgmt_thread.is_alive():
                     bot_engine.start(passive_monitoring=True)
-                else:
-                    # If already running, we might need to apply new credentials if they changed
-                    # (Though credentials are usually considered sensitive and blocked if changed while running)
-                    bot_engine._apply_api_credentials()
                 
                 # Check if the currently selected credentials are valid
                 valid, msg = bot_engine.check_credentials()
                 if not valid:
                     emit_to_client('error', {'message': f'API Credentials Error: {msg}'})
             
-            import threading
             threading.Thread(target=background_init, daemon=True).start()
             
             final_msg = 'Configuration updated successfully'
@@ -279,16 +288,17 @@ def get_status():
             logging.error(f"Error initializing bot engine for status: {e}")
             return jsonify({'running': False, 'error': str(e)}), 500
 
-    if not bot_engine.is_running:
-        try:
-            bot_engine.fetch_account_data_sync()
-        except Exception as e:
-            logging.error(f"Error fetching sync account data: {e}")
+    # Background sync is already handling data updates
+    # if not bot_engine.is_running:
+    #     try:
+    #         bot_engine.fetch_account_data_sync()
+    #     except Exception as e:
+    #         logging.error(f"Error fetching sync account data: {e}")
 
     # Centralized metric calculation logic (matches bot_engine._emit_socket_updates)
     total_active_trades_count = bot_engine.total_trades_count + len(bot_engine.open_trades)
     
-    return jsonify({
+    status = {
         'running': bot_engine.is_running,
         'open_trades': bot_engine.open_trades,
         'total_trades': total_active_trades_count,
@@ -305,6 +315,7 @@ def get_status():
         'in_position': bot_engine.in_position,
         'position_entry_price': bot_engine.position_entry_price,
         'position_qty': bot_engine.position_qty,
+        'position_liq': bot_engine.position_manager.position_liq,
         'current_take_profit': bot_engine.current_take_profit,
         'current_stop_loss': bot_engine.current_stop_loss,
         'positions': {
@@ -327,11 +338,15 @@ def get_status():
         'net_trade_profit': getattr(bot_engine, 'net_trade_profit', 0.0),
         'total_trade_profit': getattr(bot_engine, 'total_trade_profit', 0.0),
         'total_trade_loss': getattr(bot_engine, 'total_trade_loss', 0.0)
-    })
+    }
+
+    response = jsonify(status)
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
  
 @socketio.on('connect')
-def handle_connect(sid):
+def handle_connect(auth=None):
+    sid = request.sid
     global bot_engine
     logging.info(f'Client connected: {sid}')
     emit('connection_status', {'connected': True}, room=sid)
@@ -346,9 +361,7 @@ def handle_connect(sid):
     if bot_engine:
         emit('bot_status', {'running': bot_engine.is_running}, room=sid)
         if bot_engine:
-            # Trigger a sync to ensure metrics are fresh
-            bot_engine.fetch_account_data_sync()
-            
+            # Use cached data for immediate response
             payload = {
                 'total_capital': bot_engine.total_equity,
                 'total_capital_2nd': max(0.0, bot_engine.total_equity - bot_engine.cumulative_margin_used),
@@ -376,12 +389,15 @@ def handle_connect(sid):
             'in_position': bot_engine.in_position,
             'position_entry_price': bot_engine.position_entry_price,
             'position_qty': bot_engine.position_qty,
+            'position_liq': bot_engine.position_manager.position_liq,
             'current_take_profit': bot_engine.current_take_profit,
             'current_stop_loss': bot_engine.current_stop_loss
         }, room=sid)
  
-        for log in list(bot_engine.console_logs):
-            emit('console_log', log, room=sid)
+        # Batch logs to avoid flooding and race conditions on client side
+        logs = list(bot_engine.console_logs)
+        if logs:
+            emit('console_log_batch', {'logs': logs}, room=sid)
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -470,7 +486,7 @@ def handle_emergency_sl(data=None):
          bot_engine = TradingBotEngine(config_file, emit_to_client)
          bot_engine.start(passive_monitoring=True)
     
-    bot_engine.emergency_sl()
+    bot_engine.execute_auto_exit(reason="Manual Emergency SL Triggered")
 
 
 if __name__ == '__main__':

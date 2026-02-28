@@ -989,15 +989,27 @@
                                 <div class="accordion-body">
                                     <div class="mb-3 form-check">
                                         <input type="checkbox" class="form-check-input"
+                                            id="cancelOnTpPriceBelowMarket">
+                                        <label class="form-check-label" for="cancelOnTpPriceBelowMarket">
+                                            Cancel if TP price is below market price</label>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input"
+                                            id="cancelOnTpPriceAboveMarket">
+                                        <label class="form-check-label" for="cancelOnTpPriceAboveMarket">
+                                            Cancel if TP price is above market price</label>
+                                    </div>
+                                    <div class="mb-3 form-check">
+                                        <input type="checkbox" class="form-check-input"
                                             id="cancelOnEntryPriceBelowMarket">
-                                        <label class="form-check-label" for="cancelOnEntryPriceBelowMarket">Short:
-                                            Cancel if Entry price is below market price</label>
+                                        <label class="form-check-label" for="cancelOnEntryPriceBelowMarket">
+                                            Cancel if Entry price is below market price (e.g. Short move away)</label>
                                     </div>
                                     <div class="mb-3 form-check">
                                         <input type="checkbox" class="form-check-input"
                                             id="cancelOnEntryPriceAboveMarket">
-                                        <label class="form-check-label" for="cancelOnEntryPriceAboveMarket">Long: Cancel
-                                            if Entry price is above market price</label>
+                                        <label class="form-check-label" for="cancelOnEntryPriceAboveMarket">
+                                            Cancel if Entry price is above market price (e.g. Long move away)</label>
                                     </div>
                                 </div>
                             </div>

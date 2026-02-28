@@ -1,4 +1,12 @@
-const socket = io();
+const socket = io({
+    transports: ['websocket', 'polling'],
+    upgrade: true,
+    reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
+    timeout: 20000
+});
 
 let currentConfig = null;
 const configModal = new bootstrap.Modal(document.getElementById('configModal'));
@@ -10,14 +18,15 @@ let lastSizeFee = 0; // Track last known Size Fee for Auto-Cal Size calculation
 
 document.addEventListener('DOMContentLoaded', () => {
     initializeTheme();
-    // Faster parallel load for Config and Status
-    Promise.all([loadConfig(), loadStatus()]).then(() => {
-        setupEventListeners();
-        setupSocketListeners();
-        startUITimers();
-    }).catch(err => {
-        console.error('Initial load failed:', err);
-    });
+
+    // Setup listeners first so they work even if initial data load is slow/fails
+    setupEventListeners();
+    setupSocketListeners();
+    startUITimers();
+
+    // Load initial data
+    loadConfig().catch(err => console.error('Load Config failed:', err));
+    loadStatus().catch(err => console.error('Load Status failed:', err));
 });
 
 function initializeTheme() {
@@ -192,6 +201,10 @@ function setupEventListeners() {
 
     document.getElementById('tradeFeePercentage').addEventListener('change', saveLiveConfigs);
 
+    // Safety Line live listeners
+    document.getElementById('shortSafetyLinePrice').addEventListener('change', saveLiveConfigs);
+    document.getElementById('longSafetyLinePrice').addEventListener('change', saveLiveConfigs);
+
     // Sync Dashboard Card with Modal Inputs
     document.querySelectorAll('.dashboard-sync').forEach(el => {
         el.addEventListener('change', (e) => {
@@ -302,6 +315,11 @@ async function testApiKey() {
     }
 }
 function setupSocketListeners() {
+    socket.on('connect_error', (err) => {
+        console.error('Socket.IO Connection Error:', err);
+        addConsoleLog({ message: `Dashboard Connection Error: ${err.message}. Retrying...`, level: 'error' });
+    });
+
     socket.on('connection_status', (data) => {
         console.log('Connected to server:', data);
     });
@@ -310,7 +328,7 @@ function setupSocketListeners() {
         updateBotStatus(data.running);
     });
 
-    socket.on('account_update', (data) => {
+    socket.on('account_update', (data) => { console.log('Received account_update', data);
         updateAccountMetrics(data);
     });
 
@@ -324,6 +342,14 @@ function setupSocketListeners() {
 
     socket.on('console_log', (data) => {
         addConsoleLog(data);
+    });
+
+    socket.on('console_log_batch', (data) => {
+        if (data && data.logs) {
+            const consoleEl = document.getElementById('consoleOutput');
+            if (consoleEl) consoleEl.innerHTML = ''; // Clear once before batch
+            data.logs.forEach(log => addConsoleLog(log));
+        }
     });
 
     socket.on('console_cleared', () => {
@@ -348,9 +374,6 @@ function setupSocketListeners() {
 
     socket.on('connect', () => {
         console.log('WebSocket connected');
-        // Clear console on reconnect to avoid duplicate history logs
-        const consoleEl = document.getElementById('consoleOutput');
-        if (consoleEl) consoleEl.innerHTML = '';
         loadStatus();
     });
 
@@ -401,37 +424,60 @@ function updateAccountMetrics(data) {
         return;
     }
 
+    const safeFix = (val, prec = 2) => {
+        const n = Number(val);
+        if (isNaN(n) || !isFinite(n)) return '0.00';
+        return n.toFixed(prec);
+    };
+
+    const safeSetText = (id, text) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    };
+
     if (data.total_capital !== undefined) {
-        document.getElementById('totalCapital').textContent = `$${Number(data.total_capital).toFixed(2)}`;
+        safeSetText('totalCapital', `$${safeFix(data.total_capital)}`);
     }
     if (data.total_capital_2nd !== undefined) {
-        document.getElementById('totalCapital2nd').textContent = `$${Number(data.total_capital_2nd).toFixed(2)}`;
+        safeSetText('totalCapital2nd', `$${safeFix(data.total_capital_2nd)}`);
     }
     if (data.max_allowed_used_display !== undefined) {
-        document.getElementById('maxAllowedUsedDisplay').textContent = `$${Number(data.max_allowed_used_display).toFixed(2)}`;
+        safeSetText('maxAllowedUsedDisplay', `$${safeFix(data.max_allowed_used_display)}`);
     }
     if (data.max_amount_display !== undefined) {
-        document.getElementById('maxAmountDisplay').textContent = `$${Number(data.max_amount_display).toFixed(2)}`;
+        safeSetText('maxAmountDisplay', `$${safeFix(data.max_amount_display)}`);
     }
     if (data.used_amount !== undefined) {
-        document.getElementById('usedAmount').textContent = `$${Number(data.used_amount).toFixed(2)}`;
+        safeSetText('usedAmount', `$${safeFix(data.used_amount)}`);
     }
-    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0.00;
+    const remaining = data.remaining_amount !== undefined ? Number(data.remaining_amount) : 0;
     const minOrder = currentConfig?.min_order_amount || 0;
     const remainingEl = document.getElementById('remainingAmount');
-    if (remaining < minOrder && minOrder > 0) {
-        remainingEl.textContent = 'No remaining balance for trade';
-        remainingEl.classList.add('text-danger', 'small');
-        remainingEl.style.fontSize = '0.75rem';
-    } else {
-        remainingEl.textContent = `$${remaining.toFixed(2)}`;
-        remainingEl.classList.remove('text-danger', 'small');
-        remainingEl.style.fontSize = '';
+    if (remainingEl) {
+        if (!isNaN(remaining) && remaining < minOrder && minOrder > 0) {
+            remainingEl.textContent = 'No remaining balance for trade';
+            remainingEl.classList.add('text-danger', 'small');
+            remainingEl.style.fontSize = '0.75rem';
+        } else {
+            remainingEl.textContent = `$${safeFix(remaining)}`;
+            remainingEl.classList.remove('text-danger', 'small');
+            remainingEl.style.fontSize = '';
+        }
     }
-    document.getElementById('needAddProfitTargetDisplay').textContent = `$${data.need_add_usdt !== undefined ? Number(data.need_add_usdt).toFixed(2) : '0.00'}`;
-    document.getElementById('needAddAboveZeroDisplay').textContent = `$${data.need_add_above_zero !== undefined ? Number(data.need_add_above_zero).toFixed(2) : '0.00'}`;
+    const needAddProfitVal = Number(data.need_add_usdt) || 0;
+    const needAddPnlVal = Number(data.need_add_above_zero) || 0;
+    const qtyProfitVal = Number(data.need_add_qty_profit) || 0;
+    const qtyZeroVal = Number(data.need_add_qty_zero) || 0;
+
+    let profitText = `$${safeFix(needAddProfitVal)}`;
+    if (qtyProfitVal > 0) profitText += ` (${safeFix(qtyProfitVal, 4)} ct)`;
+    safeSetText('needAddProfitTargetDisplay', profitText);
+
+    let pnlText = `$${safeFix(needAddPnlVal)}`;
+    if (qtyZeroVal > 0) pnlText += ` (${safeFix(qtyZeroVal, 4)} ct)`;
+    safeSetText('needAddAboveZeroDisplay', pnlText);
     if (data.available_balance !== undefined) {
-        document.getElementById('balance').textContent = `$${Number(data.available_balance).toFixed(2)}`;
+        safeSetText('balance', `$${safeFix(data.available_balance)}`);
     }
 
     // Update Auto-Cal Add Header based on position side
@@ -466,25 +512,27 @@ function updateAccountMetrics(data) {
 
     const netProfitElement = document.getElementById('netProfit');
     const netProfitValue = data.net_profit !== undefined ? Number(data.net_profit) : 0.00;
-    netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;
+    if (netProfitElement) {
+        netProfitElement.textContent = `$${netProfitValue.toFixed(2)}`;
 
-    // Color coding for Net Profit
-    if (netProfitValue > 0) {
-        netProfitElement.classList.remove('text-danger');
-        netProfitElement.classList.add('text-success');
-    } else if (netProfitValue < 0) {
-        netProfitElement.classList.remove('text-success');
-        netProfitElement.classList.add('text-danger');
-    } else {
-        netProfitElement.classList.remove('text-success', 'text-danger');
+        // Color coding for Net Profit
+        if (netProfitValue > 0) {
+            netProfitElement.classList.remove('text-danger');
+            netProfitElement.classList.add('text-success');
+        } else if (netProfitValue < 0) {
+            netProfitElement.classList.remove('text-success');
+            netProfitElement.classList.add('text-danger');
+        } else {
+            netProfitElement.classList.remove('text-success', 'text-danger');
+        }
     }
 
     // New Advanced Profit Analytics
-    document.getElementById('totalTradeProfit').textContent = `$${(data.total_trade_profit || 0).toFixed(2)}`;
-    document.getElementById('totalTradeLoss').textContent = `$${(data.total_trade_loss || 0).toFixed(2)}`;
-    document.getElementById('netTradeProfit').textContent = `$${(data.net_trade_profit || 0).toFixed(2)}`;
+    safeSetText('totalTradeProfit', `$${safeFix(data.total_trade_profit)}`);
+    safeSetText('totalTradeLoss', `$${safeFix(data.total_trade_loss)}`);
+    safeSetText('netTradeProfit', `$${safeFix(data.net_trade_profit)}`);
 
-    document.getElementById('totalTrades').textContent = data.total_trades !== undefined ? data.total_trades : '0';
+    safeSetText('totalTrades', data.total_trades !== undefined ? String(data.total_trades) : '0');
 
     // Update daily report if present
     if (data.daily_reports) {
@@ -498,12 +546,12 @@ function updateAccountMetrics(data) {
     const sizeFee = data.size_fees || 0;
     const feeRate = (currentConfig?.trade_fee_percentage || 0.07);
 
-    document.getElementById('tradeFees').textContent = `$${Number(tradeFees).toFixed(2)}`;
-    document.getElementById('usedFee').textContent = `$${Number(usedFee).toFixed(2)}`;
-    document.getElementById('remainingFee').textContent = `$${Number(remainingFee).toFixed(2)}`;
-    document.getElementById('feeRateDisplay').textContent = `${Number(feeRate).toFixed(3)}%`;
-    document.getElementById('sizeAmountDisplay').textContent = `$${Number(data.size_amount || 0).toFixed(2)}`;
-    document.getElementById('sizeFeeDisplay').textContent = `$${Number(sizeFee).toFixed(2)}`;
+    safeSetText('tradeFees', `$${safeFix(tradeFees)}`);
+    safeSetText('usedFee', `$${safeFix(usedFee)}`);
+    safeSetText('remainingFee', `$${safeFix(remainingFee)}`);
+    safeSetText('feeRateDisplay', `${safeFix(feeRate, 3)}%`);
+    safeSetText('sizeAmountDisplay', `$${safeFix(data.size_amount)}`);
+    safeSetText('sizeFeeDisplay', `$${safeFix(sizeFee)}`);
 
     lastUsedFee = usedFee;
     lastSizeFee = sizeFee;
@@ -515,23 +563,28 @@ function updateAccountMetrics(data) {
     const tgtEl = document.getElementById('needAddProfitTargetDisplay');
     const zeroEl = document.getElementById('needAddAboveZeroDisplay');
 
-    if (needAddTgt > 0) {
-        tgtEl.parentElement.classList.add('bg-warning-subtle');
-        tgtEl.classList.add('text-warning');
-    } else {
-        tgtEl.parentElement.classList.remove('bg-warning-subtle');
-        tgtEl.classList.remove('text-warning');
+    if (tgtEl) {
+        if (needAddTgt > 0) {
+            tgtEl.parentElement.classList.add('bg-warning-subtle');
+            tgtEl.classList.add('text-warning');
+        } else {
+            tgtEl.parentElement.classList.remove('bg-warning-subtle');
+            tgtEl.classList.remove('text-warning');
+        }
     }
 
-    if (needAddAboveZero > 0) {
-        zeroEl.parentElement.classList.add('bg-warning-subtle');
-        zeroEl.classList.add('text-warning');
-    } else {
-        zeroEl.parentElement.classList.remove('bg-warning-subtle');
-        zeroEl.classList.remove('text-warning');
+    if (zeroEl) {
+        if (needAddAboveZero > 0) {
+            zeroEl.parentElement.classList.add('bg-warning-subtle');
+            zeroEl.classList.add('text-warning');
+        } else {
+            zeroEl.parentElement.classList.remove('bg-warning-subtle');
+            zeroEl.classList.remove('text-warning');
+        }
     }
 
     updateAutoCalDisplay();
+    updatePositionDisplay(data);
 }
 
 function updateDailyReport(reports) {
@@ -549,51 +602,56 @@ function updateDailyReport(reports) {
     tableBody.innerHTML = sortedReports.map(report => `
         <tr>
             <td>${report.date}</td>
-            <td>$${report.total_capital.toFixed(2)}</td>
+            <td>$${(report.total_capital || 0).toFixed(2)}</td>
             <td class="${report.net_trade_profit >= 0 ? 'text-success' : 'text-danger'}">
-                $${report.net_trade_profit.toFixed(2)}
+                $${(report.net_trade_profit || 0).toFixed(2)}
             </td>
             <td>
                 <span class="badge ${report.compound_interest >= 1 ? 'bg-success' : 'bg-danger'}">
                     ${((report.compound_interest - 1) * 100).toFixed(2)}%
                 </span>
-                <small class="text-muted ms-1">(${report.compound_interest.toFixed(4)})</small>
+                <small class="text-muted ms-1">(${(report.compound_interest || 0).toFixed(4)})</small>
             </td>
         </tr>
     `).join('');
 }
 
 function updateAutoCalDisplay() {
+    const safeSetVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = val;
+    };
+    const safeGetVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? parseFloat(el.value) || 0 : 0;
+    };
+
     // Profit
-    const profitTimes = parseFloat(document.getElementById('pnlAutoCalTimes').value) || 0;
+    const profitTimes = safeGetVal('pnlAutoCalTimes');
     const autoProfitValue = lastUsedFee * profitTimes;
-    const profitDisplay = document.getElementById('pnlAutoCalDisplay');
-    if (profitDisplay) profitDisplay.value = autoProfitValue.toFixed(2);
+    safeSetVal('pnlAutoCalDisplay', autoProfitValue.toFixed(2));
 
     // Loss
-    const lossTimes = parseFloat(document.getElementById('pnlAutoCalLossTimes').value) || 0;
+    const lossTimes = safeGetVal('pnlAutoCalLossTimes');
     const autoLossValue = -(lastUsedFee * lossTimes);
-    const lossDisplay = document.getElementById('pnlAutoCalLossDisplay');
-    if (lossDisplay) lossDisplay.value = autoLossValue.toFixed(2);
+    safeSetVal('pnlAutoCalLossDisplay', autoLossValue.toFixed(2));
 
     // Auto-Cal Size (Profit) (NEW)
-    const sizeProfitTimes = parseFloat(document.getElementById('sizeAutoCalTimes').value) || 0;
+    const sizeProfitTimes = safeGetVal('sizeAutoCalTimes');
     // Uses Size Fee basis as requested
     const autoSizeProfitValue = lastSizeFee * sizeProfitTimes;
-    const sizeProfitDisplay = document.getElementById('sizeAutoCalDisplay');
-    if (sizeProfitDisplay) sizeProfitDisplay.value = autoSizeProfitValue.toFixed(2);
+    safeSetVal('sizeAutoCalDisplay', autoSizeProfitValue.toFixed(2));
 
     // Auto-Cal Size Loss (NEW)
-    const sizeLossTimes = parseFloat(document.getElementById('sizeAutoCalLossTimes').value) || 0;
+    const sizeLossTimes = safeGetVal('sizeAutoCalLossTimes');
     const autoSizeLossValue = -(lastSizeFee * sizeLossTimes);
-    const sizeLossDisplay = document.getElementById('sizeAutoCalLossDisplay');
-    if (sizeLossDisplay) sizeLossDisplay.value = autoSizeLossValue.toFixed(2);
+    safeSetVal('sizeAutoCalLossDisplay', autoSizeLossValue.toFixed(2));
 }
 
 function updatePositionDisplay(positionData) {
     const mlResultsContainer = document.getElementById('mlStrategyResults');
 
-    if (!positionData || (!positionData.in_position && (!positionData.positions || (!positionData.positions.long.in && !positionData.positions.short.in)))) {
+    if (!positionData) {
         mlResultsContainer.innerHTML = '<p class="text-muted">No active position.</p>';
         return;
     }
@@ -607,19 +665,30 @@ function updatePositionDisplay(positionData) {
         if (positionData.positions.short.in) {
             positionsToRender.push({ side: 'SHORT', ...positionData.positions.short });
         }
-    } else if (positionData.in_position) {
-        // Fallback for older data format or primary display
-        positionsToRender.push({
-            side: (positionData.position_qty > 0 ? 'LONG' : 'SHORT'),
-            price: positionData.position_entry_price,
-            qty: positionData.position_qty,
-            tp: positionData.current_take_profit,
-            sl: positionData.current_stop_loss
+    } else if (positionData.in_position && typeof positionData.in_position === 'object') {
+        // Handle dictionary format: {'long': True, 'short': False}
+        ['long', 'short'].forEach(side => {
+            if (positionData.in_position[side]) {
+                positionsToRender.push({
+                    side: side.toUpperCase(),
+                    price: positionData.position_entry_price ? positionData.position_entry_price[side] : 0,
+                    qty: positionData.position_qty ? positionData.position_qty[side] : 0,
+                    tp: positionData.current_take_profit ? positionData.current_take_profit[side] : 0,
+                    sl: positionData.current_stop_loss ? positionData.current_stop_loss[side] : 0,
+                    liq: positionData.position_liq ? positionData.position_liq[side] : 0
+                });
+            }
         });
+    }
+
+    if (positionsToRender.length === 0) {
+        mlResultsContainer.innerHTML = '<p class="text-muted">No active position.</p>';
+        return;
     }
 
     let positionHtml = '';
     positionsToRender.forEach(pos => {
+        const safeFix4 = (v) => safeFix(v, 4);
         positionHtml += `
             <div class="position-card mb-2 p-2 border rounded ${pos.side.toLowerCase()}-bg">
                 <div class="d-flex justify-content-between align-items-center mb-1">
@@ -628,13 +697,13 @@ function updatePositionDisplay(positionData) {
                 </div>
                 <div class="row g-0">
                     <div class="col-6 small text-white-50">Entry Price:</div>
-                    <div class="col-6 small text-end">${Number(pos.price || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end">${safeFix4(pos.price)}</div>
                     <div class="col-6 small text-white-50">Quantity:</div>
-                    <div class="col-6 small text-end">${Number(pos.qty || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end">${safeFix4(pos.qty)}</div>
                     <div class="col-6 small text-white-50">Current TP:</div>
-                    <div class="col-6 small text-end text-success">${Number(pos.tp || (positionData && positionData.current_take_profit) || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end text-success">${safeFix4(pos.tp)}</div>
                     <div class="col-6 small text-white-50">Current SL:</div>
-                    <div class="col-6 small text-end text-danger">${Number(pos.sl || (positionData && positionData.current_stop_loss) || 0).toFixed(4)}</div>
+                    <div class="col-6 small text-end text-danger">${safeFix4(pos.sl)}</div>
                 </div>
             </div>
         `;
@@ -769,15 +838,19 @@ function updateParametersDisplay() {
                 <span class="param-value">${currentConfig.cancel_unfilled_seconds}</span>
             </div>
             <div class="param-item">
-                <span class="param-label">Short: Cancel if TP below market:</span>
+                <span class="param-label">Cancel if TP below market:</span>
                 <span class="param-value">${currentConfig.cancel_on_tp_price_below_market ? 'Yes' : 'No'}</span>
             </div>
             <div class="param-item">
-                <span class="param-label">Short: Cancel if Entry below market:</span>
+                <span class="param-label">Cancel if TP above market:</span>
+                <span class="param-value">${currentConfig.cancel_on_tp_price_above_market ? 'Yes' : 'No'}</span>
+            </div>
+            <div class="param-item">
+                <span class="param-label">Cancel if Entry below market:</span>
                 <span class="param-value">${currentConfig.cancel_on_entry_price_below_market ? 'Yes' : 'No'}</span>
             </div>
             <div class="param-item">
-                <span class="param-label">Long: Cancel if Entry above market:</span>
+                <span class="param-label">Cancel if Entry above market:</span>
                 <span class="param-value">${currentConfig.cancel_on_entry_price_above_market ? 'Yes' : 'No'}</span>
             </div>
            <div class="param-item">
@@ -835,7 +908,7 @@ function updateOpenTrades(trades) {
     const tradesContainer = document.getElementById('openTrades');
 
     if (!trades || trades.length === 0) {
-        tradesContainer.innerHTML = '<p class="text-muted">No open positions</p>';
+        tradesContainer.innerHTML = '<p class="text-muted">No open orders</p>';
         return;
     }
 
@@ -1108,89 +1181,85 @@ async function loadStatus() {
 function loadConfigToModal() {
     if (!currentConfig) return;
 
-    document.getElementById('okxApiKey').value = currentConfig.okx_api_key;
-    document.getElementById('okxApiSecret').value = currentConfig.okx_api_secret;
-    document.getElementById('okxPassphrase').value = currentConfig.okx_passphrase;
-    document.getElementById('okxDemoApiKey').value = currentConfig.okx_demo_api_key;
-    document.getElementById('okxDemoApiSecret').value = currentConfig.okx_demo_api_secret;
-    document.getElementById('okxDemoApiPassphrase').value = currentConfig.okx_demo_api_passphrase;
-    document.getElementById('devApiKey').value = currentConfig.dev_api_key;
-    document.getElementById('devApiSecret').value = currentConfig.dev_api_secret;
-    document.getElementById('devPassphrase').value = currentConfig.dev_passphrase;
-    document.getElementById('devDemoApiKey').value = currentConfig.dev_demo_api_key;
-    document.getElementById('devDemoApiSecret').value = currentConfig.dev_demo_api_secret;
-    document.getElementById('devDemoApiPassphrase').value = currentConfig.dev_demo_api_passphrase;
-    document.getElementById('useTestnet').checked = currentConfig.use_testnet;
-    document.getElementById('useDeveloperApi').checked = currentConfig.use_developer_api;
-    document.getElementById('symbol').value = currentConfig.symbol;
-    document.getElementById('shortSafetyLinePrice').value = currentConfig.short_safety_line_price;
-    document.getElementById('longSafetyLinePrice').value = currentConfig.long_safety_line_price;
-    document.getElementById('leverage').value = currentConfig.leverage;
-    document.getElementById('maxAllowedUsed').value = currentConfig.max_allowed_used;
-    document.getElementById('entryPriceOffset').value = currentConfig.entry_price_offset;
-    document.getElementById('batchOffset').value = currentConfig.batch_offset;
-    document.getElementById('tpPriceOffset').value = currentConfig.tp_price_offset;
-    document.getElementById('slPriceOffset').value = currentConfig.sl_price_offset;
-    document.getElementById('loopTimeSeconds').value = currentConfig.loop_time_seconds;
-    document.getElementById('rateDivisor').value = currentConfig.rate_divisor;
-    document.getElementById('batchSizePerLoop').value = currentConfig.batch_size_per_loop;
-    document.getElementById('minOrderAmount').value = currentConfig.min_order_amount;
-    document.getElementById('targetOrderAmount').value = currentConfig.target_order_amount;
-    document.getElementById('cancelUnfilledSeconds').value = currentConfig.cancel_unfilled_seconds;
-    document.getElementById('cancelOnEntryPriceBelowMarket').checked = currentConfig.cancel_on_entry_price_below_market;
-    document.getElementById('cancelOnEntryPriceAboveMarket').checked = currentConfig.cancel_on_entry_price_above_market;
-    document.getElementById('tradeFeePercentage').value = currentConfig.trade_fee_percentage || 0.07;
+    const safeSetVal = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.value = (val !== undefined && val !== null) ? val : '';
+    };
+    const safeSetChecked = (id, checked) => {
+        const el = document.getElementById(id);
+        if (el) el.checked = !!checked;
+    };
+
+    safeSetVal('okxApiKey', currentConfig.okx_api_key);
+    safeSetVal('okxApiSecret', currentConfig.okx_api_secret);
+    safeSetVal('okxPassphrase', currentConfig.okx_passphrase);
+    safeSetVal('okxDemoApiKey', currentConfig.okx_demo_api_key);
+    safeSetVal('okxDemoApiSecret', currentConfig.okx_demo_api_secret);
+    safeSetVal('okxDemoApiPassphrase', currentConfig.okx_demo_api_passphrase);
+    safeSetVal('devApiKey', currentConfig.dev_api_key);
+    safeSetVal('devApiSecret', currentConfig.dev_api_secret);
+    safeSetVal('devPassphrase', currentConfig.dev_passphrase);
+    safeSetVal('devDemoApiKey', currentConfig.dev_demo_api_key);
+    safeSetVal('devDemoApiSecret', currentConfig.dev_demo_api_secret);
+    safeSetVal('devDemoApiPassphrase', currentConfig.dev_demo_api_passphrase);
+    safeSetChecked('useTestnet', currentConfig.use_testnet);
+    safeSetChecked('useDeveloperApi', currentConfig.use_developer_api);
+    safeSetVal('symbol', currentConfig.symbol);
+    safeSetVal('shortSafetyLinePrice', currentConfig.short_safety_line_price);
+    safeSetVal('longSafetyLinePrice', currentConfig.long_safety_line_price);
+    safeSetVal('leverage', currentConfig.leverage);
+    safeSetVal('maxAllowedUsed', currentConfig.max_allowed_used);
+    safeSetVal('entryPriceOffset', currentConfig.entry_price_offset);
+    safeSetVal('batchOffset', currentConfig.batch_offset);
+    safeSetVal('tpPriceOffset', currentConfig.tp_price_offset);
+    safeSetVal('slPriceOffset', currentConfig.sl_price_offset);
+    safeSetVal('loopTimeSeconds', currentConfig.loop_time_seconds);
+    safeSetVal('rateDivisor', currentConfig.rate_divisor);
+    safeSetVal('batchSizePerLoop', currentConfig.batch_size_per_loop);
+    safeSetVal('minOrderAmount', currentConfig.min_order_amount);
+    safeSetVal('targetOrderAmount', currentConfig.target_order_amount);
+    safeSetVal('cancelUnfilledSeconds', currentConfig.cancel_unfilled_seconds);
+    safeSetChecked('cancelOnTpPriceBelowMarket', currentConfig.cancel_on_tp_price_below_market);
+    safeSetChecked('cancelOnTpPriceAboveMarket', currentConfig.cancel_on_tp_price_above_market);
+    safeSetChecked('cancelOnEntryPriceBelowMarket', currentConfig.cancel_on_entry_price_below_market);
+    safeSetChecked('cancelOnEntryPriceAboveMarket', currentConfig.cancel_on_entry_price_above_market);
+    safeSetVal('tradeFeePercentage', currentConfig.trade_fee_percentage || 0.07);
 
     // New fields
-    document.getElementById('direction').value = currentConfig.direction;
-    document.getElementById('mode').value = currentConfig.mode;
-    document.getElementById('tpAmount').value = currentConfig.tp_amount;
-    document.getElementById('slAmount').value = currentConfig.sl_amount;
-    document.getElementById('triggerPrice').value = currentConfig.trigger_price;
-    document.getElementById('tpMode').value = currentConfig.tp_mode;
-    document.getElementById('tpType').value = currentConfig.tp_type;
-    document.getElementById('useCandlestickConditions').checked = currentConfig.use_candlestick_conditions;
+    safeSetVal('direction', currentConfig.direction);
+    safeSetVal('mode', currentConfig.mode);
+    safeSetVal('tpAmount', currentConfig.tp_amount);
+    safeSetVal('slAmount', currentConfig.sl_amount);
+    safeSetVal('triggerPrice', currentConfig.trigger_price);
+    safeSetVal('tpMode', currentConfig.tp_mode);
+    safeSetVal('tpType', currentConfig.tp_type);
+    safeSetChecked('useCandlestickConditions', currentConfig.use_candlestick_conditions);
 
     // Candlestick conditions
-    document.getElementById('useChgOpenClose').checked = currentConfig.use_chg_open_close;
-    document.getElementById('minChgOpenClose').value = currentConfig.min_chg_open_close;
-    document.getElementById('maxChgOpenClose').value = currentConfig.max_chg_open_close;
-    document.getElementById('useChgHighLow').checked = currentConfig.use_chg_high_low;
-    document.getElementById('minChgHighLow').value = currentConfig.min_chg_high_low;
-    document.getElementById('maxChgHighLow').value = currentConfig.max_chg_high_low;
-    document.getElementById('useChgHighClose').checked = currentConfig.use_chg_high_close;
-    document.getElementById('minChgHighClose').value = currentConfig.min_chg_high_close;
-    document.getElementById('maxChgHighClose').value = currentConfig.max_chg_high_close;
-    document.getElementById('candlestickTimeframe').value = currentConfig.candlestick_timeframe;
-    document.getElementById('okxPosMode').value = currentConfig.okx_pos_mode || 'net_mode';
+    safeSetChecked('useChgOpenClose', currentConfig.use_chg_open_close);
+    safeSetVal('minChgOpenClose', currentConfig.min_chg_open_close);
+    safeSetVal('maxChgOpenClose', currentConfig.max_chg_open_close);
+    safeSetChecked('useChgHighLow', currentConfig.use_chg_high_low);
+    safeSetVal('minChgHighLow', currentConfig.min_chg_high_low);
+    safeSetVal('maxChgHighLow', currentConfig.max_chg_high_low);
+    safeSetChecked('useChgHighClose', currentConfig.use_chg_high_close);
+    safeSetVal('minChgHighClose', currentConfig.min_chg_high_close);
+    safeSetVal('maxChgHighClose', currentConfig.max_chg_high_close);
+    safeSetVal('candlestickTimeframe', currentConfig.candlestick_timeframe);
+    safeSetVal('okxPosMode', currentConfig.okx_pos_mode || 'net_mode');
 
     // PnL Auto-Cancel (Modal Sync -> Maps to Auto-Manual Profit)
-    const autCancelCheck = document.getElementById('usePnlAutoCancelModal');
-    const autCancelThreshold = document.getElementById('pnlAutoCancelThresholdModal');
-    if (autCancelCheck) autCancelCheck.checked = currentConfig.use_pnl_auto_manual || false;
-    if (autCancelThreshold) autCancelThreshold.value = currentConfig.pnl_auto_manual_threshold || 100.0;
+    safeSetChecked('usePnlAutoCancelModal', currentConfig.use_pnl_auto_manual || false);
+    safeSetVal('pnlAutoCancelThresholdModal', currentConfig.pnl_auto_manual_threshold || 100.0);
 
-    // Populate Add Pos fields in modal explicitly if not handled by sync
-    const elRec = document.getElementById('addPosRecoveryPercent');
-    if (elRec) elRec.value = currentConfig.add_pos_recovery_percent || 0.6;
-
-    const elGap = document.getElementById('addPosGapThreshold');
-    if (elGap) elGap.value = currentConfig.add_pos_gap_threshold || 5.0;
-
-    const elProt = document.getElementById('addPosProfitMultiplier');
-    if (elProt) elProt.value = currentConfig.add_pos_profit_multiplier || 1.5;
-
-    const elSize = document.getElementById('addPosSizePct');
-    if (elSize) elSize.value = currentConfig.add_pos_size_pct || 30.0;
-
-    const elMax = document.getElementById('addPosMaxCount');
-    if (elMax) elMax.value = currentConfig.add_pos_max_count || 10;
-
-    const elGapOff = document.getElementById('addPosGapOffset');
-    if (elGapOff) elGapOff.value = currentConfig.add_pos_gap_offset || 0.0;
-
-    const elSizeOff = document.getElementById('addPosSizePctOffset');
-    if (elSizeOff) elSizeOff.value = currentConfig.add_pos_size_pct_offset || 0.0;
+    // Populate Add Pos fields in modal explicitly
+    safeSetVal('addPosRecoveryPercent', currentConfig.add_pos_recovery_percent || 0.6);
+    safeSetVal('addPosGapThreshold', currentConfig.add_pos_gap_threshold || 5.0);
+    safeSetVal('addPosProfitMultiplier', currentConfig.add_pos_profit_multiplier || 1.5);
+    safeSetVal('addPosSizePct', currentConfig.add_pos_size_pct || 30.0);
+    safeSetVal('addPosMaxCount', currentConfig.add_pos_max_count || 10);
+    safeSetVal('addPosGapOffset', currentConfig.add_pos_gap_offset || 0.0);
+    safeSetVal('addPosSizePctOffset', currentConfig.add_pos_size_pct_offset || 0.0);
 }
 
 // Helper to keep dashboard and modal in sync - Removed old PnL sync listeners as modal update is pending
@@ -1227,6 +1296,8 @@ async function saveConfig() {
         min_order_amount: parseFloat(document.getElementById('minOrderAmount').value),
         target_order_amount: parseFloat(document.getElementById('targetOrderAmount').value),
         cancel_unfilled_seconds: parseInt(document.getElementById('cancelUnfilledSeconds').value),
+        cancel_on_tp_price_below_market: document.getElementById('cancelOnTpPriceBelowMarket').checked,
+        cancel_on_tp_price_above_market: document.getElementById('cancelOnTpPriceAboveMarket').checked,
         cancel_on_entry_price_below_market: document.getElementById('cancelOnEntryPriceBelowMarket').checked,
         cancel_on_entry_price_above_market: document.getElementById('cancelOnEntryPriceAboveMarket').checked,
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),
@@ -1330,6 +1401,10 @@ async function saveLiveConfigs() {
         size_auto_cal_loss_times: parseFloat(document.getElementById('sizeAutoCalLossTimes').value),
 
         trade_fee_percentage: parseFloat(document.getElementById('tradeFeePercentage').value),
+
+        // Safety Lines (Add to live updates)
+        short_safety_line_price: parseFloat(document.getElementById('shortSafetyLinePrice').value),
+        long_safety_line_price: parseFloat(document.getElementById('longSafetyLinePrice').value),
 
         // Auto-Add Margin
         use_auto_margin: document.getElementById('useAutoMargin').checked,
